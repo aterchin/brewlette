@@ -7,13 +7,49 @@ export default function BeerEditor({
   onAdd,
   onUpdate,
   onDelete,
-  onMove,
   onReset,
+  nextNumber,
 }) {
   const [editingId, setEditingId] = useState(null);
   const [showAdd, setShowAdd] = useState(false);
 
   const editingBeer = beers.find((beer) => beer.id === editingId) || null;
+  const isFormOpen = Boolean(editingBeer) || showAdd;
+
+  const usedNumbers = beers
+    .filter((beer) => !editingBeer || beer.id !== editingBeer.id)
+    .map((beer) => beer.number);
+
+  function closeForm() {
+    setEditingId(null);
+    setShowAdd(false);
+  }
+
+  if (isFormOpen) {
+    return (
+      <section className="beer-editor beer-editor--form">
+        <div className="beer-editor__panel">
+          <h2>{editingBeer ? "Edit beer" : "Add beer"}</h2>
+          <BeerForm
+            initial={editingBeer || undefined}
+            defaultNumber={editingBeer ? undefined : nextNumber}
+            usedNumbers={usedNumbers}
+            submitLabel={editingBeer ? "Save changes" : "Add beer"}
+            cancelLabel="Back to list"
+            onSubmit={(values) => {
+              if (editingBeer) {
+                onUpdate(editingBeer.id, values);
+              } else {
+                onAdd(values);
+              }
+              closeForm();
+            }}
+            onCancel={closeForm}
+          />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="beer-editor">
@@ -23,34 +59,24 @@ export default function BeerEditor({
       </div>
 
       <ul className="beer-editor__list">
-        {beers.map((beer, index) => (
+        {beers.map((beer) => (
           <li key={beer.id} className="beer-editor__item">
             <div className="beer-editor__info">
-              <strong>{beer.name}</strong>
-              <span>
-                {[beer.brewery, beer.style].filter(Boolean).join(" · ") ||
-                  "No details"}
+              <span className="beer-editor__number" aria-hidden="true">
+                #{beer.number}
               </span>
+              <div className="beer-editor__copy">
+                <strong>
+                  <span className="visually-hidden">Number {beer.number}. </span>
+                  {beer.name}
+                </strong>
+                <span>
+                  {[beer.brewery, beer.style].filter(Boolean).join(" · ") ||
+                    "No details"}
+                </span>
+              </div>
             </div>
             <div className="beer-editor__controls">
-              <button
-                type="button"
-                className="btn btn-sm btn-ghost"
-                onClick={() => onMove(beer.id, "up")}
-                disabled={index === 0}
-                aria-label={`Move ${beer.name} up`}
-              >
-                Up
-              </button>
-              <button
-                type="button"
-                className="btn btn-sm btn-ghost"
-                onClick={() => onMove(beer.id, "down")}
-                disabled={index === beers.length - 1}
-                aria-label={`Move ${beer.name} down`}
-              >
-                Down
-              </button>
               <button
                 type="button"
                 className="btn btn-sm btn-ghost"
@@ -67,7 +93,6 @@ export default function BeerEditor({
                 onClick={() => {
                   if (window.confirm(`Remove ${beer.name}?`)) {
                     onDelete(beer.id);
-                    if (editingId === beer.id) setEditingId(null);
                   }
                 }}
               >
@@ -78,45 +103,17 @@ export default function BeerEditor({
         ))}
       </ul>
 
-      {editingBeer && (
-        <div className="beer-editor__panel">
-          <h3>Edit beer</h3>
-          <BeerForm
-            initial={editingBeer}
-            submitLabel="Save changes"
-            onSubmit={(values) => {
-              onUpdate(editingBeer.id, values);
-              setEditingId(null);
-            }}
-            onCancel={() => setEditingId(null)}
-          />
-        </div>
-      )}
-
-      {showAdd && !editingBeer && (
-        <div className="beer-editor__panel">
-          <h3>Add beer</h3>
-          <BeerForm
-            submitLabel="Add beer"
-            onSubmit={(values) => {
-              onAdd(values);
-              setShowAdd(false);
-            }}
-            onCancel={() => setShowAdd(false)}
-          />
-        </div>
-      )}
-
       <div className="beer-editor__footer">
-        {!showAdd && !editingBeer && (
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => setShowAdd(true)}
-          >
-            Add beer
-          </button>
-        )}
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => {
+            setEditingId(null);
+            setShowAdd(true);
+          }}
+        >
+          Add beer
+        </button>
         <button
           type="button"
           className="btn btn-ghost"
@@ -127,8 +124,7 @@ export default function BeerEditor({
               )
             ) {
               onReset();
-              setEditingId(null);
-              setShowAdd(false);
+              closeForm();
             }
           }}
         >

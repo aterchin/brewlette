@@ -42,11 +42,30 @@
 
 .beer-editor__info {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-width: 0;
 }
 
-.beer-editor__info strong {
+.beer-editor__number {
+  flex-shrink: 0;
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-2xl);
+  line-height: 1;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-accent-deep);
+  min-width: 2.5rem;
+}
+
+.beer-editor__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.beer-editor__copy strong {
   font-family: var(--font-family-base);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
@@ -55,7 +74,7 @@
   color: var(--color-ink);
 }
 
-.beer-editor__info span {
+.beer-editor__copy > span {
   color: #4a4a4a;
   font-size: var(--font-size-sm);
 }
@@ -64,6 +83,12 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-2);
+}
+
+.beer-editor--form .beer-editor__panel h2 {
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-4);
+  color: var(--color-ink);
 }
 
 .beer-editor__controls .btn {
@@ -103,7 +128,7 @@
   }
 
   .beer-editor__controls {
-    grid-template-columns: repeat(4, minmax(4.5rem, auto));
+    grid-template-columns: repeat(2, minmax(4.5rem, auto));
     width: auto;
   }
 }

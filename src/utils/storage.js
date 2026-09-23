@@ -15,19 +15,63 @@ function isValidBeer(beer) {
   return abvOk;
 }
 
-function normalizeBeer(beer) {
-  const abv =
-    typeof beer.abv === "number" && Number.isFinite(beer.abv) ? beer.abv : null;
+function parseNumber(value) {
+  if (typeof value === "number" && Number.isInteger(value) && value >= 1) {
+    return value;
+  }
+  if (typeof value === "string" && value.trim() !== "") {
+    const n = Number.parseInt(value, 10);
+    if (Number.isInteger(n) && n >= 1) return n;
+  }
+  return null;
+}
 
-  return {
-    id: String(beer.id),
-    name: String(beer.name).trim(),
-    brewery: typeof beer.brewery === "string" ? beer.brewery : "",
-    style: typeof beer.style === "string" ? beer.style : "",
-    abv,
-    description: typeof beer.description === "string" ? beer.description : "",
-    surprise: typeof beer.surprise === "string" ? beer.surprise : "",
-  };
+/**
+ * Normalize beers and ensure each has a unique positive integer `number`.
+ * Missing/invalid numbers get the next free slot; duplicates are remapped.
+ */
+export function normalizeBeerList(beers) {
+  const used = new Set();
+  let nextFree = 1;
+
+  function claim(preferred) {
+    let n = preferred;
+    if (n == null || used.has(n)) {
+      while (used.has(nextFree)) nextFree += 1;
+      n = nextFree;
+    }
+    used.add(n);
+    while (used.has(nextFree)) nextFree += 1;
+    return n;
+  }
+
+  const normalized = beers.filter(isValidBeer).map((beer, index) => {
+    const abv =
+      typeof beer.abv === "number" && Number.isFinite(beer.abv) ? beer.abv : null;
+    const preferred = parseNumber(beer.number) ?? index + 1;
+
+    return {
+      id: String(beer.id),
+      number: claim(preferred),
+      name: String(beer.name).trim(),
+      brewery: typeof beer.brewery === "string" ? beer.brewery : "",
+      style: typeof beer.style === "string" ? beer.style : "",
+      abv,
+      description: typeof beer.description === "string" ? beer.description : "",
+      surprise: typeof beer.surprise === "string" ? beer.surprise : "",
+    };
+  });
+
+  return sortByNumber(normalized);
+}
+
+export function sortByNumber(beers) {
+  return [...beers].sort((a, b) => a.number - b.number || a.name.localeCompare(b.name));
+}
+
+export function nextBeerNumber(beers) {
+  if (!beers.length) return 1;
+  return Math.max(...beers.map((b) => b.number)) + 1;
 }
 
 /**
@@ -46,7 +90,7 @@ export function loadBeers() {
       return cloneDefaults();
     }
 
-    const beers = parsed.filter(isValidBeer).map(normalizeBeer);
+    const beers = normalizeBeerList(parsed);
     if (beers.length === 0) {
       return cloneDefaults();
     }
@@ -63,7 +107,7 @@ export function saveBeers(beers) {
   }
 
   try {
-    const normalized = beers.filter(isValidBeer).map(normalizeBeer);
+    const normalized = normalizeBeerList(beers);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
     return true;
   } catch {
@@ -81,5 +125,5 @@ export function resetBeers() {
 }
 
 function cloneDefaults() {
-  return defaultBeers.map((beer) => ({ ...beer }));
+  return normalizeBeerList(defaultBeers.map((beer) => ({ ...beer })));
 }

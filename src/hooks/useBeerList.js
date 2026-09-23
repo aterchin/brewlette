@@ -1,5 +1,12 @@
 import { useCallback, useState } from "react";
-import { loadBeers, resetBeers, saveBeers } from "../utils/storage.js";
+import {
+  loadBeers,
+  nextBeerNumber,
+  normalizeBeerList,
+  resetBeers,
+  saveBeers,
+  sortByNumber,
+} from "../utils/storage.js";
 
 function createId(name) {
   const slug = String(name || "beer")
@@ -12,8 +19,20 @@ function createId(name) {
 }
 
 function persist(next) {
-  saveBeers(next);
-  return next;
+  const sorted = sortByNumber(next);
+  saveBeers(sorted);
+  return sorted;
+}
+
+function parseSlotNumber(value) {
+  if (typeof value === "number" && Number.isInteger(value) && value >= 1) {
+    return value;
+  }
+  if (typeof value === "string" && value.trim() !== "") {
+    const n = Number.parseInt(value, 10);
+    if (Number.isInteger(n) && n >= 1) return n;
+  }
+  return null;
 }
 
 export function useBeerList() {
@@ -21,8 +40,14 @@ export function useBeerList() {
 
   const addBeer = useCallback((input) => {
     setBeers((current) => {
+      const slot = parseSlotNumber(input.number) ?? nextBeerNumber(current);
+      if (current.some((beer) => beer.number === slot)) {
+        return current;
+      }
+
       const beer = {
         id: createId(input.name),
+        number: slot,
         name: String(input.name || "").trim(),
         brewery: String(input.brewery || "").trim(),
         style: String(input.style || "").trim(),
@@ -38,10 +63,24 @@ export function useBeerList() {
 
   const updateBeer = useCallback((id, input) => {
     setBeers((current) => {
+      const existing = current.find((beer) => beer.id === id);
+      if (!existing) return current;
+
+      const slot =
+        input.number !== undefined
+          ? parseSlotNumber(input.number)
+          : existing.number;
+      if (slot == null) return current;
+
+      if (current.some((beer) => beer.id !== id && beer.number === slot)) {
+        return current;
+      }
+
       const next = current.map((beer) => {
         if (beer.id !== id) return beer;
         return {
           ...beer,
+          number: slot,
           name: String(input.name ?? beer.name).trim(),
           brewery: String(input.brewery ?? beer.brewery).trim(),
           style: String(input.style ?? beer.style).trim(),
@@ -61,24 +100,9 @@ export function useBeerList() {
     setBeers((current) => persist(current.filter((beer) => beer.id !== id)));
   }, []);
 
-  const moveBeer = useCallback((id, direction) => {
-    setBeers((current) => {
-      const index = current.findIndex((beer) => beer.id === id);
-      if (index < 0) return current;
-
-      const target = direction === "up" ? index - 1 : index + 1;
-      if (target < 0 || target >= current.length) return current;
-
-      const next = [...current];
-      const [item] = next.splice(index, 1);
-      next.splice(target, 0, item);
-      return persist(next);
-    });
-  }, []);
-
   const resetToDefaults = useCallback(() => {
     const next = resetBeers();
-    setBeers(next);
+    setBeers(normalizeBeerList(next));
   }, []);
 
   return {
@@ -86,8 +110,8 @@ export function useBeerList() {
     addBeer,
     updateBeer,
     deleteBeer,
-    moveBeer,
     resetToDefaults,
+    nextNumber: nextBeerNumber(beers),
   };
 }
 

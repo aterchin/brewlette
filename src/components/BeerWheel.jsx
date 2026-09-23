@@ -199,7 +199,11 @@ function drawWheel(canvas, beers, rotationDeg, cssSize, dpr) {
     const midRad = (midDeg * Math.PI) / 180;
     const labelRadius = radius * (count > 14 ? 0.68 : 0.6);
     const maxChars = count > 16 ? 9 : count > 12 ? 11 : count > 8 ? 14 : 18;
-    const label = shortenLabel(beers[i].name, maxChars);
+    const rawLabel =
+      beers[i].number != null
+        ? `#${beers[i].number} ${beers[i].name}`
+        : beers[i].name;
+    const label = shortenLabel(rawLabel, maxChars);
 
     ctx.save();
     ctx.rotate(midRad);

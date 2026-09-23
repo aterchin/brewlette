@@ -26,6 +26,7 @@ Subtle control to enter Edit (e.g. “Edit beer list”). Do not put a giant adm
 ```js
 {
   id: string,          // stable; never array index
+  number: number,      // bartender-assigned slot; unique; gaps allowed
   name: string,        // required
   brewery: string,
   style: string,
@@ -34,6 +35,8 @@ Subtle control to enter Edit (e.g. “Edit beer list”). Do not put a giant adm
   surprise: string     // optional fun payoff; omit UI if empty
 }
 ```
+
+List and wheel order by `number` ascending. Missing numbers (e.g. no #12) do not create empty wedges — only programmed beers appear.
 
 Persistence key: `brewlette.beers.v1`. Corrupt or missing data → fall back to `src/data/defaultBeers.js` (~19 sample beers).
 
@@ -60,7 +63,8 @@ Record changes from the original build idea here so future chats don’t re-liti
 | When | Decision |
 |------|----------|
 | 2026-09-22 | Public GitHub repo `aterchin/brewlette`; build spec stays out of git |
-| 2026-09-22 | Reorder beers with up/down buttons (no drag-and-drop) |
+| 2026-09-22 | Beer `number` is bartender-assigned (unique, gaps OK); order by number, not array index; no up/down reorder |
+| 2026-09-22 | Edit/Add uses replace view (hides list while form is open) |
 | 2026-09-22 | Focus / presentation mode **deferred** |
 | 2026-09-22 | Typography: Poller One (brand), Abril Fatface (display), Arvo (UI) |
 | 2026-09-22 | Visual system: Taproom Roulette (`.cursorrules`) — dive palette, polaroid cards, chunky borders, mechanical wheel |
@@ -69,7 +73,7 @@ Record changes from the original build idea here so future chats don’t re-liti
 
 - [ ] Focus / presentation mode — hide Edit and secondary chrome while spinning (no fullscreen API required)
 - [ ] Multiple saved lists, shareable URLs, QR, public/customer mode
-- [ ] Beer images, tap numbers, price, IBU, ratings
+- [ ] Beer images, price, IBU, ratings
 - [ ] Richer surprise types (challenge, discount, bartender instruction) — keep `surprise` a string until needed
 
 Do not implement backlog items unless explicitly requested.

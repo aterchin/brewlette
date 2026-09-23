@@ -4,6 +4,7 @@
  * Beer shape:
  * {
  *   id: string,          // stable id; never use array index
+ *   number: number,      // bartender-assigned slot; unique; gaps allowed
  *   name: string,        // required
  *   brewery: string,
  *   style: string,
@@ -16,6 +17,7 @@
 export const defaultBeers = [
   {
     id: "green-city",
+    number: 1,
     name: "Green City",
     brewery: "Other Half",
     style: "IPA",
@@ -25,6 +27,7 @@ export const defaultBeers = [
   },
   {
     id: "all-citra",
+    number: 2,
     name: "All Citra Everything",
     brewery: "Other Half",
     style: "Double IPA",
@@ -34,6 +37,7 @@ export const defaultBeers = [
   },
   {
     id: "forever-forever",
+    number: 3,
     name: "Forever Forever",
     brewery: "Hudson Valley",
     style: "Sour IPA",
@@ -43,6 +47,7 @@ export const defaultBeers = [
   },
   {
     id: "wave-action",
+    number: 4,
     name: "Wave Action",
     brewery: "Barrier",
     style: "Pale Ale",
@@ -52,6 +57,7 @@ export const defaultBeers = [
   },
   {
     id: "mantis",
+    number: 5,
     name: "Mantis",
     brewery: "Finback",
     style: "Hazy IPA",
@@ -61,6 +67,7 @@ export const defaultBeers = [
   },
   {
     id: "lawnmower",
+    number: 6,
     name: "Lawnmower",
     brewery: "Austin Beerworks",
     style: "Kölsch",
@@ -70,6 +77,7 @@ export const defaultBeers = [
   },
   {
     id: "two-hearted",
+    number: 7,
     name: "Two Hearted Ale",
     brewery: "Bell's",
     style: "IPA",
@@ -79,6 +87,7 @@ export const defaultBeers = [
   },
   {
     id: "guinness",
+    number: 8,
     name: "Guinness Draught",
     brewery: "Guinness",
     style: "Stout",
@@ -88,6 +97,7 @@ export const defaultBeers = [
   },
   {
     id: "pilsner-urquell",
+    number: 9,
     name: "Pilsner Urquell",
     brewery: "Pilsner Urquell",
     style: "Pilsner",
@@ -97,6 +107,7 @@ export const defaultBeers = [
   },
   {
     id: "hefeweizen",
+    number: 10,
     name: "Hefewizen",
     brewery: "Weihenstephaner",
     style: "Hefeweizen",
@@ -106,6 +117,7 @@ export const defaultBeers = [
   },
   {
     id: "saison-dupont",
+    number: 11,
     name: "Saison Dupont",
     brewery: "Dupont",
     style: "Saison",
@@ -115,6 +127,7 @@ export const defaultBeers = [
   },
   {
     id: "oberon",
+    number: 12,
     name: "Oberon",
     brewery: "Bell's",
     style: "Wheat Ale",
@@ -124,6 +137,7 @@ export const defaultBeers = [
   },
   {
     id: "space-dust",
+    number: 13,
     name: "Space Dust",
     brewery: "Elysian",
     style: "IPA",
@@ -133,6 +147,7 @@ export const defaultBeers = [
   },
   {
     id: "mexico-city",
+    number: 14,
     name: "Mexico City Lager",
     brewery: "Narragansett",
     style: "Mexican Lager",
@@ -142,6 +157,7 @@ export const defaultBeers = [
   },
   {
     id: "midnight-oil",
+    number: 15,
     name: "Midnight Oil",
     brewery: "Threes",
     style: "Porter",
@@ -151,6 +167,7 @@ export const defaultBeers = [
   },
   {
     id: "citra-ass-down",
+    number: 16,
     name: "Citra Ass Down",
     brewery: "Kern River",
     style: "IPA",
@@ -160,6 +177,7 @@ export const defaultBeers = [
   },
   {
     id: "fresh-squeeze",
+    number: 17,
     name: "Fresh Squeezed",
     brewery: "Deschutes",
     style: "IPA",
@@ -169,6 +187,7 @@ export const defaultBeers = [
   },
   {
     id: "orphan-annie",
+    number: 18,
     name: "Orphan Annie",
     brewery: "Industrial Arts",
     style: "Hazy IPA",
@@ -178,6 +197,7 @@ export const defaultBeers = [
   },
   {
     id: "long-name-test",
+    number: 19,
     name: "Extremely Long Hop Explosion Spectacular Reserve",
     brewery: "Tiny Tap House",
     style: "Imperial IPA",

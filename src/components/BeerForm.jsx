@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./BeerForm.css";
 
 const emptyForm = {
+  number: "",
   name: "",
   brewery: "",
   style: "",
@@ -10,13 +11,22 @@ const emptyForm = {
   surprise: "",
 };
 
-export default function BeerForm({ initial, onSubmit, onCancel, submitLabel }) {
+export default function BeerForm({
+  initial,
+  onSubmit,
+  onCancel,
+  submitLabel,
+  cancelLabel = "Cancel",
+  usedNumbers = [],
+  defaultNumber,
+}) {
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (initial) {
       setForm({
+        number: initial.number == null ? "" : String(initial.number),
         name: initial.name || "",
         brewery: initial.brewery || "",
         style: initial.style || "",
@@ -25,10 +35,13 @@ export default function BeerForm({ initial, onSubmit, onCancel, submitLabel }) {
         surprise: initial.surprise || "",
       });
     } else {
-      setForm(emptyForm);
+      setForm({
+        ...emptyForm,
+        number: defaultNumber == null ? "" : String(defaultNumber),
+      });
     }
     setError("");
-  }, [initial]);
+  }, [initial, defaultNumber]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -43,6 +56,17 @@ export default function BeerForm({ initial, onSubmit, onCancel, submitLabel }) {
       return;
     }
 
+    const slot = Number.parseInt(String(form.number).trim(), 10);
+    if (!Number.isInteger(slot) || slot < 1) {
+      setError("Number must be a whole number 1 or higher.");
+      return;
+    }
+
+    if (usedNumbers.includes(slot)) {
+      setError(`Number ${slot} is already used. Pick another.`);
+      return;
+    }
+
     let abv = null;
     if (form.abv.trim() !== "") {
       const parsed = Number.parseFloat(form.abv);
@@ -54,6 +78,7 @@ export default function BeerForm({ initial, onSubmit, onCancel, submitLabel }) {
     }
 
     onSubmit({
+      number: slot,
       name,
       brewery: form.brewery.trim(),
       style: form.style.trim(),
@@ -63,13 +88,33 @@ export default function BeerForm({ initial, onSubmit, onCancel, submitLabel }) {
     });
 
     if (!initial) {
-      setForm(emptyForm);
+      setForm({
+        ...emptyForm,
+        number: defaultNumber == null ? "" : String(defaultNumber),
+      });
     }
     setError("");
   }
 
   return (
     <form className="beer-form" onSubmit={handleSubmit} noValidate>
+      <Field
+        label="Number"
+        htmlFor="beer-number"
+        required
+        hint="Tap / slot number. Gaps are fine (e.g. skip 12)."
+      >
+        <input
+          id="beer-number"
+          name="number"
+          value={form.number}
+          onChange={handleChange}
+          inputMode="numeric"
+          autoComplete="off"
+          required
+        />
+      </Field>
+
       <Field label="Beer name" htmlFor="beer-name" required>
         <input
           id="beer-name"
@@ -140,7 +185,7 @@ export default function BeerForm({ initial, onSubmit, onCancel, submitLabel }) {
         </button>
         {onCancel && (
           <button type="button" className="btn btn-ghost" onClick={onCancel}>
-            Cancel
+            {cancelLabel}
           </button>
         )}
       </div>

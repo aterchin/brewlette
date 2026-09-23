@@ -39,6 +39,8 @@ Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, 
 - `prefers-reduced-motion`: shorter spin, still show result
 - Empty / 1-beer / corrupt storage / long names must not break
 - Optional “Remove this beer” after spin — never auto-remove
+- Beers have bartender-assigned `number` (unique, gaps OK); list/wheel sort by number — not array index / up-down reorder
+- Edit/Add: replace view (hide list while form open)
 
 ## Product docs
 

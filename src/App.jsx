@@ -12,8 +12,8 @@ function App() {
     addBeer,
     updateBeer,
     deleteBeer,
-    moveBeer,
     resetToDefaults,
+    nextNumber,
   } = useBeerList();
 
   const [mode, setMode] = useState("spin");
@@ -61,8 +61,8 @@ function App() {
             onAdd={addBeer}
             onUpdate={updateBeer}
             onDelete={deleteBeer}
-            onMove={moveBeer}
             onReset={resetToDefaults}
+            nextNumber={nextNumber}
           />
         ) : beers.length === 0 ? (
           <EmptyState onEdit={() => setMode("edit")} />

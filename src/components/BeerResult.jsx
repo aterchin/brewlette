@@ -36,8 +36,14 @@ export default function BeerResult({ beer, onSpinAgain, onRemove }) {
 
   return (
     <section className="beer-result" aria-live="polite">
-      <p className="visually-hidden">{beer.name} selected.</p>
+      <p className="visually-hidden">
+        {beer.number != null ? `Number ${beer.number}, ` : ""}
+        {beer.name} selected.
+      </p>
 
+      {beer.number != null && (
+        <p className="beer-result__number">#{beer.number}</p>
+      )}
       <h2 className="beer-result__name">{beer.name}</h2>
 
       <div
