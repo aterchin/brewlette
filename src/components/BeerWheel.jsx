@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import {
+  buildWheelSegments,
   easeMechanical,
   easeMechanicalSpin,
   getSliceAngle,
@@ -7,13 +8,14 @@ import {
   getSliceStartAngle,
   getTargetRotation,
   prefersReducedMotion,
-  shortenLabel,
 } from "../utils/wheel.js";
 import { randomIndex } from "../utils/random.js";
 import "./BeerWheel.css";
 
-const SLICE_COLORS = ["#1a1f26", "#991b1b", "#fdfbf7", "#064e3b"];
-const SLICE_TEXT = ["#fdfbf7", "#fdfbf7", "#12161a", "#fdfbf7"];
+const BLACK = "#0b0d11";
+const RED = "#991b1b";
+const GREEN = "#064e3b";
+const TEXT = "#fdfbf7";
 const STROKE = "#0b0d11";
 const RIM = "#f59e0b";
 const HUB = "#12161a";
@@ -22,10 +24,11 @@ const INNER_RING = "#fdfbf7";
 
 /**
  * @param {{
- *   beers: Array<{ id: string, name: string }>,
+ *   beers: Array<{ id: string, name: string, number?: number }>,
  *   spinning: boolean,
- *   onSpinComplete: (beer: object, index: number) => void,
- *   rotationRef: React.MutableRefObject<number>,
+ *   onSpinStart?: (segment: object, index: number) => void,
+ *   onSpinComplete: (segment: object, index: number) => void,
+ *   disabled?: boolean,
  * }} props
  */
 export default function BeerWheel({
@@ -44,6 +47,7 @@ export default function BeerWheel({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const segments = buildWheelSegments(beers);
 
     const resize = () => {
       const parent = canvas.parentElement;
@@ -58,7 +62,7 @@ export default function BeerWheel({
       canvas.height = Math.floor(cssSize * dpr);
       canvas.style.width = `${cssSize}px`;
       canvas.style.height = `${cssSize}px`;
-      drawWheel(canvas, beers, rotationRef.current, cssSize, dpr);
+      drawWheel(canvas, segments, rotationRef.current, cssSize, dpr);
     };
 
     resize();
@@ -70,7 +74,13 @@ export default function BeerWheel({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const dpr = window.devicePixelRatio || 1;
-    drawWheel(canvas, beers, rotationRef.current, sizeRef.current, dpr);
+    drawWheel(
+      canvas,
+      buildWheelSegments(beers),
+      rotationRef.current,
+      sizeRef.current,
+      dpr
+    );
   }, [beers]);
 
   useEffect(() => {
@@ -83,15 +93,16 @@ export default function BeerWheel({
     if (disabled || spinning || lockRef.current || !beers.length) return;
 
     lockRef.current = true;
-    const winnerIndex = randomIndex(beers.length);
-    const winner = beers[winnerIndex];
+    const pockets = buildWheelSegments(beers);
+    const winnerIndex = randomIndex(pockets.length);
+    const winner = pockets[winnerIndex];
     onSpinStart?.(winner, winnerIndex);
 
     const reduced = prefersReducedMotion();
     const from = rotationRef.current;
     const to = getTargetRotation({
       winnerIndex,
-      count: beers.length,
+      count: pockets.length,
       currentRotation: from,
       minSpins: reduced ? 1 : 5,
       maxSpins: reduced ? 1 : 8,
@@ -110,7 +121,7 @@ export default function BeerWheel({
       const canvas = canvasRef.current;
       if (canvas) {
         const dpr = window.devicePixelRatio || 1;
-        drawWheel(canvas, beers, current, sizeRef.current, dpr);
+        drawWheel(canvas, pockets, current, sizeRef.current, dpr);
       }
 
       if (t < 1) {
@@ -132,7 +143,7 @@ export default function BeerWheel({
           ref={canvasRef}
           className="beer-wheel__canvas"
           role="img"
-          aria-label={`Beer wheel with ${beers.length} beers`}
+          aria-label={`Roulette wheel with ${beers.length} taps and a green zero`}
         />
         <div className="beer-wheel__pointer" aria-hidden="true" />
       </div>
@@ -148,12 +159,22 @@ export default function BeerWheel({
   );
 }
 
-function drawWheel(canvas, beers, rotationDeg, cssSize, dpr) {
+function sliceColors(segment, nonZeroIndex) {
+  if (segment?.isZero) {
+    return { fill: GREEN, text: TEXT };
+  }
+  if (nonZeroIndex % 2 === 0) {
+    return { fill: BLACK, text: TEXT };
+  }
+  return { fill: RED, text: TEXT };
+}
+
+function drawWheel(canvas, segments, rotationDeg, cssSize, dpr) {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
   const size = cssSize;
-  const count = beers.length;
+  const count = segments.length;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, size, size);
 
@@ -180,18 +201,24 @@ function drawWheel(canvas, beers, rotationDeg, cssSize, dpr) {
   ctx.stroke();
 
   const slice = getSliceAngle(count);
+  let nonZeroIndex = 0;
 
   for (let i = 0; i < count; i += 1) {
+    const segment = segments[i];
     const startDeg = getSliceStartAngle(i, count);
     const start = (startDeg * Math.PI) / 180;
     const end = ((startDeg + slice) * Math.PI) / 180;
-    const colorIndex = i % SLICE_COLORS.length;
+    const colors = sliceColors(
+      segment,
+      segment?.isZero ? 0 : nonZeroIndex
+    );
+    if (!segment?.isZero) nonZeroIndex += 1;
 
     ctx.beginPath();
     ctx.moveTo(0, 0);
     ctx.arc(0, 0, radius - 2, start, end);
     ctx.closePath();
-    ctx.fillStyle = SLICE_COLORS[colorIndex];
+    ctx.fillStyle = colors.fill;
     ctx.fill();
     ctx.strokeStyle = STROKE;
     ctx.lineWidth = 3;
@@ -199,33 +226,27 @@ function drawWheel(canvas, beers, rotationDeg, cssSize, dpr) {
 
     const midDeg = getSliceMidAngle(i, count);
     const midRad = (midDeg * Math.PI) / 180;
-    const maxChars = count > 16 ? 14 : count > 12 ? 16 : count > 8 ? 20 : 24;
-    const title = shortenLabel(beers[i].name, maxChars);
-    const hasNumber = beers[i].number != null;
-    const numberLabel = hasNumber ? String(beers[i].number) : null;
+    const numberLabel =
+      segment?.number != null ? String(segment.number) : null;
+    if (!numberLabel) continue;
 
-    // Radial labels painted on the wheel (hub → rim) — rotate with the slice, no screen flip.
-    const titleSize = Math.max(
-      14,
-      Math.min(22, radius * (count > 14 ? 0.062 : 0.072))
+    // Near the outer rim; tops toward the hub (real roulette), same draw pass — no extra cost.
+    const numberSize = Math.max(
+      18,
+      Math.min(34, radius * (count > 16 ? 0.085 : count > 12 ? 0.095 : 0.11))
     );
-    const numberSize = titleSize * 2.15;
-    const numberStart = radius * 0.22;
-    const titleStart = hasNumber ? radius * 0.42 : radius * 0.26;
+    const numberPos = radius * 0.88;
 
     ctx.save();
     ctx.rotate(midRad);
-    ctx.fillStyle = SLICE_TEXT[colorIndex];
-    ctx.textAlign = "left";
+    ctx.translate(numberPos, 0);
+    // +X was outward; +90° makes text run along the rim with glyph tops pointing inward.
+    ctx.rotate(Math.PI / 2);
+    ctx.fillStyle = colors.text;
+    ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-
-    if (numberLabel) {
-      ctx.font = `700 ${numberSize}px "Abril Fatface", Georgia, serif`;
-      ctx.fillText(numberLabel, numberStart, 0);
-    }
-
-    ctx.font = `700 ${titleSize}px Arvo, Georgia, serif`;
-    ctx.fillText(title, titleStart, 0);
+    ctx.font = `700 ${numberSize}px "Abril Fatface", Georgia, serif`;
+    ctx.fillText(numberLabel, 0, 0);
     ctx.restore();
   }
 

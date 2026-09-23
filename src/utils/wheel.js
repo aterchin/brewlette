@@ -1,6 +1,23 @@
 /** Degrees in a full circle. */
 export const FULL_CIRCLE = 360;
 
+/** Green-zero pocket — not a tap; result is surprise-only (default SPIN AGAIN). */
+export const WHEEL_ZERO = Object.freeze({
+  id: "__wheel_zero__",
+  number: 0,
+  isZero: true,
+  surprise: "SPIN AGAIN",
+});
+
+/**
+ * Wheel pockets: green 0 first, then the live tap list.
+ * Zero is never stored in the beer list.
+ */
+export function buildWheelSegments(beers) {
+  const list = Array.isArray(beers) ? beers : [];
+  return [WHEEL_ZERO, ...list];
+}
+
 /**
  * Slice geometry for a beer list.
  * Index 0 starts at -90deg (12 o'clock) so the pointer at top feels natural.

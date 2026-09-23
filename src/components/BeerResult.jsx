@@ -27,6 +27,28 @@ export default function BeerResult({ beer, onSpinAgain }) {
 
   if (!beer) return null;
 
+  if (beer.isZero) {
+    const message = beer.surprise?.trim() || "SPIN AGAIN";
+    return (
+      <section className="beer-result beer-result--zero" aria-live="polite">
+        <p className="visually-hidden">Zero. {message}.</p>
+        <p className="beer-result__number">#0</p>
+        <h2
+          className={`beer-result__name beer-result__zero-message ${
+            showSurprise ? "is-visible" : ""
+          }`}
+        >
+          {message}
+        </h2>
+        <div className="beer-result__actions">
+          <button type="button" className="btn btn-primary" onClick={onSpinAgain}>
+            Spin again
+          </button>
+        </div>
+      </section>
+    );
+  }
+
   const abvLabel =
     typeof beer.abv === "number" && Number.isFinite(beer.abv)
       ? `${formatAbv(beer.abv)}% ABV`

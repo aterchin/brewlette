@@ -35,6 +35,24 @@
   color: var(--color-ink);
 }
 
+.beer-result__zero-message {
+  color: var(--color-dive-green);
+  opacity: 0;
+  transform: translateY(0.5rem);
+  transition:
+    opacity 400ms var(--ease-mechanical),
+    transform 400ms var(--ease-mechanical);
+}
+
+.beer-result__zero-message.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.beer-result--zero .beer-result__number {
+  color: var(--color-dive-green);
+}
+
 .beer-result__meta {
   display: flex;
   flex-direction: column;
@@ -123,7 +141,8 @@
   }
 
   .beer-result__meta,
-  .beer-result__surprise {
+  .beer-result__surprise,
+  .beer-result__zero-message {
     opacity: 1;
     transform: none;
     transition: none;
