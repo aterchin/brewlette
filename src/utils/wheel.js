@@ -32,33 +32,22 @@ export function getTargetRotation({
 }) {
   if (!count || count < 1) return currentRotation;
 
-  const slice = getSliceAngle(count);
-  // Mid of winner should sit at top (pointer). With our -90 offset in drawing,
-  // the wheel's canvas rotation that places mid-angle at top:
-  // midAngle + rotation ≡ -90 (mod 360) in canvas space where 0 is east.
-  // Simpler: pointer is at top. After rotation R, mid of winner should be at top.
-  // Mid angle in unrotated wheel (0 = east, CCW positive in canvas): start at -90.
-  // We use CSS rotate which is clockwise-positive from 12 o'clock visual if we
-  // draw with the same convention. Keep math consistent with BeerWheel drawing.
+  // Pointer is fixed at the top (-90°). After clockwise rotation R,
+  // a slice mid at `mid` appears at mid + R. Land mid under the pointer:
+  // mid + R ≡ -90 (mod 360) → R ≡ -90 - mid.
   const mid = getSliceMidAngle(winnerIndex, count);
-  // We want mid + rotation = -90 + k*360 in the same angle space used for arcs
-  // that start at -90 for index 0. Pointer sits at visual top = -90deg.
-  const aligned = -90 - mid;
-  const base = normalizeDegrees(aligned);
+  const landing = normalizeDegrees(-90 - mid);
 
-  const spins =
-    minSpins +
-    Math.floor(Math.random() * Math.max(1, maxSpins - minSpins + 1));
+  const spinRange = Math.max(1, maxSpins - minSpins + 1);
+  const spins = minSpins + Math.floor(Math.random() * spinRange);
 
-  // Always spin forward (increasing rotation) from current position.
-  const absolute = currentRotation + spins * FULL_CIRCLE;
   const currentNorm = normalizeDegrees(currentRotation);
-  let delta = normalizeDegrees(base - currentNorm);
-  if (delta < 20) {
+  let delta = normalizeDegrees(landing - currentNorm);
+  if (delta < 1) {
     delta += FULL_CIRCLE;
   }
 
-  return absolute - currentNorm + currentRotation + delta;
+  return currentRotation + spins * FULL_CIRCLE + delta;
 }
 
 export function normalizeDegrees(degrees) {

@@ -1,0 +1,43 @@
+.beer-wheel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+  width: 100%;
+}
+
+.beer-wheel__stage {
+  position: relative;
+  width: var(--wheel-max);
+  max-width: 100%;
+  aspect-ratio: 1;
+}
+
+.beer-wheel__canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 50%;
+  box-shadow: var(--shadow-lg);
+}
+
+.beer-wheel__pointer {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 22px solid var(--color-pointer);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
+  z-index: 2;
+}
+
+.beer-wheel__spin {
+  min-width: 10rem;
+  font-size: var(--font-size-xl);
+  padding: var(--space-4) var(--space-8);
+  box-shadow: var(--shadow-md);
+}
