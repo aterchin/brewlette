@@ -3,17 +3,23 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--space-3);
-  width: 100%;
-  max-width: 26rem;
+  justify-content: center;
+  gap: var(--space-4);
+  width: min(92vw, 40rem);
+  min-height: min(62vh, 28rem);
   text-align: center;
-  padding: var(--space-5) var(--space-4) var(--space-10);
+  padding: var(--space-8) var(--space-6) var(--space-12);
   background: var(--color-marquee);
   color: var(--color-ink);
   border: var(--border-chunky) solid var(--color-border-chunky);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-lg);
-  animation: result-in var(--duration-med) var(--ease-mechanical);
+  animation: result-in 1.15s var(--ease-mechanical) both;
+}
+
+.beer-result--leaving {
+  animation: result-out 280ms ease-out both;
+  pointer-events: none;
 }
 
 .beer-result__number {
@@ -28,12 +34,16 @@
 
 .beer-result__name {
   font-family: var(--font-family-display);
-  font-size: clamp(1.85rem, 5.5vw, 2.75rem);
+  font-size: clamp(1.65rem, 4.8vw, 2.85rem);
   font-weight: 700;
   letter-spacing: var(--tracking-wide);
   line-height: var(--line-height-tight);
   text-transform: uppercase;
   color: var(--color-ink);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+  max-width: 100%;
 }
 
 .beer-result__zero-message {
@@ -74,6 +84,8 @@
   color: var(--color-ink);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .beer-result__abv {
@@ -125,19 +137,32 @@
   width: 100%;
 }
 
+/* Slow fade-in from blur; quicker fade-out on Spin again */
 @keyframes result-in {
   from {
     opacity: 0;
-    transform: translate(0.4rem, 0.75rem);
+    filter: blur(10px);
   }
   to {
     opacity: 1;
-    transform: translate(0, 0);
+    filter: blur(0);
+  }
+}
+
+@keyframes result-out {
+  from {
+    opacity: 1;
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    filter: blur(6px);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .beer-result {
+  .beer-result,
+  .beer-result--leaving {
     animation: none;
   }
 

@@ -2,11 +2,16 @@ import { useEffect, useState } from "react";
 import { prefersReducedMotion } from "../utils/wheel.js";
 import "./BeerResult.css";
 
+const FADE_OUT_MS = 280;
+
 export default function BeerResult({ beer, onSpinAgain }) {
   const [showDetails, setShowDetails] = useState(false);
   const [showSurprise, setShowSurprise] = useState(false);
+  const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
+    setLeaving(false);
+
     if (prefersReducedMotion()) {
       setShowDetails(true);
       setShowSurprise(true);
@@ -16,8 +21,8 @@ export default function BeerResult({ beer, onSpinAgain }) {
     setShowDetails(false);
     setShowSurprise(false);
 
-    const detailsTimer = window.setTimeout(() => setShowDetails(true), 280);
-    const surpriseTimer = window.setTimeout(() => setShowSurprise(true), 900);
+    const detailsTimer = window.setTimeout(() => setShowDetails(true), 700);
+    const surpriseTimer = window.setTimeout(() => setShowSurprise(true), 1300);
 
     return () => {
       window.clearTimeout(detailsTimer);
@@ -25,12 +30,37 @@ export default function BeerResult({ beer, onSpinAgain }) {
     };
   }, [beer?.id]);
 
+  useEffect(() => {
+    if (!leaving) return undefined;
+
+    if (prefersReducedMotion()) {
+      onSpinAgain();
+      return undefined;
+    }
+
+    const timer = window.setTimeout(onSpinAgain, FADE_OUT_MS);
+    return () => window.clearTimeout(timer);
+  }, [leaving, onSpinAgain]);
+
+  function handleSpinAgain() {
+    if (leaving) return;
+    setLeaving(true);
+  }
+
   if (!beer) return null;
+
+  const className = [
+    "beer-result",
+    beer.isZero ? "beer-result--zero" : "",
+    leaving ? "beer-result--leaving" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   if (beer.isZero) {
     const message = beer.surprise?.trim() || "SPIN AGAIN";
     return (
-      <section className="beer-result beer-result--zero" aria-live="polite">
+      <section className={className} aria-live="polite">
         <p className="visually-hidden">Zero. {message}.</p>
         <p className="beer-result__number">#0</p>
         <h2
@@ -41,7 +71,12 @@ export default function BeerResult({ beer, onSpinAgain }) {
           {message}
         </h2>
         <div className="beer-result__actions">
-          <button type="button" className="btn btn-primary" onClick={onSpinAgain}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={handleSpinAgain}
+            disabled={leaving}
+          >
             Spin again
           </button>
         </div>
@@ -57,7 +92,7 @@ export default function BeerResult({ beer, onSpinAgain }) {
   const surprise = beer.surprise?.trim();
 
   return (
-    <section className="beer-result" aria-live="polite">
+    <section className={className} aria-live="polite">
       <p className="visually-hidden">
         {beer.number != null ? `Number ${beer.number}, ` : ""}
         {beer.name} selected.
@@ -91,7 +126,12 @@ export default function BeerResult({ beer, onSpinAgain }) {
       )}
 
       <div className="beer-result__actions">
-        <button type="button" className="btn btn-primary" onClick={onSpinAgain}>
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={handleSpinAgain}
+          disabled={leaving}
+        >
           Spin again
         </button>
       </div>
