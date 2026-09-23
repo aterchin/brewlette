@@ -13,8 +13,9 @@ Follow [`.cursorrules`](../.cursorrules) for visual system (“Taproom Roulette�
 
 - React + Vite + JavaScript
 - HTML Canvas wheel; CSS design tokens in `src/styles/`
-- `localStorage` via `src/utils/storage.js` only
-- Static site only — **no** backend, auth, API, DB, Firebase, Next.js
+- `localStorage` / `sessionStorage` via `src/utils/storage.js` only
+- Static site only — **no** backend, API, DB, Firebase, Next.js
+- Soft bartender PIN (client-side) is allowed; not real authentication
 
 ## Architecture
 
@@ -34,13 +35,16 @@ Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, 
 
 ## UX invariants
 
-- Wheel-first Spin Mode; subtle Edit entry
+- Wheel-first Spin Mode; Edit entry is a right-edge tab outside the game column
+- Edit is its **own page** (game hidden): sticky compact list left, form right; list updates live as fields change
+- Soft bartender PIN gates Edit; unlock lasts for the browser tab session
+- **Controls** screen (from edit top bar): reset defaults, change password — out of beer-list product flow
 - Touch targets ≥ 44px (prefer 48px); hover never required
 - `prefers-reduced-motion`: shorter spin, still show result
 - Empty / 1-beer / corrupt storage / long names must not break
 - Optional “Remove this beer” after spin — never auto-remove
 - Beers have bartender-assigned `number` (unique, gaps OK); list/wheel sort by number — not array index / up-down reorder
-- Edit/Add: replace view (hide list while form open)
+- Edit page: pick from sticky list or Add; form on the right
 
 ## Product docs
 

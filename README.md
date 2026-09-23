@@ -8,7 +8,8 @@ Designed primarily for an iPad behind the bar — bartender maintains the tap li
 
 - React + Vite (static site)
 - HTML Canvas wheel
-- Browser `localStorage` (no backend, no auth, no API)
+- Browser `localStorage` / `sessionStorage` (no backend, no API)
+- Soft bartender PIN (client-side only) for edit access
 
 ## Develop
 
@@ -35,7 +36,7 @@ npm run preview
 - Crypto-backed random selection (animation lands on a pre-chosen winner)
 - Result reveal with optional surprise message
 - Optional “Remove this beer” after a spin
-- Bartender editor: add / edit / delete / reorder / reset defaults
+- Bartender edit page (password-gated): sticky list + form, reset defaults, change password
 - Touch-friendly controls and `prefers-reduced-motion` support
 
 ## Product notes

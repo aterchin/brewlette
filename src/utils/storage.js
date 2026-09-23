@@ -1,6 +1,9 @@
 import { defaultBeers } from "../data/defaultBeers.js";
 
 export const STORAGE_KEY = "brewlette.beers.v1";
+export const PASSWORD_KEY = "brewlette.password.v1";
+export const UNLOCK_KEY = "brewlette.unlocked.v1";
+export const DEFAULT_PASSWORD = "brewlette";
 
 function isValidBeer(beer) {
   if (!beer || typeof beer !== "object") return false;
@@ -126,4 +129,60 @@ export function resetBeers() {
 
 function cloneDefaults() {
   return normalizeBeerList(defaultBeers.map((beer) => ({ ...beer })));
+}
+
+/**
+ * Soft bartender PIN — client-side only. Default when nothing stored.
+ */
+export function loadPassword() {
+  try {
+    const raw = localStorage.getItem(PASSWORD_KEY);
+    if (raw == null) return DEFAULT_PASSWORD;
+    const trimmed = String(raw).trim();
+    return trimmed === "" ? DEFAULT_PASSWORD : trimmed;
+  } catch {
+    return DEFAULT_PASSWORD;
+  }
+}
+
+export function isDefaultPassword() {
+  return loadPassword() === DEFAULT_PASSWORD;
+}
+
+export function savePassword(password) {
+  const trimmed = typeof password === "string" ? password.trim() : "";
+  if (trimmed === "") return false;
+
+  try {
+    localStorage.setItem(PASSWORD_KEY, trimmed);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function checkPassword(attempt) {
+  const trimmed = typeof attempt === "string" ? attempt.trim() : "";
+  return trimmed !== "" && trimmed === loadPassword();
+}
+
+export function isSessionUnlocked() {
+  try {
+    return sessionStorage.getItem(UNLOCK_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function setSessionUnlocked(unlocked) {
+  try {
+    if (unlocked) {
+      sessionStorage.setItem(UNLOCK_KEY, "1");
+    } else {
+      sessionStorage.removeItem(UNLOCK_KEY);
+    }
+    return true;
+  } catch {
+    return false;
+  }
 }

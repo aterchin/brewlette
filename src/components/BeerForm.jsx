@@ -15,8 +15,11 @@ export default function BeerForm({
   initial,
   onSubmit,
   onCancel,
+  onDelete,
+  onDraftChange,
   submitLabel,
   cancelLabel = "Cancel",
+  deleteLabel = "Delete",
   usedNumbers = [],
   defaultNumber,
 }) {
@@ -42,6 +45,11 @@ export default function BeerForm({
     }
     setError("");
   }, [initial, defaultNumber]);
+
+  useEffect(() => {
+    if (!onDraftChange) return;
+    onDraftChange(form);
+  }, [form, onDraftChange]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -186,6 +194,11 @@ export default function BeerForm({
         {onCancel && (
           <button type="button" className="btn btn-ghost" onClick={onCancel}>
             {cancelLabel}
+          </button>
+        )}
+        {onDelete && (
+          <button type="button" className="btn btn-danger" onClick={onDelete}>
+            {deleteLabel}
           </button>
         )}
       </div>

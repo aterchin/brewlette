@@ -1,10 +1,17 @@
 import { useState } from "react";
+import BartenderTab from "./components/BartenderTab.jsx";
+import BartenderUnlock from "./components/BartenderUnlock.jsx";
 import BeerEditor from "./components/BeerEditor.jsx";
 import BeerResult from "./components/BeerResult.jsx";
 import BeerWheel from "./components/BeerWheel.jsx";
 import EmptyState from "./components/EmptyState.jsx";
 import Header from "./components/Header.jsx";
 import { useBeerList } from "./hooks/useBeerList.js";
+import {
+  checkPassword,
+  isSessionUnlocked,
+  savePassword,
+} from "./utils/storage.js";
 
 function App() {
   const {
@@ -16,7 +23,8 @@ function App() {
     nextNumber,
   } = useBeerList();
 
-  const [mode, setMode] = useState("spin");
+  const [editOpen, setEditOpen] = useState(false);
+  const [unlockOpen, setUnlockOpen] = useState(false);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState(null);
 
@@ -34,47 +42,96 @@ function App() {
     setResult(null);
   }
 
-  function toggleMode() {
-    if (spinning) return;
-    setMode((current) => (current === "spin" ? "edit" : "spin"));
+  function openEditPage() {
+    setEditOpen(true);
+    setUnlockOpen(false);
     setResult(null);
+  }
+
+  function requestEdit() {
+    if (spinning) return;
+    if (editOpen) {
+      setEditOpen(false);
+      return;
+    }
+    if (isSessionUnlocked()) {
+      openEditPage();
+      return;
+    }
+    setUnlockOpen(true);
+  }
+
+  function closeEdit() {
+    if (spinning) return;
+    setEditOpen(false);
+  }
+
+  function handleChangePassword(current, next) {
+    if (!checkPassword(current)) {
+      return { ok: false, error: "Current password is wrong." };
+    }
+    const trimmed = typeof next === "string" ? next.trim() : "";
+    if (trimmed === "") {
+      return { ok: false, error: "New password can’t be empty." };
+    }
+    if (!savePassword(trimmed)) {
+      return { ok: false, error: "Couldn’t save password." };
+    }
+    return { ok: true };
+  }
+
+  if (editOpen) {
+    return (
+      <div className="app-shell app-shell--edit-page">
+        <BeerEditor
+          beers={beers}
+          onAdd={addBeer}
+          onUpdate={updateBeer}
+          onDelete={deleteBeer}
+          onReset={resetToDefaults}
+          nextNumber={nextNumber}
+          onClose={closeEdit}
+          onChangePassword={handleChangePassword}
+        />
+      </div>
+    );
   }
 
   return (
     <div className="app-shell">
-      <Header
-        mode={mode}
-        onToggleMode={toggleMode}
+      <div className="app-game">
+        <Header />
+
+        <div className="app-body">
+          <main className="app-main">
+            {beers.length === 0 ? (
+              <EmptyState />
+            ) : result ? (
+              <BeerResult beer={result} onSpinAgain={handleSpinAgain} />
+            ) : (
+              <BeerWheel
+                beers={beers}
+                spinning={spinning}
+                onSpinStart={handleSpinStart}
+                onSpinComplete={handleSpinComplete}
+                disabled={spinning}
+              />
+            )}
+          </main>
+        </div>
+      </div>
+
+      <BartenderTab
+        editOpen={editOpen}
+        onToggleEdit={requestEdit}
         disabled={spinning}
       />
 
-      <main className="app-main">
-        {mode === "edit" ? (
-          <BeerEditor
-            beers={beers}
-            onAdd={addBeer}
-            onUpdate={updateBeer}
-            onDelete={deleteBeer}
-            onReset={resetToDefaults}
-            nextNumber={nextNumber}
-          />
-        ) : beers.length === 0 ? (
-          <EmptyState onEdit={() => setMode("edit")} />
-        ) : result ? (
-          <BeerResult
-            beer={result}
-            onSpinAgain={handleSpinAgain}
-          />
-        ) : (
-          <BeerWheel
-            beers={beers}
-            spinning={spinning}
-            onSpinStart={handleSpinStart}
-            onSpinComplete={handleSpinComplete}
-            disabled={spinning}
-          />
-        )}
-      </main>
+      <BartenderUnlock
+        open={unlockOpen}
+        onUnlock={openEditPage}
+        onCancel={() => setUnlockOpen(false)}
+      />
     </div>
   );
 }

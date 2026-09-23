@@ -6,31 +6,3 @@
   padding: var(--space-2) 0 var(--space-4);
   width: 100%;
 }
-
-.header-edit {
-  min-height: var(--touch-min);
-  padding: var(--space-2) var(--space-4);
-  color: var(--color-ink);
-  background: var(--color-marquee);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  border: var(--border-chunky) solid var(--color-border-chunky);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-sm);
-}
-
-.header-edit:hover {
-  background: #fff;
-}
-
-.header-edit[aria-pressed="true"] {
-  background: var(--color-accent);
-  color: var(--color-ink);
-}
-
-.header-edit:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
