@@ -198,11 +198,10 @@ export default function BeerListWorkspace({
                 onSubmit={(values) => {
                   if (editingBeer) {
                     onUpdate(editingBeer.id, values);
-                    setDraft(null);
                   } else {
                     onAdd(values);
-                    closeForm();
                   }
+                  closeForm();
                 }}
                 onCancel={closeForm}
                 onDelete={
