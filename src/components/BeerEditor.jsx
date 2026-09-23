@@ -151,7 +151,7 @@ export default function BeerEditor({
             )
           );
         }}
-        idleTitle="Add as many beers as you have taps"
+        idleTitle="Add as many beers as you want"
         idleCopy="This is saved so you can reset to this list at any time."
         emptyListCopy="No default beers yet — add one to get started."
         topbarActions={

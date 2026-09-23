@@ -19,7 +19,7 @@ Brewlette is a beer roulette / spinning-wheel web app for use on an iPad behind 
 | **Spin** (default) | Customers / bar floor | Dominated by the canvas wheel + Spin; theatrical result reveal |
 | **Edit** | Bartender | Full edit page: sticky compact list (left) + form (right) |
 
-Subtle right-edge tab (“Edit beer list”) — outside the game column. Soft bartender password (default `brewlette`) unlocks for the browser tab session. Edit is its **own page** (game hidden): sticky compact beer list on the left updates live as fields change; editable form on the right. **Controls** (top-right, after Back to wheel) is a separate admin screen for reset-to-defaults, set default beer list, and change password — kept out of the beer-list product flow. Client-side PIN only.
+Subtle bottom-right gear icon — outside the game column. Soft bartender password (default `brewlette`) unlocks for the browser tab session. Edit is its **own page** (game hidden): sticky compact beer list on the left updates live as fields change; editable form on the right. **Controls** (top-right, after Back to wheel) is a separate admin screen for reset-to-defaults, set default beer list, and change password — kept out of the beer-list product flow. Client-side PIN only.
 
 ## Beer model
 
@@ -70,7 +70,7 @@ Record changes from the original build idea here so future chats don’t re-liti
 | 2026-09-22 | Visual system: Taproom Roulette (`.cursorrules`) — dive palette, polaroid cards, chunky borders, mechanical wheel |
 | 2026-09-22 | Soft bartender password (default `brewlette`, settable in UI); unlock lasts until tab closes |
 | 2026-09-22 | Edit is its own page: sticky compact list (left) + form (right); list updates live while editing |
-| 2026-09-22 | Edit entry is a right-edge tab outside the game column (not under the brand / EmptyState) |
+| 2026-09-23 | Edit entry is a subtle bottom-right gear icon (not a right-edge tab) |
 | 2026-09-22 | Admin actions live on a separate Controls screen (reset defaults, set default beer list, change password) — not in the beer-list flow |
 | 2026-09-22 | “Set default beer list” edits `brewlette.defaults.v1` (auto-saves on add/update/delete); used by Reset |
 

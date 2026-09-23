@@ -1,41 +1,36 @@
 .bartender-tab {
   position: fixed;
-  top: 50%;
-  right: 0;
+  bottom: var(--space-4);
+  right: var(--space-4);
   z-index: 25;
-  transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
+  width: var(--touch-min);
+  height: var(--touch-min);
   min-width: var(--touch-min);
-  min-height: 7.5rem;
-  padding: var(--space-3) var(--space-2);
-  color: var(--color-ink);
-  background: var(--color-marquee);
-  border: var(--border-chunky) solid var(--color-border-chunky);
-  border-right: none;
-  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
-  box-shadow: var(--shadow-md);
+  min-height: var(--touch-min);
+  padding: 0;
+  color: var(--color-marquee);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  opacity: 0.55;
 }
 
-.bartender-tab:hover:not(:disabled) {
-  background: var(--color-accent);
+.bartender-tab:hover:not(:disabled),
+.bartender-tab:focus-visible {
+  opacity: 1;
+  color: var(--color-accent);
 }
 
 .bartender-tab:disabled {
-  opacity: 0.4;
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
-.bartender-tab__label {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-family: var(--font-family-base);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
-  white-space: nowrap;
-  line-height: 1.1;
+.bartender-tab__icon {
+  display: block;
+  flex-shrink: 0;
 }

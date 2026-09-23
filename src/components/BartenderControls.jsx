@@ -106,9 +106,6 @@ export default function BartenderControls({
             >
               <label className="bartender-controls__field">
                 <span>Current password</span>
-                {showDefaultHint ? (
-                  <p className="bartender-controls__hint">{DEFAULT_PASSWORD_HINT}</p>
-                ) : null}
                 <input
                   type="text"
                   autoComplete="off"

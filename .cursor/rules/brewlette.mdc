@@ -35,7 +35,7 @@ Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, 
 
 ## UX invariants
 
-- Wheel-first Spin Mode; Edit entry is a right-edge tab outside the game column
+- Wheel-first Spin Mode; Edit entry is a bottom-right gear icon outside the game column
 - Edit is its **own page** (game hidden): sticky compact list left, form right; list updates live as fields change
 - Soft bartender PIN gates Edit; unlock lasts for the browser tab session
 - **Controls** screen (from edit top bar): reset defaults, set default beer list, change password — out of beer-list product flow
