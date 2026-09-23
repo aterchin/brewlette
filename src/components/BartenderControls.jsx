@@ -63,14 +63,14 @@ export default function BartenderControls({
             className="btn btn-sm btn-ghost"
             onClick={onBack}
           >
-            Beer List
+            Beers on the Wheel
           </button>
         </div>
       </header>
 
       <div className="bartender-controls__body">
         <div className="bartender-controls__panel">
-          <h3>Beer list</h3>
+          <h3>Default beers</h3>
           <p className="bartender-controls__copy">
             Replace the current wheel with your default beer list.
           </p>
@@ -88,7 +88,7 @@ export default function BartenderControls({
                 className="btn btn-primary"
                 onClick={onSetDefaultList}
               >
-                Set default beer list
+                Set defaults
               </button>
             ) : null}
           </div>
