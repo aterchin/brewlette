@@ -5,6 +5,7 @@ import {
   getSliceMidAngle,
   getSliceStartAngle,
   getTargetRotation,
+  normalizeDegrees,
   prefersReducedMotion,
   shortenLabel,
 } from "../utils/wheel.js";
@@ -197,27 +198,36 @@ function drawWheel(canvas, beers, rotationDeg, cssSize, dpr) {
 
     const midDeg = getSliceMidAngle(i, count);
     const midRad = (midDeg * Math.PI) / 180;
-    const labelRadius = radius * (count > 14 ? 0.68 : 0.6);
-    const maxChars = count > 16 ? 9 : count > 12 ? 11 : count > 8 ? 14 : 18;
-    const rawLabel =
-      beers[i].number != null
-        ? `#${beers[i].number} ${beers[i].name}`
-        : beers[i].name;
-    const label = shortenLabel(rawLabel, maxChars);
+    const maxChars = count > 16 ? 14 : count > 12 ? 16 : count > 8 ? 20 : 24;
+    const title = shortenLabel(beers[i].name, maxChars);
+    const hasNumber = beers[i].number != null;
+    const numberLabel = hasNumber ? String(beers[i].number) : null;
+
+    // Radial labels: hub → rim. Flip left-side slices so type stays upright.
+    const screenDeg = normalizeDegrees(midDeg + rotationDeg);
+    const flip = screenDeg > 90 && screenDeg < 270;
+    const titleSize = Math.max(
+      14,
+      Math.min(22, radius * (count > 14 ? 0.062 : 0.072))
+    );
+    const numberSize = titleSize * 2.15;
+    const numberStart = radius * 0.22;
+    const titleStart = hasNumber ? radius * 0.42 : radius * 0.26;
 
     ctx.save();
     ctx.rotate(midRad);
-    ctx.translate(labelRadius, 0);
-    ctx.rotate(Math.PI / 2);
+    if (flip) ctx.rotate(Math.PI);
     ctx.fillStyle = SLICE_TEXT[colorIndex];
-    ctx.textAlign = "center";
+    ctx.textAlign = flip ? "right" : "left";
     ctx.textBaseline = "middle";
-    const fontSize = Math.max(
-      9,
-      Math.min(13, (radius * slice) / (count > 14 ? 220 : 180))
-    );
-    ctx.font = `700 ${fontSize}px Arvo, Georgia, serif`;
-    ctx.fillText(label, 0, 0);
+
+    if (numberLabel) {
+      ctx.font = `700 ${numberSize}px "Abril Fatface", Georgia, serif`;
+      ctx.fillText(numberLabel, flip ? -numberStart : numberStart, 0);
+    }
+
+    ctx.font = `700 ${titleSize}px Arvo, Georgia, serif`;
+    ctx.fillText(title, flip ? -titleStart : titleStart, 0);
     ctx.restore();
   }
 
