@@ -147,8 +147,9 @@
 
 .beer-editor__nav-number {
   flex-shrink: 0;
-  font-family: var(--font-family-display);
+  font-family: var(--font-family-number);
   font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
   line-height: 1;
   letter-spacing: var(--tracking-wide);
   color: var(--color-accent-deep);

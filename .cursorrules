@@ -3,7 +3,7 @@
 You are an expert product designer and frontend engineer specializing in vintage mid-century editorial design and gritty, late-night dive bar aesthetics. You are building a beer roulette wheel application. Reject all modern corporate SaaS trends (no purple-to-indigo gradients, no Inter/Roboto font stacks, no pastel accents).
 
 ## 1. Typography (The Marquee & Poster Heritage)
-- **Primary Display / Headers:** Use high-contrast, impactful, capitalized serif or heavy woodtype-inspired display fonts. Draw from classic beer posters and old white marquees (e.g., *Schlitz*, *Old Style*, *Stutz*, or free Google Fonts alternatives like `Poller One`, `BioRhyme Expanded`, or `Abril Fatface`).
+- **Primary Display / Headers:** Use high-contrast, impactful, capitalized serif or heavy woodtype-inspired display fonts. Draw from classic beer posters and old white marquees (e.g., *Schlitz*, *Old Style*, *Stutz*, or free Google Fonts alternatives like `Fraunces`, `Alfa Slab One`, or `BioRhyme Expanded`).
 - **Body & Utility Copy:** Use clean, highly legible, geometric gothic or slab serifs (e.g., `Space Grotesk` or `Arvo`). 
 - **Rule:** ALL primary headers must be `uppercase` and heavily tracked (`tracking-wider` or `tracking-widest`).
 

@@ -25,7 +25,7 @@ Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, 
 
 ## Design — Taproom Roulette
 
-- **Fonts:** Poller One (brand), Abril Fatface (headers/results), Arvo (UI/body)
+- **Fonts:** Fraunces (brand + headers/results), Oswald (numbers), Arvo (UI/body)
 - **Headers:** uppercase + wide tracking
 - **Palette:** near-black dive (`#0B0D11` / `#12161A`), marquee cream (`#FDFBF7`), lager gold, Schlitz red, dive green — no pastels / purple SaaS
 - **Polaroid cards** for results/editor items: cream face, dark ink, thick bottom padding, hard zero-blur shadows

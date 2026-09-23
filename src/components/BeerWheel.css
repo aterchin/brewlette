@@ -34,7 +34,8 @@
   border-left: 14px solid transparent;
   border-right: 14px solid transparent;
   border-top: 28px solid var(--color-pointer);
-  filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.55));
+  /* Vertical-only shadow so the gold mass stays on the centerline */
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.55));
   z-index: 2;
 }
 

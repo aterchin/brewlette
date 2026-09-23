@@ -3,10 +3,12 @@ import {
   buildWheelSegments,
   easeMechanical,
   easeMechanicalSpin,
+  getRestRotation,
   getSliceAngle,
   getSliceMidAngle,
   getSliceStartAngle,
   getTargetRotation,
+  measurePointerAngleDeg,
   prefersReducedMotion,
 } from "../utils/wheel.js";
 import { randomIndex } from "../utils/random.js";
@@ -39,10 +41,22 @@ export default function BeerWheel({
   disabled = false,
 }) {
   const canvasRef = useRef(null);
-  const rotationRef = useRef(0);
+  const pointerRef = useRef(null);
+  const rotationRef = useRef(null);
   const animRef = useRef(null);
   const sizeRef = useRef(320);
   const lockRef = useRef(false);
+
+  function pointerAngle() {
+    return measurePointerAngleDeg(canvasRef.current, pointerRef.current);
+  }
+
+  function ensureRotation(segmentCount) {
+    if (rotationRef.current == null) {
+      rotationRef.current = getRestRotation(0, segmentCount, pointerAngle());
+    }
+    return rotationRef.current;
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -62,7 +76,8 @@ export default function BeerWheel({
       canvas.height = Math.floor(cssSize * dpr);
       canvas.style.width = `${cssSize}px`;
       canvas.style.height = `${cssSize}px`;
-      drawWheel(canvas, segments, rotationRef.current, cssSize, dpr);
+      const rotation = ensureRotation(segments.length);
+      drawWheel(canvas, segments, rotation, cssSize, dpr);
     };
 
     resize();
@@ -73,14 +88,10 @@ export default function BeerWheel({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const segments = buildWheelSegments(beers);
     const dpr = window.devicePixelRatio || 1;
-    drawWheel(
-      canvas,
-      buildWheelSegments(beers),
-      rotationRef.current,
-      sizeRef.current,
-      dpr
-    );
+    const rotation = ensureRotation(segments.length);
+    drawWheel(canvas, segments, rotation, sizeRef.current, dpr);
   }, [beers]);
 
   useEffect(() => {
@@ -99,13 +110,14 @@ export default function BeerWheel({
     onSpinStart?.(winner, winnerIndex);
 
     const reduced = prefersReducedMotion();
-    const from = rotationRef.current;
+    const from = ensureRotation(pockets.length);
     const to = getTargetRotation({
       winnerIndex,
       count: pockets.length,
       currentRotation: from,
       minSpins: reduced ? 1 : 5,
       maxSpins: reduced ? 1 : 8,
+      pointerAngleDeg: pointerAngle(),
     });
 
     const duration = reduced ? 400 : 8000;
@@ -145,7 +157,11 @@ export default function BeerWheel({
           role="img"
           aria-label={`Roulette wheel with ${beers.length} taps and a green zero`}
         />
-        <div className="beer-wheel__pointer" aria-hidden="true" />
+        <div
+          ref={pointerRef}
+          className="beer-wheel__pointer"
+          aria-hidden="true"
+        />
       </div>
       <button
         type="button"
@@ -232,8 +248,8 @@ function drawWheel(canvas, segments, rotationDeg, cssSize, dpr) {
 
     // Near the outer rim; tops toward the hub (real roulette), same draw pass — no extra cost.
     const numberSize = Math.max(
-      18,
-      Math.min(34, radius * (count > 16 ? 0.085 : count > 12 ? 0.095 : 0.11))
+      28,
+      Math.min(52, radius * (count > 16 ? 0.125 : count > 12 ? 0.14 : 0.16))
     );
     const numberPos = radius * 0.88;
 
@@ -245,7 +261,7 @@ function drawWheel(canvas, segments, rotationDeg, cssSize, dpr) {
     ctx.fillStyle = colors.text;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font = `700 ${numberSize}px "Abril Fatface", Georgia, serif`;
+    ctx.font = `700 ${numberSize}px "Oswald", "Arial Narrow", sans-serif`;
     ctx.fillText(numberLabel, 0, 0);
     ctx.restore();
   }

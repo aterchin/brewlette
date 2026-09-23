@@ -39,12 +39,13 @@
   --color-surprise: #991b1b;
 
   /* Typography
-     Poller One — marquee brand
-     Abril Fatface — poster headlines / results
+     Fraunces — brand + poster headlines / results
+     Oswald — beer numbers (wheel, result, editor)
      Arvo — UI and body (400/700 only) */
   --font-family-base: "Arvo", "Georgia", serif;
-  --font-family-display: "Abril Fatface", "Georgia", serif;
-  --font-family-brand: "Poller One", "Georgia", serif;
+  --font-family-display: "Fraunces", "Georgia", serif;
+  --font-family-brand: var(--font-family-display);
+  --font-family-number: "Oswald", "Arial Narrow", sans-serif;
 
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;

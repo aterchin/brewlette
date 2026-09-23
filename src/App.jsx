@@ -106,16 +106,25 @@ function App() {
           <main className="app-main">
             {beers.length === 0 ? (
               <EmptyState />
-            ) : result ? (
-              <BeerResult beer={result} onSpinAgain={handleSpinAgain} />
             ) : (
-              <BeerWheel
-                beers={beers}
-                spinning={spinning}
-                onSpinStart={handleSpinStart}
-                onSpinComplete={handleSpinComplete}
-                disabled={spinning}
-              />
+              <>
+                <div
+                  className="app-main__wheel"
+                  hidden={Boolean(result)}
+                  aria-hidden={result ? "true" : undefined}
+                >
+                  <BeerWheel
+                    beers={beers}
+                    spinning={spinning}
+                    onSpinStart={handleSpinStart}
+                    onSpinComplete={handleSpinComplete}
+                    disabled={spinning}
+                  />
+                </div>
+                {result ? (
+                  <BeerResult beer={result} onSpinAgain={handleSpinAgain} />
+                ) : null}
+              </>
             )}
           </main>
         </div>
