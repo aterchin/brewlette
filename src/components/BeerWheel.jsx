@@ -11,8 +11,12 @@ import {
   measurePointerAngleDeg,
   prefersReducedMotion,
 } from "../utils/wheel.js";
-import { randomIndex } from "../utils/random.js";
+import { pickRandomItem, randomIndex } from "../utils/random.js";
 import "./BeerWheel.css";
+
+/** Base spin length; each spin jitters by one of these seconds (not reduced-motion). */
+const BASE_SPIN_MS = 8000;
+const SPIN_DURATION_OFFSETS_SEC = [-2, -1, 1, 2];
 
 const BLACK = "#0b0d11";
 const RED = "#991b1b";
@@ -120,7 +124,9 @@ export default function BeerWheel({
       pointerAngleDeg: pointerAngle(),
     });
 
-    const duration = reduced ? 400 : 8000;
+    const duration = reduced
+      ? 400
+      : BASE_SPIN_MS + pickRandomItem(SPIN_DURATION_OFFSETS_SEC) * 1000;
     const delta = to - from;
     const start = performance.now();
 
