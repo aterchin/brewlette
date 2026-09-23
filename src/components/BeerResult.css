@@ -1,0 +1,117 @@
+.beer-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 28rem;
+  text-align: center;
+  padding: var(--space-6) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  animation: result-in var(--duration-med) var(--ease-out);
+}
+
+.beer-result__name {
+  font-family: var(--font-family-display);
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: var(--font-weight-black);
+  letter-spacing: -0.02em;
+  color: var(--color-accent);
+}
+
+.beer-result__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  opacity: 0;
+  transform: translateY(0.5rem);
+  transition:
+    opacity var(--duration-med) var(--ease-out),
+    transform var(--duration-med) var(--ease-out);
+}
+
+.beer-result__meta.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.beer-result__brewery {
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+}
+
+.beer-result__abv {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.beer-result__description {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-snug);
+  max-width: 24rem;
+}
+
+.beer-result__surprise {
+  margin: var(--space-2) 0 0;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-left: 3px solid var(--color-accent);
+  color: var(--color-surprise);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-lg);
+  font-style: italic;
+  line-height: var(--line-height-snug);
+  opacity: 0;
+  transform: translateY(0.5rem);
+  transition:
+    opacity 400ms var(--ease-out),
+    transform 400ms var(--ease-out);
+}
+
+.beer-result__surprise.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.beer-result__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  margin-top: var(--space-4);
+}
+
+.beer-result__actions .btn {
+  width: 100%;
+}
+
+@keyframes result-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beer-result {
+    animation: none;
+  }
+
+  .beer-result__meta,
+  .beer-result__surprise {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
