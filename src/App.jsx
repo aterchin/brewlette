@@ -34,12 +34,6 @@ function App() {
     setResult(null);
   }
 
-  function handleRemoveWinner() {
-    if (!result) return;
-    deleteBeer(result.id);
-    setResult(null);
-  }
-
   function toggleMode() {
     if (spinning) return;
     setMode((current) => (current === "spin" ? "edit" : "spin"));
@@ -70,7 +64,6 @@ function App() {
           <BeerResult
             beer={result}
             onSpinAgain={handleSpinAgain}
-            onRemove={handleRemoveWinner}
           />
         ) : (
           <BeerWheel

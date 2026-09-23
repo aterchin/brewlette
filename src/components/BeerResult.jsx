@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { prefersReducedMotion } from "../utils/wheel.js";
 import "./BeerResult.css";
 
-export default function BeerResult({ beer, onSpinAgain, onRemove }) {
+export default function BeerResult({ beer, onSpinAgain }) {
   const [showDetails, setShowDetails] = useState(false);
   const [showSurprise, setShowSurprise] = useState(false);
 
@@ -72,11 +72,6 @@ export default function BeerResult({ beer, onSpinAgain, onRemove }) {
         <button type="button" className="btn btn-primary" onClick={onSpinAgain}>
           Spin again
         </button>
-        {onRemove && (
-          <button type="button" className="btn btn-ghost" onClick={onRemove}>
-            Remove this beer
-          </button>
-        )}
       </div>
     </section>
   );

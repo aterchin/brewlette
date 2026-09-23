@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import {
   easeMechanical,
+  easeMechanicalSpin,
   getSliceAngle,
   getSliceMidAngle,
   getSliceStartAngle,
   getTargetRotation,
-  normalizeDegrees,
   prefersReducedMotion,
   shortenLabel,
 } from "../utils/wheel.js";
@@ -93,17 +93,18 @@ export default function BeerWheel({
       winnerIndex,
       count: beers.length,
       currentRotation: from,
-      minSpins: reduced ? 1 : 4,
-      maxSpins: reduced ? 1 : 7,
+      minSpins: reduced ? 1 : 5,
+      maxSpins: reduced ? 1 : 8,
     });
 
-    const duration = reduced ? 400 : 4200;
+    const duration = reduced ? 400 : 8000;
+    const delta = to - from;
     const start = performance.now();
 
     const tick = (now) => {
       const t = Math.min(1, (now - start) / duration);
-      const eased = easeMechanical(t);
-      const current = from + (to - from) * eased;
+      const eased = reduced ? easeMechanical(t) : easeMechanicalSpin(t);
+      const current = from + delta * eased;
       rotationRef.current = current;
 
       const canvas = canvasRef.current;
@@ -203,9 +204,7 @@ function drawWheel(canvas, beers, rotationDeg, cssSize, dpr) {
     const hasNumber = beers[i].number != null;
     const numberLabel = hasNumber ? String(beers[i].number) : null;
 
-    // Radial labels: hub → rim. Flip left-side slices so type stays upright.
-    const screenDeg = normalizeDegrees(midDeg + rotationDeg);
-    const flip = screenDeg > 90 && screenDeg < 270;
+    // Radial labels painted on the wheel (hub → rim) — rotate with the slice, no screen flip.
     const titleSize = Math.max(
       14,
       Math.min(22, radius * (count > 14 ? 0.062 : 0.072))
@@ -216,18 +215,17 @@ function drawWheel(canvas, beers, rotationDeg, cssSize, dpr) {
 
     ctx.save();
     ctx.rotate(midRad);
-    if (flip) ctx.rotate(Math.PI);
     ctx.fillStyle = SLICE_TEXT[colorIndex];
-    ctx.textAlign = flip ? "right" : "left";
+    ctx.textAlign = "left";
     ctx.textBaseline = "middle";
 
     if (numberLabel) {
       ctx.font = `700 ${numberSize}px "Abril Fatface", Georgia, serif`;
-      ctx.fillText(numberLabel, flip ? -numberStart : numberStart, 0);
+      ctx.fillText(numberLabel, numberStart, 0);
     }
 
     ctx.font = `700 ${titleSize}px Arvo, Georgia, serif`;
-    ctx.fillText(title, flip ? -titleStart : titleStart, 0);
+    ctx.fillText(title, titleStart, 0);
     ctx.restore();
   }
 

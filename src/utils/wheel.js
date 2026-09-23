@@ -94,8 +94,20 @@ export function prefersReducedMotion() {
 }
 
 /**
- * Mechanical deceleration — matches CSS cubic-bezier(0.12, 1, 0.33, 1).
- * Feels like friction and weight on a carnival wheel.
+ * Continuous decelerate into the winner — no overshoot, no bounce, no phased crawl.
+ * Fast revolutions early, then a long smooth coast that never re-accelerates.
+ *
+ * @param {number} t progress 0..1
+ */
+export function easeMechanicalSpin(t) {
+  if (t <= 0) return 0;
+  if (t >= 1) return 1;
+  // Quintic ease-out: most of the travel early, last stretch is a long soft landing
+  return 1 - (1 - t) ** 5;
+}
+
+/**
+ * Mechanical deceleration without bounce — CSS cubic-bezier(0.12, 1, 0.33, 1).
  */
 export function easeMechanical(t) {
   return sampleBezier(0.12, 1, 0.33, 1, t);
