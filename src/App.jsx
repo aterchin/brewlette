@@ -19,7 +19,7 @@ function App() {
     addBeer,
     updateBeer,
     deleteBeer,
-    resetToDefaults,
+    resetToDemo,
     nextNumber,
   } = useBeerList();
 
@@ -88,7 +88,7 @@ function App() {
           onAdd={addBeer}
           onUpdate={updateBeer}
           onDelete={deleteBeer}
-          onReset={resetToDefaults}
+          onReset={resetToDemo}
           nextNumber={nextNumber}
           onClose={closeEdit}
           onChangePassword={handleChangePassword}

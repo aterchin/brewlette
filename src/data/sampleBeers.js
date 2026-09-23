@@ -1,6 +1,7 @@
 /**
- * Default tap list for Brewlette.
- * Source: bar tap board (tap_list_styles.csv).
+ * Built-in sample set for demos and “Reset to demo”.
+ * Source: bar tap board (tap_list_styles.csv). Not a second editable list —
+ * bartenders maintain one live wheel list in localStorage only.
  *
  * Beer shape:
  * {
@@ -15,7 +16,7 @@
  * }
  */
 
-export const defaultBeers = [
+export const sampleBeers = [
   {
     id: "gaffel-kolsch",
     number: 1,

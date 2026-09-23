@@ -100,7 +100,7 @@ export function useBeerList() {
     setBeers((current) => persist(current.filter((beer) => beer.id !== id)));
   }, []);
 
-  const resetToDefaults = useCallback(() => {
+  const resetToDemo = useCallback(() => {
     const next = resetBeers();
     setBeers(normalizeBeerList(next));
   }, []);
@@ -110,7 +110,7 @@ export function useBeerList() {
     addBeer,
     updateBeer,
     deleteBeer,
-    resetToDefaults,
+    resetToDemo,
     nextNumber: nextBeerNumber(beers),
   };
 }

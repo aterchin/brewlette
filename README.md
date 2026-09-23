@@ -36,7 +36,7 @@ npm run preview
 - Crypto-backed random selection (animation lands on a pre-chosen winner)
 - Result reveal with optional surprise message
 - Optional “Remove this beer” after a spin
-- Bartender edit page (password-gated): sticky list + form, reset defaults, change password
+- Bartender edit page (password-gated): sticky list + form; Controls for reset-to-demo and password
 - Touch-friendly controls and `prefers-reduced-motion` support
 
 ## Product notes

@@ -4,7 +4,7 @@ import ConfirmDialog from "./ConfirmDialog.jsx";
 import "./BeerEditor.css";
 
 /**
- * Sticky list + form workspace shared by the live beer list and default-list editor.
+ * Sticky list + form workspace for the live beer list.
  */
 export default function BeerListWorkspace({
   title,

@@ -1,7 +1,6 @@
-import { defaultBeers } from "../data/defaultBeers.js";
+import { sampleBeers } from "../data/sampleBeers.js";
 
 export const STORAGE_KEY = "brewlette.beers.v1";
-export const DEFAULTS_KEY = "brewlette.defaults.v1";
 export const PASSWORD_KEY = "brewlette.password.v1";
 export const UNLOCK_KEY = "brewlette.unlocked.v1";
 export const DEFAULT_PASSWORD = "brewlette";
@@ -79,29 +78,36 @@ export function nextBeerNumber(beers) {
 }
 
 /**
+ * Built-in sample set from `sampleBeers.js` — demos and Reset to demo only.
+ */
+export function cloneSampleBeers() {
+  return normalizeBeerList(sampleBeers.map((beer) => ({ ...beer })));
+}
+
+/**
  * Load beers from localStorage.
- * Falls back to defaults when missing or malformed.
+ * Falls back to the sample set when missing or malformed.
  */
 export function loadBeers() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw == null) {
-      return cloneDefaults();
+      return cloneSampleBeers();
     }
 
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed) || parsed.length === 0) {
-      return cloneDefaults();
+      return cloneSampleBeers();
     }
 
     const beers = normalizeBeerList(parsed);
     if (beers.length === 0) {
-      return cloneDefaults();
+      return cloneSampleBeers();
     }
 
     return beers;
   } catch {
-    return cloneDefaults();
+    return cloneSampleBeers();
   }
 }
 
@@ -119,79 +125,19 @@ export function saveBeers(beers) {
   }
 }
 
+/** Replace the live list with the built-in sample set. */
 export function resetBeers() {
-  const defaults = cloneDefaults();
+  const sample = cloneSampleBeers();
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaults));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sample));
   } catch {
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch {
-      // Ignore storage errors; still return defaults.
+      // Ignore storage errors; still return sample.
     }
   }
-  return defaults;
-}
-
-/**
- * Built-in sample list from `defaultBeers.js`.
- */
-export function cloneBuiltInDefaults() {
-  return normalizeBeerList(defaultBeers.map((beer) => ({ ...beer })));
-}
-
-/**
- * Load bartender-defined defaults from localStorage.
- * Returns null when unset, empty, or unreadable (caller should use built-ins).
- */
-export function loadCustomDefaults() {
-  try {
-    const raw = localStorage.getItem(DEFAULTS_KEY);
-    if (raw == null) return null;
-
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return null;
-
-    const beers = normalizeBeerList(parsed);
-    if (beers.length === 0) {
-      // Empty custom list is treated as unset — clear stale key.
-      try {
-        localStorage.removeItem(DEFAULTS_KEY);
-      } catch {
-        // Ignore
-      }
-      return null;
-    }
-
-    return beers;
-  } catch {
-    return null;
-  }
-}
-
-export function saveCustomDefaults(beers) {
-  if (!Array.isArray(beers)) return false;
-
-  try {
-    const normalized = normalizeBeerList(beers);
-    if (normalized.length === 0) {
-      localStorage.removeItem(DEFAULTS_KEY);
-      return true;
-    }
-    localStorage.setItem(DEFAULTS_KEY, JSON.stringify(normalized));
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Effective defaults for reset / missing storage: non-empty custom if set, else built-in.
- */
-function cloneDefaults() {
-  const custom = loadCustomDefaults();
-  if (custom != null && custom.length > 0) return custom;
-  return cloneBuiltInDefaults();
+  return sample;
 }
 
 /**

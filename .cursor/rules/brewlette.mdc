@@ -19,7 +19,7 @@ Follow [`.cursorrules`](../.cursorrules) for visual system (“Taproom Roulette�
 
 ## Architecture
 
-Prefer: `components/`, `hooks/useBeerList.js`, `utils/{storage,random,wheel}.js`, `data/defaultBeers.js`.
+Prefer: `components/`, `hooks/useBeerList.js`, `utils/{storage,random,wheel}.js`, `data/sampleBeers.js`.
 
 Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, then animate.**
 
@@ -38,14 +38,15 @@ Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, 
 - Wheel-first Spin Mode; Edit entry is a bottom-right gear icon outside the game column
 - Edit is its **own page** (game hidden): sticky compact list left, form right; list updates live as fields change
 - Soft bartender PIN gates Edit; unlock lasts for the browser tab session
-- **Controls** screen (from edit top bar): reset defaults, set default beer list, change password — out of beer-list product flow
+- **Controls** screen (from edit top bar): Reset to demo, change password — not a second beer editor
+- One live beer list (`brewlette.beers.v1`); `sampleBeers.js` is demo/reset only
 - Touch targets ≥ 44px (prefer 48px); hover never required
 - `prefers-reduced-motion`: shorter spin, still show result
 - Empty / 1-beer / corrupt storage / long names must not break
 - Optional “Remove this beer” after spin — never auto-remove
 - Beers have bartender-assigned `number` (unique, gaps OK); list/wheel sort by number — not array index / up-down reorder
 - Edit page: pick from sticky list or Add; form on the right
-- Default-list editor: same beer-list UI; add/update/delete persist custom defaults for Reset
+- No editable defaults list — bartenders maintain one list only
 
 ## Product docs
 

@@ -9,7 +9,6 @@ export default function BartenderControls({
   onBack,
   onReset,
   onChangePassword,
-  onSetDefaultList,
 }) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -63,16 +62,16 @@ export default function BartenderControls({
             className="btn btn-sm btn-ghost"
             onClick={onBack}
           >
-            Beers on the Wheel
+            Back
           </button>
         </div>
       </header>
 
       <div className="bartender-controls__body">
         <div className="bartender-controls__panel">
-          <h3>Default beers</h3>
+          <h3>Demo list</h3>
           <p className="bartender-controls__copy">
-            Replace the current wheel with your default beer list.
+            Replace the current wheel with the built-in sample beer list.
           </p>
           <div className="bartender-controls__actions">
             <button
@@ -80,17 +79,8 @@ export default function BartenderControls({
               className="btn btn-danger"
               onClick={() => setResetConfirmOpen(true)}
             >
-              Reset to defaults
+              Reset to demo
             </button>
-            {onSetDefaultList ? (
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={onSetDefaultList}
-              >
-                Set defaults
-              </button>
-            ) : null}
           </div>
         </div>
 
@@ -154,7 +144,7 @@ export default function BartenderControls({
       <ConfirmDialog
         open={resetConfirmOpen}
         title="Reset beer list?"
-        message="Reset to the default beer list? This replaces your current list."
+        message="Reset to the demo beer list? This replaces your current list."
         confirmLabel="Reset"
         onConfirm={confirmReset}
         onCancel={() => setResetConfirmOpen(false)}

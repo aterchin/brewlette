@@ -18,8 +18,9 @@ Brewlette is a beer roulette / spinning-wheel web app for use on an iPad behind 
 |------|-----|-----|
 | **Spin** (default) | Customers / bar floor | Dominated by the canvas wheel + Spin; theatrical result reveal |
 | **Edit** | Bartender | Full edit page: sticky compact list (left) + form (right) |
+| **Controls** | Bartender | From Edit top bar: reset to demo sample list, change password |
 
-Subtle bottom-right gear icon — outside the game column. Soft bartender password (default `brewlette`) unlocks for the browser tab session. Edit is its **own page** (game hidden): sticky compact beer list on the left updates live as fields change; editable form on the right. **Controls** (top-right, after Back to wheel) is a separate admin screen for reset-to-defaults, set default beer list, and change password — kept out of the beer-list product flow. Client-side PIN only.
+Subtle bottom-right gear icon — outside the game column. Soft bartender password (default `brewlette`) unlocks for the browser tab session. Edit is its **own page** (game hidden): sticky compact beer list on the left updates live as fields change; editable form on the right. **Controls** is a third screen for admin actions only — not a second beer-list editor. Client-side PIN only.
 
 ## Beer model
 
@@ -38,7 +39,7 @@ Subtle bottom-right gear icon — outside the game column. Soft bartender passwo
 
 List and wheel order by `number` ascending. Missing numbers (e.g. no #12) do not create empty wedges — only programmed beers appear.
 
-Persistence key: `brewlette.beers.v1`. Corrupt or missing data → fall back to bartender-defined defaults (`brewlette.defaults.v1`) if set, else `src/data/defaultBeers.js` (current tap board; slot 12 blank / gap OK).
+One live list only. Persistence key: `brewlette.beers.v1`. Corrupt or missing data → fall back to the built-in sample set in `src/data/sampleBeers.js` (demo tap board; slot 12 blank / gap OK). **Reset to demo** replaces the live list with that sample set. There is no separate editable defaults list.
 
 ## Spin behavior
 
@@ -71,8 +72,8 @@ Record changes from the original build idea here so future chats don’t re-liti
 | 2026-09-22 | Soft bartender password (default `brewlette`, settable in UI); unlock lasts until tab closes |
 | 2026-09-22 | Edit is its own page: sticky compact list (left) + form (right); list updates live while editing |
 | 2026-09-23 | Edit entry is a subtle bottom-right gear icon (not a right-edge tab) |
-| 2026-09-22 | Admin actions live on a separate Controls screen (reset defaults, set default beer list, change password) — not in the beer-list flow |
-| 2026-09-22 | “Set default beer list” edits `brewlette.defaults.v1` (auto-saves on add/update/delete); used by Reset |
+| 2026-09-22 | Admin actions live on a separate Controls screen (reset, change password) — not in the beer-list flow |
+| 2026-09-23 | One live beer list only; built-in `sampleBeers.js` is demo/reset fodder — no editable defaults list / `brewlette.defaults.v1` |
 
 ## Backlog
 
