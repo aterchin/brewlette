@@ -6,7 +6,7 @@ import {
   getSliceStartAngle,
   getTargetRotation,
   prefersReducedMotion,
-  wrapLabel,
+  shortenLabel,
 } from "../utils/wheel.js";
 import { randomIndex } from "../utils/random.js";
 import "./BeerWheel.css";
@@ -181,11 +181,12 @@ function drawWheel(canvas, beers, rotationDeg, cssSize, dpr) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Labels
+    // Labels — single shortened line keeps dense wheels readable
     const midDeg = getSliceMidAngle(i, count);
     const midRad = (midDeg * Math.PI) / 180;
-    const labelRadius = radius * (count > 12 ? 0.62 : 0.58);
-    const lines = wrapLabel(beers[i].name, count > 14 ? 10 : 12);
+    const labelRadius = radius * (count > 14 ? 0.68 : 0.6);
+    const maxChars = count > 16 ? 9 : count > 12 ? 11 : count > 8 ? 14 : 18;
+    const label = shortenLabel(beers[i].name, maxChars);
 
     ctx.save();
     ctx.rotate(midRad);
@@ -194,13 +195,12 @@ function drawWheel(canvas, beers, rotationDeg, cssSize, dpr) {
     ctx.fillStyle = TEXT;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    const fontSize = Math.max(10, Math.min(14, radius / (count > 12 ? 14 : 11)));
+    const fontSize = Math.max(
+      9,
+      Math.min(13, (radius * slice) / (count > 14 ? 220 : 180))
+    );
     ctx.font = `600 ${fontSize}px Figtree, sans-serif`;
-    const lineHeight = fontSize * 1.15;
-    const offset = ((lines.length - 1) * lineHeight) / 2;
-    lines.forEach((line, idx) => {
-      ctx.fillText(line, 0, idx * lineHeight - offset);
-    });
+    ctx.fillText(label, 0, 0);
     ctx.restore();
   }
 
