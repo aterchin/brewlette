@@ -82,3 +82,9 @@
   --content-max: 42rem;
   --wheel-max: min(88vw, 28rem);
 }
+
+@media (min-width: 768px) {
+  :root {
+    --wheel-max: min(72vw, 32rem);
+  }
+}

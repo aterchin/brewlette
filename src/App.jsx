@@ -48,7 +48,11 @@ function App() {
 
   return (
     <div className="app-shell">
-      <Header mode={mode} onToggleMode={toggleMode} />
+      <Header
+        mode={mode}
+        onToggleMode={toggleMode}
+        disabled={spinning}
+      />
 
       <main className="app-main">
         {mode === "edit" ? (

@@ -37,6 +37,7 @@ export default function BeerWheel({
   const rotationRef = useRef(0);
   const animRef = useRef(null);
   const sizeRef = useRef(320);
+  const lockRef = useRef(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -47,7 +48,7 @@ export default function BeerWheel({
       const cssSize = Math.min(
         parent?.clientWidth || 320,
         typeof window !== "undefined" ? window.innerWidth * 0.88 : 320,
-        448
+        typeof window !== "undefined" && window.innerWidth >= 768 ? 512 : 448
       );
       const dpr = window.devicePixelRatio || 1;
       sizeRef.current = cssSize;
@@ -77,8 +78,9 @@ export default function BeerWheel({
   }, []);
 
   function spin() {
-    if (disabled || spinning || !beers.length) return;
+    if (disabled || spinning || lockRef.current || !beers.length) return;
 
+    lockRef.current = true;
     const winnerIndex = randomIndex(beers.length);
     const winner = beers[winnerIndex];
     onSpinStart?.(winner, winnerIndex);
@@ -112,6 +114,7 @@ export default function BeerWheel({
         animRef.current = requestAnimationFrame(tick);
       } else {
         rotationRef.current = to;
+        lockRef.current = false;
         onSpinComplete?.(winner, winnerIndex);
       }
     };

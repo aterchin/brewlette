@@ -28,3 +28,8 @@
   color: var(--color-accent);
   border-color: var(--color-border-strong);
 }
+
+.header-edit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { prefersReducedMotion } from "../utils/wheel.js";
 import "./BeerResult.css";
 
 export default function BeerResult({ beer, onSpinAgain, onRemove }) {
@@ -6,6 +7,12 @@ export default function BeerResult({ beer, onSpinAgain, onRemove }) {
   const [showSurprise, setShowSurprise] = useState(false);
 
   useEffect(() => {
+    if (prefersReducedMotion()) {
+      setShowDetails(true);
+      setShowSurprise(true);
+      return undefined;
+    }
+
     setShowDetails(false);
     setShowSurprise(false);
 
