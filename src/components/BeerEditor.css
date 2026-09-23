@@ -98,6 +98,17 @@
   max-height: 40vh;
 }
 
+.beer-editor__nav-empty {
+  margin: 0;
+  padding: var(--space-3);
+}
+
+.beer-editor__nav-empty p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
 @media (min-width: 768px) {
   .beer-editor__nav {
     max-height: none;

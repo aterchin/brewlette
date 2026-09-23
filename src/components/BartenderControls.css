@@ -70,6 +70,12 @@
   font-size: var(--font-size-sm);
 }
 
+.bartender-controls__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
 .bartender-controls__password-form {
   display: flex;
   flex-direction: column;

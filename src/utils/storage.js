@@ -1,6 +1,7 @@
 import { defaultBeers } from "../data/defaultBeers.js";
 
 export const STORAGE_KEY = "brewlette.beers.v1";
+export const DEFAULTS_KEY = "brewlette.defaults.v1";
 export const PASSWORD_KEY = "brewlette.password.v1";
 export const UNLOCK_KEY = "brewlette.unlocked.v1";
 export const DEFAULT_PASSWORD = "brewlette";
@@ -119,16 +120,63 @@ export function saveBeers(beers) {
 }
 
 export function resetBeers() {
+  const defaults = cloneDefaults();
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaults));
   } catch {
-    // Ignore storage errors; still return defaults.
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Ignore storage errors; still return defaults.
+    }
   }
-  return cloneDefaults();
+  return defaults;
 }
 
-function cloneDefaults() {
+/**
+ * Built-in sample list from `defaultBeers.js`.
+ */
+export function cloneBuiltInDefaults() {
   return normalizeBeerList(defaultBeers.map((beer) => ({ ...beer })));
+}
+
+/**
+ * Load bartender-defined defaults from localStorage.
+ * Returns null when unset or unreadable (caller should use built-ins).
+ */
+export function loadCustomDefaults() {
+  try {
+    const raw = localStorage.getItem(DEFAULTS_KEY);
+    if (raw == null) return null;
+
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return null;
+
+    return normalizeBeerList(parsed);
+  } catch {
+    return null;
+  }
+}
+
+export function saveCustomDefaults(beers) {
+  if (!Array.isArray(beers)) return false;
+
+  try {
+    const normalized = normalizeBeerList(beers);
+    localStorage.setItem(DEFAULTS_KEY, JSON.stringify(normalized));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Effective defaults for reset / missing storage: custom if set, else built-in.
+ */
+function cloneDefaults() {
+  const custom = loadCustomDefaults();
+  if (custom != null) return custom;
+  return cloneBuiltInDefaults();
 }
 
 /**
