@@ -37,3 +37,7 @@ npm run preview
 - Optional “Remove this beer” after a spin
 - Bartender editor: add / edit / delete / reorder / reset defaults
 - Touch-friendly controls and `prefers-reduced-motion` support
+
+## Product notes
+
+See [`PRODUCT.md`](PRODUCT.md) for the living product brief and backlog. Cursor agents load project rules from `.cursor/rules/`.

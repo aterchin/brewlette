@@ -1,0 +1,42 @@
+---
+description: Brewlette product constraints, stack, and UX invariants
+alwaysApply: true
+---
+
+# Brewlette
+
+Beer roulette for an iPad behind a bar. Fun bar toy — not enterprise software.
+
+## Stack (do not change without asking)
+
+- React + Vite + JavaScript
+- HTML Canvas wheel; CSS design tokens in `src/styles/`
+- `localStorage` via `src/utils/storage.js` only
+- Static site only — **no** backend, auth, API, DB, Firebase, Next.js
+
+## Architecture
+
+Prefer the existing layout: `components/`, `hooks/useBeerList.js`, `utils/{storage,random,wheel}.js`, `data/defaultBeers.js`.
+
+Keep wheel math in `wheel.js`; keep crypto selection in `random.js`. **Pick the winner first, then animate** — never use animation position as randomness.
+
+## UX invariants
+
+- Wheel-first Spin Mode; subtle Edit entry (no admin chrome on the wheel)
+- Touch targets ≥ 44px; hover is optional, never required
+- Respect `prefers-reduced-motion` (shorter spin; still show the result)
+- Empty / 1-beer / corrupt storage / long names must not break the UI
+- Optional “Remove this beer” after a spin — never auto-remove
+
+## Design
+
+Warm, slightly dark, playful bar aesthetic. Tokens in `tokens.css` — no one-off colors/spacing. Distinctive display type for brand + result. Avoid SaaS dashboards, rustic wood kitsch, neon glow spam.
+
+## Product docs
+
+- Living idea / backlog: [`PRODUCT.md`](PRODUCT.md) — **update this when UX decisions change**
+- Local historical build spec (`Brewlette-Cursor-Build-Spec.md`) is gitignored — do not commit it
+
+## Git
+
+Small, focused commits with why-focused messages. Push when the user asks.
