@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  cloneBuiltInDefaults,
   loadCustomDefaults,
   nextBeerNumber,
   saveCustomDefaults,
@@ -111,7 +112,8 @@ export default function BeerEditor({
   }
 
   function openDefaultEditor() {
-    setDefaultDraft(loadCustomDefaults() ?? []);
+    // Edit what Reset currently uses: custom if set, else built-in tap list.
+    setDefaultDraft(loadCustomDefaults() ?? cloneBuiltInDefaults());
     setView("defaults");
   }
 

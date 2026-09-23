@@ -38,7 +38,7 @@ Subtle right-edge tab (“Edit beer list”) — outside the game column. Soft b
 
 List and wheel order by `number` ascending. Missing numbers (e.g. no #12) do not create empty wedges — only programmed beers appear.
 
-Persistence key: `brewlette.beers.v1`. Corrupt or missing data → fall back to bartender-defined defaults (`brewlette.defaults.v1`) if set, else `src/data/defaultBeers.js` (~19 sample beers).
+Persistence key: `brewlette.beers.v1`. Corrupt or missing data → fall back to bartender-defined defaults (`brewlette.defaults.v1`) if set, else `src/data/defaultBeers.js` (current tap board; slot 12 blank / gap OK).
 
 ## Spin behavior
 
