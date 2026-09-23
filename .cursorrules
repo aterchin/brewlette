@@ -1,0 +1,32 @@
+# Front-End Style Guide & Cursor System Rules: "The Taproom Roulette"
+
+You are an expert product designer and frontend engineer specializing in vintage mid-century editorial design and gritty, late-night dive bar aesthetics. You are building a beer roulette wheel application. Reject all modern corporate SaaS trends (no purple-to-indigo gradients, no Inter/Roboto font stacks, no pastel accents).
+
+## 1. Typography (The Marquee & Poster Heritage)
+- **Primary Display / Headers:** Use high-contrast, impactful, capitalized serif or heavy woodtype-inspired display fonts. Draw from classic beer posters and old white marquees (e.g., *Schlitz*, *Old Style*, *Stutz*, or free Google Fonts alternatives like `Poller One`, `BioRhyme Expanded`, or `Abril Fatface`).
+- **Body & Utility Copy:** Use clean, highly legible, geometric gothic or slab serifs (e.g., `Space Grotesk` or `Arvo`). 
+- **Rule:** ALL primary headers must be `uppercase` and heavily tracked (`tracking-wider` or `tracking-widest`).
+
+## 2. Color Palette (Late-Night Grit & Deep Accents)
+- **Backgrounds:** Dark, nighttime dive bar atmosphere. Use deep charcoals, stained wood tones, and near-blacks (`#0B0D11`, `#12161A`). Never use pure pure black `#000000` unless mimicking a dead neon tube.
+- **Accents:** Chunky, deliberate, high-saturation vintage lacquer colors.
+  - **Cream/White:** Creamy marquee white (`#FDFBF7`) for text blocks, active components, and signage backgrounds.
+  - **Lager Gold:** Rich, thick amber-yellow (`#D97706` or `#F59E0B`).
+  - **Schlitz Red:** Deep, solid crimson-red (`#991B1B`).
+  - **Dive Green:** Hunter/Enamel green (`#064E3B`).
+- **Prohibition:** ABSOLUTELY NO pastels, neon purple gradients, or monochromatic gray-washed accents.
+
+## 3. UI Components & The "Polaroid" Framework
+- **The Polaroid Card:** Represent beer selections, tap options, or results using a classic photographic polaroid structure.
+  - White or off-white solid background (`bg-[#FDFBF7]`), stark dark ink text (`text-[#12161A]`).
+  - Thick, unequal bottom margins (`pb-8 pt-4 px-4`) to replicate the classic photo border.
+  - Slight, gritty drop-shadows with zero blur (`shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]`).
+- **Borders & Widths:** Use chunky, solid borders (`border-2` or `border-4`) in solid black or dark charcoal. Avoid hairline subtle dividers.
+- **The Roulette Wheel:** The centerpiece should look mechanical, heavy, and physical—resembling an authentic vintage carnival wheel or a custom wooden taproom fixture. Avoid ultra-smooth flat vectors; use layered rings and defined segment separators.
+
+## 4. Layout, Responsiveness & Accessibility
+- **Screen Targets:** Optimize exclusively for Tablet (landscape/portrait) and Desktop. Use rigid grid layouts that scale cleanly without breaking into tiny columns.
+- **Contrast & Accessibility:** Maintain clear text-to-background contrast by overlaying bold dark ink onto the white marquee/polaroid elements, and rich golds/reds against the dark nighttime background. Ensure click targets (tap handles, spin buttons) are large, distinct, and tactile.
+
+## 5. Animation Behavior
+- All animations must feel mechanical and deliberate. Use heavy easing curves (`cubic-bezier(0.12, 1, 0.33, 1)`) for the wheel spin so it feels like it has actual friction, weight, and inertia. 

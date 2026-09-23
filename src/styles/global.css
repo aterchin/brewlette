@@ -19,8 +19,8 @@ body {
   line-height: var(--line-height-body);
   color: var(--color-text);
   background:
-    radial-gradient(ellipse 120% 80% at 50% -20%, var(--color-bg-glow), transparent 55%),
-    radial-gradient(ellipse 80% 50% at 100% 100%, rgba(224, 154, 60, 0.06), transparent 45%),
+    radial-gradient(ellipse 90% 60% at 50% -10%, rgba(245, 158, 11, 0.08), transparent 50%),
+    radial-gradient(ellipse 70% 40% at 0% 100%, rgba(153, 27, 27, 0.12), transparent 45%),
     var(--color-bg);
   background-attachment: fixed;
 }
@@ -33,8 +33,10 @@ h1,
 h2,
 h3 {
   font-family: var(--font-family-display);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-regular);
   line-height: var(--line-height-tight);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
   margin: 0;
 }
 
@@ -72,7 +74,7 @@ img {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 3px solid var(--color-accent);
   outline-offset: 3px;
 }
 
@@ -87,14 +89,14 @@ img {
 
 @media (min-width: 768px) {
   .app-shell {
-    max-width: 36rem;
+    max-width: 40rem;
     padding: var(--space-6) var(--space-6) var(--space-10);
   }
 }
 
 @media (min-width: 1024px) {
   .app-shell {
-    max-width: 40rem;
+    max-width: 44rem;
   }
 }
 
@@ -108,13 +110,15 @@ img {
 }
 
 .brand {
-  font-family: var(--font-family-display);
+  font-family: var(--font-family-brand);
   font-size: var(--font-size-brand);
-  font-weight: var(--font-weight-black);
-  letter-spacing: -0.03em;
+  font-weight: var(--font-weight-regular);
+  letter-spacing: var(--tracking-widest);
+  line-height: var(--line-height-tight);
   text-align: center;
-  color: var(--color-text);
+  color: var(--color-marquee);
   margin: 0;
+  text-transform: uppercase;
 }
 
 .brand span {
@@ -129,24 +133,28 @@ img {
   min-width: var(--touch-min);
   padding: var(--space-3) var(--space-6);
   border-radius: var(--radius-pill);
-  font-family: var(--font-family-display);
+  border: var(--border-chunky) solid var(--color-border-chunky);
+  font-family: var(--font-family-base);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
+  box-shadow: var(--shadow-md);
   transition:
-    background-color var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out),
-    transform var(--duration-fast) var(--ease-out);
+    background-color var(--duration-fast) var(--ease-mechanical),
+    color var(--duration-fast) var(--ease-mechanical),
+    transform var(--duration-fast) var(--ease-mechanical),
+    box-shadow var(--duration-fast) var(--ease-mechanical);
 }
 
 .btn:active:not(:disabled) {
-  transform: scale(0.98);
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-primary {
   background: var(--color-accent);
-  color: var(--color-text-inverse);
+  color: var(--color-ink);
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -154,32 +162,28 @@ img {
 }
 
 .btn-ghost {
-  background: transparent;
-  color: var(--color-text-muted);
-  border: 1px solid var(--color-border);
+  background: var(--color-marquee);
+  color: var(--color-ink);
 }
 
 .btn-ghost:hover:not(:disabled) {
-  color: var(--color-text);
-  border-color: var(--color-border-strong);
-  background: var(--color-surface);
+  background: #fff;
 }
 
 .btn-danger {
-  background: transparent;
-  color: var(--color-danger);
-  border: 1px solid var(--color-danger);
+  background: var(--color-schlitz);
+  color: var(--color-marquee);
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: var(--color-danger);
-  color: var(--color-text);
+  background: var(--color-schlitz-hover);
 }
 
 .btn-sm {
   min-height: var(--touch-min);
   padding: var(--space-2) var(--space-4);
   font-size: var(--font-size-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .visually-hidden {

@@ -47,9 +47,11 @@ Persistence key: `brewlette.beers.v1`. Corrupt or missing data → fall back to 
 
 ## Design north star
 
-Warm, slightly dark, modern, playful, bar-like. Not rustic craft-beer cliché, not neon, not corporate SaaS. Wheel is the entertainment; result is the payoff.
+**Taproom Roulette** — vintage mid-century editorial + late-night dive bar. Marquee/poster type, polaroid result cards, chunky borders, hard shadows, mechanical carnival wheel. See [`.cursorrules`](.cursorrules).
 
-Primary target: **iPad portrait**. Also phone, desktop, iPad landscape.
+Not corporate SaaS, not pastel, not purple gradients, not Inter/Roboto.
+
+Primary targets: **tablet** (portrait/landscape) and desktop. Wheel is the entertainment; result is the payoff.
 
 ## Decisions log
 
@@ -60,6 +62,8 @@ Record changes from the original build idea here so future chats don’t re-liti
 | 2026-09-22 | Public GitHub repo `aterchin/brewlette`; build spec stays out of git |
 | 2026-09-22 | Reorder beers with up/down buttons (no drag-and-drop) |
 | 2026-09-22 | Focus / presentation mode **deferred** |
+| 2026-09-22 | Typography: Poller One (brand), Abril Fatface (display), Arvo (UI) |
+| 2026-09-22 | Visual system: Taproom Roulette (`.cursorrules`) — dive palette, polaroid cards, chunky borders, mechanical wheel |
 
 ## Backlog
 

@@ -94,8 +94,38 @@ export function prefersReducedMotion() {
 }
 
 /**
- * Ease-out cubic for wheel deceleration.
+ * Mechanical deceleration — matches CSS cubic-bezier(0.12, 1, 0.33, 1).
+ * Feels like friction and weight on a carnival wheel.
  */
+export function easeMechanical(t) {
+  return sampleBezier(0.12, 1, 0.33, 1, t);
+}
+
+/** @deprecated Prefer easeMechanical */
 export function easeOutCubic(t) {
-  return 1 - (1 - t) ** 3;
+  return easeMechanical(t);
+}
+
+function sampleBezier(x1, y1, x2, y2, t) {
+  if (t <= 0) return 0;
+  if (t >= 1) return 1;
+
+  let start = 0;
+  let end = 1;
+  let mid = t;
+
+  for (let i = 0; i < 12; i += 1) {
+    const x = bezierCoord(mid, x1, x2);
+    if (Math.abs(t - x) < 1e-5) break;
+    if (x < t) start = mid;
+    else end = mid;
+    mid = (start + end) / 2;
+  }
+
+  return bezierCoord(mid, y1, y2);
+}
+
+function bezierCoord(t, a, b) {
+  const mt = 1 - t;
+  return 3 * mt * mt * t * a + 3 * mt * t * t * b + t * t * t;
 }

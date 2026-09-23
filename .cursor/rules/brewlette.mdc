@@ -7,6 +7,8 @@ alwaysApply: true
 
 Beer roulette for an iPad behind a bar. Fun bar toy — not enterprise software.
 
+Follow [`.cursorrules`](../.cursorrules) for visual system (“Taproom Roulette”). Summarized below.
+
 ## Stack (do not change without asking)
 
 - React + Vite + JavaScript
@@ -16,27 +18,33 @@ Beer roulette for an iPad behind a bar. Fun bar toy — not enterprise software.
 
 ## Architecture
 
-Prefer the existing layout: `components/`, `hooks/useBeerList.js`, `utils/{storage,random,wheel}.js`, `data/defaultBeers.js`.
+Prefer: `components/`, `hooks/useBeerList.js`, `utils/{storage,random,wheel}.js`, `data/defaultBeers.js`.
 
-Keep wheel math in `wheel.js`; keep crypto selection in `random.js`. **Pick the winner first, then animate** — never use animation position as randomness.
+Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, then animate.**
+
+## Design — Taproom Roulette
+
+- **Fonts:** Poller One (brand), Abril Fatface (headers/results), Arvo (UI/body)
+- **Headers:** uppercase + wide tracking
+- **Palette:** near-black dive (`#0B0D11` / `#12161A`), marquee cream (`#FDFBF7`), lager gold, Schlitz red, dive green — no pastels / purple SaaS
+- **Polaroid cards** for results/editor items: cream face, dark ink, thick bottom padding, hard zero-blur shadows
+- **Chunky borders** (`3px`), sharp corners — not hairline soft UI
+- **Wheel:** mechanical carnival feel; easing `cubic-bezier(0.12, 1, 0.33, 1)` / `easeMechanical`
+- Reject Inter/Roboto, purple gradients, neon glow spam
 
 ## UX invariants
 
-- Wheel-first Spin Mode; subtle Edit entry (no admin chrome on the wheel)
-- Touch targets ≥ 44px; hover is optional, never required
-- Respect `prefers-reduced-motion` (shorter spin; still show the result)
-- Empty / 1-beer / corrupt storage / long names must not break the UI
-- Optional “Remove this beer” after a spin — never auto-remove
-
-## Design
-
-Warm, slightly dark, playful bar aesthetic. Tokens in `tokens.css` — no one-off colors/spacing. Distinctive display type for brand + result. Avoid SaaS dashboards, rustic wood kitsch, neon glow spam.
+- Wheel-first Spin Mode; subtle Edit entry
+- Touch targets ≥ 44px (prefer 48px); hover never required
+- `prefers-reduced-motion`: shorter spin, still show result
+- Empty / 1-beer / corrupt storage / long names must not break
+- Optional “Remove this beer” after spin — never auto-remove
 
 ## Product docs
 
-- Living idea / backlog: [`PRODUCT.md`](PRODUCT.md) — **update this when UX decisions change**
-- Local historical build spec (`Brewlette-Cursor-Build-Spec.md`) is gitignored — do not commit it
+- Living brief: [`PRODUCT.md`](../../PRODUCT.md)
+- Local build spec gitignored — do not commit it
 
 ## Git
 
-Small, focused commits with why-focused messages. Push when the user asks.
+Small focused commits. Push when the user asks.

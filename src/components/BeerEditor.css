@@ -9,10 +9,14 @@
 .beer-editor__intro h2 {
   font-size: var(--font-size-2xl);
   margin-bottom: var(--space-2);
+  color: var(--color-marquee);
 }
 
 .beer-editor__intro p {
   color: var(--color-text-muted);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  font-size: var(--font-size-sm);
 }
 
 .beer-editor__list {
@@ -28,10 +32,12 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  padding: var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-4) var(--space-6);
+  background: var(--color-marquee);
+  color: var(--color-ink);
+  border: var(--border-chunky) solid var(--color-border-chunky);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
 }
 
 .beer-editor__info {
@@ -41,12 +47,16 @@
 }
 
 .beer-editor__info strong {
-  font-family: var(--font-family-display);
+  font-family: var(--font-family-base);
   font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-ink);
 }
 
 .beer-editor__info span {
-  color: var(--color-text-muted);
+  color: #4a4a4a;
   font-size: var(--font-size-sm);
 }
 
@@ -61,15 +71,18 @@
 }
 
 .beer-editor__panel {
-  padding: var(--space-5);
-  background: var(--color-surface-raised);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-5) var(--space-8);
+  background: var(--color-marquee);
+  color: var(--color-ink);
+  border: var(--border-chunky) solid var(--color-border-chunky);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
 }
 
 .beer-editor__panel h3 {
   font-size: var(--font-size-xl);
   margin-bottom: var(--space-4);
+  color: var(--color-ink);
 }
 
 .beer-editor__footer {

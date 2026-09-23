@@ -11,6 +11,7 @@
   width: var(--wheel-max);
   max-width: 100%;
   aspect-ratio: 1;
+  padding: 6px;
 }
 
 .beer-wheel__canvas {
@@ -18,26 +19,39 @@
   width: 100%;
   height: auto;
   border-radius: 50%;
+  border: var(--border-chunky) solid var(--color-border-chunky);
   box-shadow: var(--shadow-lg);
+  background: var(--color-surface);
 }
 
 .beer-wheel__pointer {
   position: absolute;
-  top: -4px;
+  top: -2px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 12px solid transparent;
-  border-right: 12px solid transparent;
-  border-top: 22px solid var(--color-pointer);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 28px solid var(--color-pointer);
+  filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.55));
   z-index: 2;
 }
 
+.beer-wheel__pointer::after {
+  content: "";
+  position: absolute;
+  top: -28px;
+  left: -6px;
+  width: 12px;
+  height: 12px;
+  background: var(--color-accent-deep);
+  border: 2px solid var(--color-border-chunky);
+  border-radius: 50%;
+}
+
 .beer-wheel__spin {
-  min-width: 10rem;
+  min-width: 12rem;
   font-size: var(--font-size-xl);
   padding: var(--space-4) var(--space-8);
-  box-shadow: var(--shadow-md);
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import {
-  easeOutCubic,
+  easeMechanical,
   getSliceAngle,
   getSliceMidAngle,
   getSliceStartAngle,
@@ -11,12 +11,13 @@ import {
 import { randomIndex } from "../utils/random.js";
 import "./BeerWheel.css";
 
-const POINTER_COLOR = "#e09a3c";
-const SLICE_A = "#2a2119";
-const SLICE_B = "#3a2e24";
-const STROKE = "#4a3c30";
-const TEXT = "#f4ebe2";
-const HUB = "#14110e";
+const SLICE_COLORS = ["#1a1f26", "#991b1b", "#fdfbf7", "#064e3b"];
+const SLICE_TEXT = ["#fdfbf7", "#fdfbf7", "#12161a", "#fdfbf7"];
+const STROKE = "#0b0d11";
+const RIM = "#f59e0b";
+const HUB = "#12161a";
+const HUB_RING = "#f59e0b";
+const INNER_RING = "#fdfbf7";
 
 /**
  * @param {{
@@ -100,7 +101,7 @@ export default function BeerWheel({
 
     const tick = (now) => {
       const t = Math.min(1, (now - start) / duration);
-      const eased = easeOutCubic(t);
+      const eased = easeMechanical(t);
       const current = from + (to - from) * eased;
       rotationRef.current = current;
 
@@ -158,11 +159,23 @@ function drawWheel(canvas, beers, rotationDeg, cssSize, dpr) {
 
   const cx = size / 2;
   const cy = size / 2;
-  const radius = size / 2 - 8;
+  const radius = size / 2 - 10;
 
   ctx.save();
   ctx.translate(cx, cy);
   ctx.rotate((rotationDeg * Math.PI) / 180);
+
+  // Outer rim ring (static carnival metal feel)
+  ctx.beginPath();
+  ctx.arc(0, 0, radius + 4, 0, Math.PI * 2);
+  ctx.strokeStyle = RIM;
+  ctx.lineWidth = 8;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(0, 0, radius + 1, 0, Math.PI * 2);
+  ctx.strokeStyle = STROKE;
+  ctx.lineWidth = 3;
+  ctx.stroke();
 
   const slice = getSliceAngle(count);
 
@@ -170,18 +183,18 @@ function drawWheel(canvas, beers, rotationDeg, cssSize, dpr) {
     const startDeg = getSliceStartAngle(i, count);
     const start = (startDeg * Math.PI) / 180;
     const end = ((startDeg + slice) * Math.PI) / 180;
+    const colorIndex = i % SLICE_COLORS.length;
 
     ctx.beginPath();
     ctx.moveTo(0, 0);
-    ctx.arc(0, 0, radius, start, end);
+    ctx.arc(0, 0, radius - 2, start, end);
     ctx.closePath();
-    ctx.fillStyle = i % 2 === 0 ? SLICE_A : SLICE_B;
+    ctx.fillStyle = SLICE_COLORS[colorIndex];
     ctx.fill();
     ctx.strokeStyle = STROKE;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 3;
     ctx.stroke();
 
-    // Labels — single shortened line keeps dense wheels readable
     const midDeg = getSliceMidAngle(i, count);
     const midRad = (midDeg * Math.PI) / 180;
     const labelRadius = radius * (count > 14 ? 0.68 : 0.6);
@@ -192,25 +205,34 @@ function drawWheel(canvas, beers, rotationDeg, cssSize, dpr) {
     ctx.rotate(midRad);
     ctx.translate(labelRadius, 0);
     ctx.rotate(Math.PI / 2);
-    ctx.fillStyle = TEXT;
+    ctx.fillStyle = SLICE_TEXT[colorIndex];
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const fontSize = Math.max(
       9,
       Math.min(13, (radius * slice) / (count > 14 ? 220 : 180))
     );
-    ctx.font = `600 ${fontSize}px Figtree, sans-serif`;
+    ctx.font = `700 ${fontSize}px Arvo, Georgia, serif`;
     ctx.fillText(label, 0, 0);
     ctx.restore();
   }
 
+  // Inner cream ring
+  ctx.beginPath();
+  ctx.arc(0, 0, Math.max(28, radius * 0.14), 0, Math.PI * 2);
+  ctx.fillStyle = INNER_RING;
+  ctx.fill();
+  ctx.strokeStyle = STROKE;
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
   // Hub
   ctx.beginPath();
-  ctx.arc(0, 0, Math.max(18, radius * 0.08), 0, Math.PI * 2);
+  ctx.arc(0, 0, Math.max(16, radius * 0.08), 0, Math.PI * 2);
   ctx.fillStyle = HUB;
   ctx.fill();
-  ctx.strokeStyle = POINTER_COLOR;
-  ctx.lineWidth = 3;
+  ctx.strokeStyle = HUB_RING;
+  ctx.lineWidth = 4;
   ctx.stroke();
 
   ctx.restore();
