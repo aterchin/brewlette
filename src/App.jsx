@@ -1,15 +1,82 @@
+import { useState } from "react";
+import BeerEditor from "./components/BeerEditor.jsx";
+import BeerResult from "./components/BeerResult.jsx";
+import BeerWheel from "./components/BeerWheel.jsx";
+import EmptyState from "./components/EmptyState.jsx";
+import Header from "./components/Header.jsx";
+import { useBeerList } from "./hooks/useBeerList.js";
+
 function App() {
+  const {
+    beers,
+    addBeer,
+    updateBeer,
+    deleteBeer,
+    moveBeer,
+    resetToDefaults,
+  } = useBeerList();
+
+  const [mode, setMode] = useState("spin");
+  const [spinning, setSpinning] = useState(false);
+  const [result, setResult] = useState(null);
+
+  function handleSpinStart() {
+    setSpinning(true);
+    setResult(null);
+  }
+
+  function handleSpinComplete(beer) {
+    setSpinning(false);
+    setResult(beer);
+  }
+
+  function handleSpinAgain() {
+    setResult(null);
+  }
+
+  function handleRemoveWinner() {
+    if (!result) return;
+    deleteBeer(result.id);
+    setResult(null);
+  }
+
+  function toggleMode() {
+    if (spinning) return;
+    setMode((current) => (current === "spin" ? "edit" : "spin"));
+    setResult(null);
+  }
+
   return (
     <div className="app-shell">
-      <header>
-        <h1 className="brand">
-          Brew<span>lette</span>
-        </h1>
-      </header>
+      <Header mode={mode} onToggleMode={toggleMode} />
+
       <main className="app-main">
-        <p style={{ color: "var(--color-text-muted)", textAlign: "center" }}>
-          Pick a beer. Spin the thing. See what happens.
-        </p>
+        {mode === "edit" ? (
+          <BeerEditor
+            beers={beers}
+            onAdd={addBeer}
+            onUpdate={updateBeer}
+            onDelete={deleteBeer}
+            onMove={moveBeer}
+            onReset={resetToDefaults}
+          />
+        ) : beers.length === 0 ? (
+          <EmptyState onEdit={() => setMode("edit")} />
+        ) : result ? (
+          <BeerResult
+            beer={result}
+            onSpinAgain={handleSpinAgain}
+            onRemove={handleRemoveWinner}
+          />
+        ) : (
+          <BeerWheel
+            beers={beers}
+            spinning={spinning}
+            onSpinStart={handleSpinStart}
+            onSpinComplete={handleSpinComplete}
+            disabled={spinning}
+          />
+        )}
       </main>
     </div>
   );
