@@ -200,3 +200,12 @@
   background: url("../assets/icons/google.svg") center / contain no-repeat;
   flex-shrink: 0;
 }
+
+.bartender-unlock__oauth--facebook::before {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: url("../assets/icons/facebook.svg") center / contain no-repeat;
+  flex-shrink: 0;
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  FacebookAuthProvider,
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -9,6 +10,7 @@ import {
 import { auth } from "../firebase.js";
 
 const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
 
 /** Firebase Auth state + sign-in helpers for the bartender Edit gate. */
 export function useAuth() {
@@ -30,9 +32,20 @@ export function useAuth() {
     await signInWithPopup(auth, googleProvider);
   }
 
+  async function signInWithFacebook() {
+    await signInWithPopup(auth, facebookProvider);
+  }
+
   async function signOut() {
     await firebaseSignOut(auth);
   }
 
-  return { user, loading, signIn, signInWithGoogle, signOut };
+  return {
+    user,
+    loading,
+    signIn,
+    signInWithGoogle,
+    signInWithFacebook,
+    signOut,
+  };
 }

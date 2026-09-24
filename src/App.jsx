@@ -18,8 +18,14 @@ function App() {
     resetToDemo,
     nextNumber,
   } = useBeerList();
-  const { user, loading: authLoading, signIn, signInWithGoogle, signOut } =
-    useAuth();
+  const {
+    user,
+    loading: authLoading,
+    signIn,
+    signInWithGoogle,
+    signInWithFacebook,
+    signOut,
+  } = useAuth();
 
   const [editOpen, setEditOpen] = useState(false);
   const [unlockOpen, setUnlockOpen] = useState(false);
@@ -73,6 +79,11 @@ function App() {
 
   async function handleSignInGoogle() {
     await signInWithGoogle();
+    openEditPage();
+  }
+
+  async function handleSignInFacebook() {
+    await signInWithFacebook();
     openEditPage();
   }
 
@@ -143,6 +154,7 @@ function App() {
         open={unlockOpen}
         onSignIn={handleSignIn}
         onSignInGoogle={handleSignInGoogle}
+        onSignInFacebook={handleSignInFacebook}
         onCancel={() => setUnlockOpen(false)}
       />
     </div>
