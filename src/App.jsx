@@ -105,6 +105,18 @@ function App() {
     );
   }
 
+  if (unlockOpen) {
+    return (
+      <div className="app-shell app-shell--sign-in">
+        <BartenderUnlock
+          onSignIn={handleSignIn}
+          onSignInGoogle={handleSignInGoogle}
+          onCancel={() => setUnlockOpen(false)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="app-shell">
       <div className="app-game">
@@ -142,13 +154,6 @@ function App() {
         editOpen={showEdit}
         onToggleEdit={requestEdit}
         disabled={spinning || authLoading}
-      />
-
-      <BartenderUnlock
-        open={unlockOpen}
-        onSignIn={handleSignIn}
-        onSignInGoogle={handleSignInGoogle}
-        onCancel={() => setUnlockOpen(false)}
       />
     </div>
   );

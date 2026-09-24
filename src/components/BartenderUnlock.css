@@ -1,42 +1,45 @@
 .bartender-unlock {
-  position: fixed;
-  inset: 0;
-  z-index: 40;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-4);
+  flex-direction: column;
+  gap: var(--space-6);
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  color: var(--color-text);
+  background-color: #181c25;
 }
 
-.bartender-unlock__backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(11, 13, 17, 0.72);
-  border: none;
-  cursor: pointer;
+/* Soft blue fill behind the centered shell on the sign-in page */
+body:has(.app-shell--sign-in) {
+  background-color: #181c25;
 }
 
-.bartender-unlock__card {
-  position: relative;
-  z-index: 1;
-  width: min(100%, 22rem);
-  padding: var(--space-5) var(--space-5) var(--space-8);
-  background: var(--color-marquee);
-  color: var(--color-ink);
-  border: var(--border-chunky) solid var(--color-border-chunky);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-lg);
+.app-shell--sign-in {
+  background-color: #181c25;
 }
 
-.bartender-unlock__card h2 {
+.bartender-unlock__topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.bartender-unlock__topbar-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.bartender-unlock__topbar-copy h2 {
+  margin: 0 0 var(--space-2);
   font-size: var(--font-size-2xl);
-  margin-bottom: var(--space-2);
-  color: var(--color-ink);
+  color: var(--color-marquee);
 }
 
 .bartender-unlock__copy {
-  margin-bottom: var(--space-5);
-  color: #4a4a4a;
+  margin: 0;
+  color: var(--color-text-muted);
   font-size: var(--font-size-sm);
 }
 
@@ -44,6 +47,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  width: 100%;
 }
 
 .bartender-unlock__field {
@@ -57,23 +61,16 @@
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
-}
-
-.bartender-unlock__hint {
-  margin: 0;
-  color: #5a5a5a;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-regular);
-  letter-spacing: normal;
-  text-transform: none;
+  color: var(--color-marquee);
 }
 
 .bartender-unlock__field input {
+  width: 100%;
   min-height: var(--touch-min);
   padding: var(--space-3) var(--space-4);
-  border: var(--border-chunky) solid var(--color-border-chunky);
+  border: var(--border-chunky) solid var(--color-marquee);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--color-marquee);
   color: var(--color-ink);
   box-shadow: var(--shadow-sm);
 }
@@ -85,7 +82,6 @@
 }
 
 .bartender-unlock__password input {
-  width: 100%;
   padding-right: calc(var(--touch-min) + var(--space-2));
 }
 
@@ -149,7 +145,7 @@
 
 .bartender-unlock__error {
   margin: 0;
-  color: var(--color-schlitz);
+  color: var(--color-accent);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-wide);
@@ -160,6 +156,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  margin-top: var(--space-2);
 }
 
 .bartender-unlock__actions .btn {
@@ -171,7 +168,7 @@
   align-items: center;
   gap: var(--space-3);
   margin: 0;
-  color: #5a5a5a;
+  color: var(--color-text-muted);
   font-size: var(--font-size-sm);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
@@ -182,7 +179,7 @@
   content: "";
   flex: 1;
   height: 2px;
-  background: var(--color-border-chunky);
+  background: var(--color-border);
 }
 
 .bartender-unlock__oauth {
