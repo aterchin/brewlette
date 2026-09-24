@@ -8,8 +8,10 @@ Designed primarily for an iPad behind the bar — bartender maintains the tap li
 
 - React + Vite (static site)
 - HTML Canvas wheel
-- Browser `localStorage` / `sessionStorage` (no backend, no API)
-- Soft bartender PIN (client-side only) for edit access
+- Browser `localStorage` for the beer list
+- Firebase Authentication (email/password + Google) for bartender Edit access
+
+Copy `.env` keys from Firebase project settings (`VITE_FIREBASE_*`). Enable Email/Password and Google in the Firebase console and create or allow a bartender account before signing in.
 
 ## Develop
 
@@ -36,7 +38,7 @@ npm run preview
 - Crypto-backed random selection (animation lands on a pre-chosen winner)
 - Result reveal with optional surprise message
 - Optional “Remove this beer” after a spin
-- Bartender edit page (password-gated): sticky list + form; Controls for reset-to-demo and password
+- Bartender edit page (Firebase sign-in): sticky list + form; Controls for reset-to-demo and sign out
 - Touch-friendly controls and `prefers-reduced-motion` support
 
 ## Product notes

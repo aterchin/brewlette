@@ -18,9 +18,9 @@ Brewlette is a beer roulette / spinning-wheel web app for use on an iPad behind 
 |------|-----|-----|
 | **Spin** (default) | Customers / bar floor | Dominated by the canvas wheel + Spin; theatrical result reveal |
 | **Edit** | Bartender | Full edit page: sticky compact list (left) + form (right) |
-| **Controls** | Bartender | From Edit top bar: reset to demo sample list, change password |
+| **Controls** | Bartender | From Edit top bar: reset to demo sample list, sign out |
 
-Subtle bottom-right gear icon — outside the game column. Soft bartender password (default `brewlette`) unlocks for the browser tab session. Edit is its **own page** (game hidden): sticky compact beer list on the left updates live as fields change; editable form on the right. **Controls** is a third screen for admin actions only — not a second beer-list editor. Client-side PIN only.
+Subtle bottom-right gear icon — outside the game column. Firebase Auth (email/password or Google) unlocks Edit; Spin Mode stays public. Edit is its **own page** (game hidden): sticky compact beer list on the left updates live as fields change; editable form on the right. **Controls** is a third screen for admin actions only — not a second beer-list editor. Beer list remains in `localStorage` until cloud sync exists.
 
 ## Beer model
 
@@ -74,6 +74,7 @@ Record changes from the original build idea here so future chats don’t re-liti
 | 2026-09-23 | Edit entry is a subtle bottom-right gear icon (not a right-edge tab) |
 | 2026-09-22 | Admin actions live on a separate Controls screen (reset, change password) — not in the beer-list flow |
 | 2026-09-23 | One live beer list only; built-in `sampleBeers.js` is demo/reset fodder — no editable defaults list / `brewlette.defaults.v1` |
+| 2026-09-24 | Firebase Auth (email/password + Google) replaces soft PIN for Edit; Controls shows account + sign out; beers still local; Facebook dropped |
 
 ## Backlog
 
