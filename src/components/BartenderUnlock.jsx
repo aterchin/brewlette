@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./BartenderUnlock.css";
 
-function friendlyAuthError(error) {
+function friendlyAuthError(error, mode) {
   const code = error?.code;
   if (
     code === "auth/invalid-credential" ||
@@ -10,6 +10,12 @@ function friendlyAuthError(error) {
     code === "auth/invalid-email"
   ) {
     return "Nope.";
+  }
+  if (code === "auth/email-already-in-use") {
+    return "That email is already registered.";
+  }
+  if (code === "auth/weak-password") {
+    return "Password must be at least 6 characters.";
   }
   if (code === "auth/too-many-requests") {
     return "Too many tries. Wait a bit.";
@@ -29,20 +35,23 @@ function friendlyAuthError(error) {
   if (code === "auth/account-exists-with-different-credential") {
     return "Use the sign-in method you used before.";
   }
-  return "Couldn’t sign in.";
+  return mode === "register" ? "Couldn’t create account." : "Couldn’t sign in.";
 }
 
 export default function BartenderUnlock({
   onSignIn,
+  onRegister,
   onSignInGoogle,
   onCancel,
 }) {
+  const [mode, setMode] = useState("signIn");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const emailRef = useRef(null);
+  const isRegister = mode === "register";
 
   useEffect(() => {
     const id = window.requestAnimationFrame(() => {
@@ -59,6 +68,13 @@ export default function BartenderUnlock({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onCancel, submitting]);
 
+  function switchMode(nextMode) {
+    if (submitting || nextMode === mode) return;
+    setMode(nextMode);
+    setError("");
+    setShowPassword(false);
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     if (submitting) return;
@@ -68,15 +84,23 @@ export default function BartenderUnlock({
       setError("Email and password required.");
       return;
     }
+    if (isRegister && password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
 
     setSubmitting(true);
     setError("");
     try {
-      await onSignIn(trimmedEmail, password);
+      if (isRegister) {
+        await onRegister(trimmedEmail, password);
+      } else {
+        await onSignIn(trimmedEmail, password);
+      }
       setEmail("");
       setPassword("");
     } catch (err) {
-      setError(friendlyAuthError(err));
+      setError(friendlyAuthError(err, mode));
       setSubmitting(false);
     }
   }
@@ -88,7 +112,7 @@ export default function BartenderUnlock({
     try {
       await onSignInGoogle();
     } catch (err) {
-      const message = friendlyAuthError(err);
+      const message = friendlyAuthError(err, mode);
       if (message) setError(message);
       setSubmitting(false);
     }
@@ -103,17 +127,11 @@ export default function BartenderUnlock({
         <div className="bartender-unlock__topbar-copy">
           <h2 id="bartender-unlock-title">Bartender only</h2>
           <p className="bartender-unlock__copy">
-            Sign in to edit the beer list.
+            {isRegister
+              ? "Create an account to edit the beer list."
+              : "Sign in to edit the beer list."}
           </p>
         </div>
-        <button
-          type="button"
-          className="btn btn-sm btn-ghost"
-          onClick={onCancel}
-          disabled={submitting}
-        >
-          Back to wheel
-        </button>
       </header>
 
       <form className="bartender-unlock__form" onSubmit={handleSubmit}>
@@ -142,7 +160,7 @@ export default function BartenderUnlock({
             <input
               id="bartender-password"
               type={showPassword ? "text" : "password"}
-              autoComplete="current-password"
+              autoComplete={isRegister ? "new-password" : "current-password"}
               value={password}
               disabled={submitting}
               onChange={(event) => {
@@ -171,7 +189,21 @@ export default function BartenderUnlock({
             className="btn btn-primary"
             disabled={submitting}
           >
-            {submitting ? "Signing in…" : "Sign in"}
+            {submitting
+              ? isRegister
+                ? "Creating…"
+                : "Signing in…"
+              : isRegister
+                ? "Create account"
+                : "Sign in"}
+          </button>
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => switchMode(isRegister ? "signIn" : "register")}
+            disabled={submitting}
+          >
+            {isRegister ? "Sign in instead" : "Create an account"}
           </button>
           {onSignInGoogle ? (
             <>
@@ -188,6 +220,14 @@ export default function BartenderUnlock({
               </button>
             </>
           ) : null}
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={onCancel}
+            disabled={submitting}
+          >
+            Cancel
+          </button>
         </div>
       </form>
     </section>

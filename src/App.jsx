@@ -22,6 +22,7 @@ function App() {
     user,
     loading: authLoading,
     signIn,
+    register,
     signInWithGoogle,
     signOut,
   } = useAuth();
@@ -76,6 +77,11 @@ function App() {
     openEditPage();
   }
 
+  async function handleRegister(email, password) {
+    await register(email, password);
+    openEditPage();
+  }
+
   async function handleSignInGoogle() {
     await signInWithGoogle();
     openEditPage();
@@ -110,6 +116,7 @@ function App() {
       <div className="app-shell app-shell--sign-in">
         <BartenderUnlock
           onSignIn={handleSignIn}
+          onRegister={handleRegister}
           onSignInGoogle={handleSignInGoogle}
           onCancel={() => setUnlockOpen(false)}
         />

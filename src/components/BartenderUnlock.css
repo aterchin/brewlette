@@ -161,6 +161,16 @@ body:has(.app-shell--sign-in) {
 
 .bartender-unlock__actions .btn {
   width: 100%;
+  height: var(--touch-min);
+  min-height: var(--touch-min);
+  max-height: var(--touch-min);
+  padding-block: 0;
+  font-size: var(--font-size-md);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .bartender-unlock__divider {
@@ -186,14 +196,14 @@ body:has(.app-shell--sign-in) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .bartender-unlock__oauth--google::before {
   content: "";
   display: block;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   background: url("../assets/icons/google.svg") center / contain no-repeat;
   flex-shrink: 0;
 }
