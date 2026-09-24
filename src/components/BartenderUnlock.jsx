@@ -135,6 +135,21 @@ export default function BartenderUnlock({
       </header>
 
       <form className="bartender-unlock__form" onSubmit={handleSubmit}>
+        {onSignInGoogle ? (
+          <div className="bartender-unlock__actions bartender-unlock__actions--lead">
+            <button
+              type="button"
+              className="btn btn-ghost bartender-unlock__oauth bartender-unlock__oauth--google"
+              onClick={handleGoogle}
+              disabled={submitting}
+            >
+              Continue with Google
+            </button>
+            <p className="bartender-unlock__divider" role="separator">
+              <span>or</span>
+            </p>
+          </div>
+        ) : null}
         <label className="bartender-unlock__field" htmlFor="bartender-email">
           <span>Email</span>
           <input
@@ -205,21 +220,6 @@ export default function BartenderUnlock({
           >
             {isRegister ? "Sign in instead" : "Create an account"}
           </button>
-          {onSignInGoogle ? (
-            <>
-              <p className="bartender-unlock__divider" role="separator">
-                <span>or</span>
-              </p>
-              <button
-                type="button"
-                className="btn btn-ghost bartender-unlock__oauth bartender-unlock__oauth--google"
-                onClick={handleGoogle}
-                disabled={submitting}
-              >
-                Continue with Google
-              </button>
-            </>
-          ) : null}
           <button
             type="button"
             className="btn btn-ghost"

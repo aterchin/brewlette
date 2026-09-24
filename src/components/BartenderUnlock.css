@@ -159,6 +159,11 @@ body:has(.app-shell--sign-in) {
   margin-top: var(--space-2);
 }
 
+.bartender-unlock__actions--lead {
+  margin-top: 0;
+  margin-bottom: var(--space-2);
+}
+
 .bartender-unlock__actions .btn {
   width: 100%;
   height: var(--touch-min);
