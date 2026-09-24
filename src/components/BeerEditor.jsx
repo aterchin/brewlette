@@ -10,7 +10,8 @@ export default function BeerEditor({
   onReset,
   nextNumber,
   onClose,
-  onChangePassword,
+  userEmail,
+  onSignOut,
 }) {
   const [view, setView] = useState("list");
 
@@ -19,7 +20,8 @@ export default function BeerEditor({
       <BartenderControls
         onBack={() => setView("list")}
         onReset={onReset}
-        onChangePassword={onChangePassword}
+        userEmail={userEmail}
+        onSignOut={onSignOut}
       />
     );
   }

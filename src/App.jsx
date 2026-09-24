@@ -6,12 +6,8 @@ import BeerResult from "./components/BeerResult.jsx";
 import BeerWheel from "./components/BeerWheel.jsx";
 import EmptyState from "./components/EmptyState.jsx";
 import Header from "./components/Header.jsx";
+import { useAuth } from "./hooks/useAuth.js";
 import { useBeerList } from "./hooks/useBeerList.js";
-import {
-  checkPassword,
-  isSessionUnlocked,
-  savePassword,
-} from "./utils/storage.js";
 
 function App() {
   const {
@@ -22,11 +18,14 @@ function App() {
     resetToDemo,
     nextNumber,
   } = useBeerList();
+  const { user, loading: authLoading, signIn, signOut } = useAuth();
 
   const [editOpen, setEditOpen] = useState(false);
   const [unlockOpen, setUnlockOpen] = useState(false);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState(null);
+
+  const showEdit = Boolean(user) && editOpen;
 
   function handleSpinStart() {
     setSpinning(true);
@@ -49,12 +48,12 @@ function App() {
   }
 
   function requestEdit() {
-    if (spinning) return;
-    if (editOpen) {
+    if (spinning || authLoading) return;
+    if (showEdit) {
       setEditOpen(false);
       return;
     }
-    if (isSessionUnlocked()) {
+    if (user) {
       openEditPage();
       return;
     }
@@ -66,21 +65,18 @@ function App() {
     setEditOpen(false);
   }
 
-  function handleChangePassword(current, next) {
-    if (!checkPassword(current)) {
-      return { ok: false, error: "Current password is wrong." };
-    }
-    const trimmed = typeof next === "string" ? next.trim() : "";
-    if (trimmed === "") {
-      return { ok: false, error: "New password can’t be empty." };
-    }
-    if (!savePassword(trimmed)) {
-      return { ok: false, error: "Couldn’t save password." };
-    }
-    return { ok: true };
+  async function handleSignIn(email, password) {
+    await signIn(email, password);
+    openEditPage();
   }
 
-  if (editOpen) {
+  async function handleSignOut() {
+    await signOut();
+    setEditOpen(false);
+    setUnlockOpen(false);
+  }
+
+  if (showEdit) {
     return (
       <div className="app-shell app-shell--edit-page">
         <BeerEditor
@@ -91,7 +87,8 @@ function App() {
           onReset={resetToDemo}
           nextNumber={nextNumber}
           onClose={closeEdit}
-          onChangePassword={handleChangePassword}
+          userEmail={user.email}
+          onSignOut={handleSignOut}
         />
       </div>
     );
@@ -131,14 +128,14 @@ function App() {
       </div>
 
       <BartenderTab
-        editOpen={editOpen}
+        editOpen={showEdit}
         onToggleEdit={requestEdit}
-        disabled={spinning}
+        disabled={spinning || authLoading}
       />
 
       <BartenderUnlock
         open={unlockOpen}
-        onUnlock={openEditPage}
+        onSignIn={handleSignIn}
         onCancel={() => setUnlockOpen(false)}
       />
     </div>

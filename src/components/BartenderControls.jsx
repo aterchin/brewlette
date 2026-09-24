@@ -1,52 +1,32 @@
 import { useState } from "react";
-import { isDefaultPassword } from "../utils/storage.js";
 import ConfirmDialog from "./ConfirmDialog.jsx";
 import "./BartenderControls.css";
-
-const DEFAULT_PASSWORD_HINT = "Default password is brewlette";
 
 export default function BartenderControls({
   onBack,
   onReset,
-  onChangePassword,
+  userEmail,
+  onSignOut,
 }) {
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
-  const showDefaultHint = isDefaultPassword();
-
-  function resetPasswordForm() {
-    setCurrentPassword("");
-    setNewPassword("");
-    setPasswordError("");
-  }
-
-  function handlePasswordSubmit(event) {
-    event.preventDefault();
-    setPasswordSuccess(false);
-
-    const next = newPassword.trim();
-    if (next === "") {
-      setPasswordError("New password can’t be empty.");
-      return;
-    }
-
-    const result = onChangePassword(currentPassword, next);
-    if (!result?.ok) {
-      setPasswordError(result?.error || "Couldn’t change password.");
-      return;
-    }
-
-    resetPasswordForm();
-    setPasswordSuccess(true);
-  }
+  const [signingOut, setSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState("");
 
   function confirmReset() {
     onReset();
-    setPasswordSuccess(false);
     setResetConfirmOpen(false);
+  }
+
+  async function handleSignOut() {
+    if (signingOut || !onSignOut) return;
+    setSigningOut(true);
+    setSignOutError("");
+    try {
+      await onSignOut();
+    } catch {
+      setSignOutError("Couldn’t sign out.");
+      setSigningOut(false);
+    }
   }
 
   return (
@@ -84,59 +64,29 @@ export default function BartenderControls({
           </div>
         </div>
 
-        {onChangePassword ? (
+        {onSignOut ? (
           <div className="bartender-controls__panel">
-            <h3>Change password</h3>
+            <h3>Account</h3>
             <p className="bartender-controls__copy">
-              Soft lock for the edit screen. Stored on this device only.
+              {userEmail
+                ? `Signed in as ${userEmail}`
+                : "Signed in to edit the beer list."}
             </p>
-            <form
-              className="bartender-controls__password-form"
-              onSubmit={handlePasswordSubmit}
-            >
-              <label className="bartender-controls__field">
-                <span>Current password</span>
-                <input
-                  type="text"
-                  autoComplete="off"
-                  spellCheck="false"
-                  placeholder={showDefaultHint ? DEFAULT_PASSWORD_HINT : undefined}
-                  value={currentPassword}
-                  onChange={(event) => {
-                    setCurrentPassword(event.target.value);
-                    setPasswordError("");
-                    setPasswordSuccess(false);
-                  }}
-                />
-              </label>
-              <label className="bartender-controls__field">
-                <span>New password</span>
-                <input
-                  type="text"
-                  autoComplete="off"
-                  spellCheck="false"
-                  value={newPassword}
-                  onChange={(event) => {
-                    setNewPassword(event.target.value);
-                    setPasswordError("");
-                    setPasswordSuccess(false);
-                  }}
-                />
-              </label>
-              {passwordError ? (
-                <p className="bartender-controls__error" role="alert">
-                  {passwordError}
-                </p>
-              ) : null}
-              {passwordSuccess ? (
-                <p className="bartender-controls__success" role="status">
-                  Password updated.
-                </p>
-              ) : null}
-              <button type="submit" className="btn btn-primary">
-                Save password
+            {signOutError ? (
+              <p className="bartender-controls__error" role="alert">
+                {signOutError}
+              </p>
+            ) : null}
+            <div className="bartender-controls__actions">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={handleSignOut}
+                disabled={signingOut}
+              >
+                {signingOut ? "Signing out…" : "Sign out"}
               </button>
-            </form>
+            </div>
           </div>
         ) : null}
       </div>
