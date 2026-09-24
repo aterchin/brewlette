@@ -1,6 +1,8 @@
 import { sampleBeers } from "../data/sampleBeers.js";
 
 export const STORAGE_KEY = "brewlette.beers.v1";
+/** Spark-friendly cap — matches Firestore `beer_lists` document design. */
+export const MAX_BEERS = 20;
 
 function isValidBeer(beer) {
   if (!beer || typeof beer !== "object") return false;
@@ -62,7 +64,7 @@ export function normalizeBeerList(beers) {
     };
   });
 
-  return sortByNumber(normalized);
+  return sortByNumber(normalized).slice(0, MAX_BEERS);
 }
 
 export function sortByNumber(beers) {

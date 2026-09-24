@@ -20,7 +20,7 @@ Brewlette is a beer roulette / spinning-wheel web app for use on an iPad behind 
 | **Edit** | Bartender | Full edit page: sticky compact list (left) + form (right) |
 | **Controls** | Bartender | From Edit top bar: reset to demo sample list, sign out |
 
-Subtle bottom-right gear icon — outside the game column. Firebase Auth (email/password or Google) unlocks Edit; Spin Mode stays public. Edit is its **own page** (game hidden): sticky compact beer list on the left updates live as fields change; editable form on the right. **Controls** is a third screen for admin actions only — not a second beer-list editor. Beer list remains in `localStorage` until cloud sync exists.
+Subtle bottom-right gear icon — outside the game column. Firebase Auth (email/password or Google) unlocks Edit; Spin Mode stays public. Edit is its **own page** (game hidden): sticky compact beer list on the left updates live as fields change; editable form on the right. **Controls** is a third screen for admin actions only — not a second beer-list editor.
 
 ## Beer model
 
@@ -37,9 +37,19 @@ Subtle bottom-right gear icon — outside the game column. Firebase Auth (email/
 }
 ```
 
-List and wheel order by `number` ascending. Missing numbers (e.g. no #12) do not create empty wedges — only programmed beers appear.
+List and wheel order by `number` ascending. Missing numbers (e.g. no #12) do not create empty wedges — only programmed beers appear. Cap: **20 beers** per list.
 
-One live list only. Persistence key: `brewlette.beers.v1`. Corrupt or missing data → fall back to the built-in sample set in `src/data/sampleBeers.js` (demo tap board; slot 12 blank / gap OK). **Reset to demo** replaces the live list with that sample set. There is no separate editable defaults list.
+One live list per signed-in bartender. Source of truth: Firestore `beer_lists/{uid}`. Browser `localStorage` key `brewlette.beers.v1` is the device cache (what Spin Mode uses). On sign-in: load that user’s cloud list onto the device. Edits while signed in write local + cloud. Corrupt or missing data → fall back to the built-in sample set in `src/data/sampleBeers.js` (demo tap board; slot 12 blank / gap OK). **Reset to demo** replaces the live list with that sample set. There is no separate editable defaults list.
+
+### Firestore document (`beer_lists/{uid}`)
+
+| Field | Type | Notes |
+|-------|------|--------|
+| `userId` | string | Same as document id (the bartender’s Auth UID) |
+| `updatedAt` | timestamp | Server timestamp on write |
+| `beers` | array | Up to 20 beer maps (`id`, `number`, `name` required; optional `brewery`, `style`, `abv`, `description`, `surprise`) |
+
+Public read; write only if `request.auth.uid == uid`. Rules live in [`firestore.rules`](firestore.rules).
 
 ## Spin behavior
 
@@ -75,6 +85,7 @@ Record changes from the original build idea here so future chats don’t re-liti
 | 2026-09-22 | Admin actions live on a separate Controls screen (reset, change password) — not in the beer-list flow |
 | 2026-09-23 | One live beer list only; built-in `sampleBeers.js` is demo/reset fodder — no editable defaults list / `brewlette.defaults.v1` |
 | 2026-09-24 | Firebase Auth (email/password + Google) replaces soft PIN for Edit; Controls shows account + sign out; beers still local; Facebook dropped |
+| 2026-09-24 | Firestore `beer_lists/{uid}` per bartender + localStorage device cache; public read; owner-only writes; max 20 beers; field `surprise` |
 
 ## Backlog
 

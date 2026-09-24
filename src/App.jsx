@@ -11,14 +11,6 @@ import { useBeerList } from "./hooks/useBeerList.js";
 
 function App() {
   const {
-    beers,
-    addBeer,
-    updateBeer,
-    deleteBeer,
-    resetToDemo,
-    nextNumber,
-  } = useBeerList();
-  const {
     user,
     loading: authLoading,
     signIn,
@@ -26,6 +18,14 @@ function App() {
     signInWithGoogle,
     signOut,
   } = useAuth();
+  const {
+    beers,
+    addBeer,
+    updateBeer,
+    deleteBeer,
+    resetToDemo,
+    nextNumber,
+  } = useBeerList(user);
 
   const [editOpen, setEditOpen] = useState(false);
   const [unlockOpen, setUnlockOpen] = useState(false);

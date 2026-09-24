@@ -13,14 +13,15 @@ Follow [`.cursorrules`](../.cursorrules) for visual system (“Taproom Roulette�
 
 - React + Vite + JavaScript
 - HTML Canvas wheel; CSS design tokens in `src/styles/`
-- Beer list: `localStorage` via `src/utils/storage.js` only
+- Beer list: Firestore `beer_lists/{uid}` via `src/utils/beerListCloud.js`; `localStorage` device cache via `src/utils/storage.js`
+- Each signed-in bartender owns their list; max 20 beers; beer field is `surprise` (not `message`)
 - Firebase Auth (email/password + Google) for the Edit gate — `src/firebase.js`, `hooks/useAuth.js`
-- Static Vite site — **no** Next.js, custom backend, or Firestore yet (beers stay local)
+- Static Vite site — **no** Next.js or custom backend
 - Soft bartender PIN is retired; do not reintroduce client-only password storage
 
 ## Architecture
 
-Prefer: `components/`, `hooks/{useBeerList,useAuth}.js`, `utils/{storage,random,wheel}.js`, `data/sampleBeers.js`, `firebase.js`.
+Prefer: `components/`, `hooks/{useBeerList,useAuth}.js`, `utils/{storage,beerListCloud,random,wheel}.js`, `data/sampleBeers.js`, `firebase.js`, `firestore.rules`.
 
 Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, then animate.**
 
@@ -40,7 +41,7 @@ Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, 
 - Edit is its **own page** (game hidden): sticky compact list left, form right; list updates live as fields change
 - Firebase email/password or Google gates Edit; session persists via Firebase Auth
 - **Controls** screen (from edit top bar): Reset to demo, sign out — not a second beer editor
-- One live beer list (`brewlette.beers.v1`); `sampleBeers.js` is demo/reset only
+- One beer list per bartender (`beer_lists/{uid}` + `brewlette.beers.v1` device cache); `sampleBeers.js` is demo/reset only
 - Touch targets ≥ 44px (prefer 48px); hover never required
 - `prefers-reduced-motion`: shorter spin, still show result
 - Empty / 1-beer / corrupt storage / long names must not break

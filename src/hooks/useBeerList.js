@@ -1,6 +1,8 @@
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchBeerList, saveBeerList } from "../utils/beerListCloud.js";
 import {
   loadBeers,
+  MAX_BEERS,
   nextBeerNumber,
   normalizeBeerList,
   resetBeers,
@@ -18,12 +20,6 @@ function createId(name) {
   return `${slug || "beer"}-${suffix}`;
 }
 
-function persist(next) {
-  const sorted = sortByNumber(next);
-  saveBeers(sorted);
-  return sorted;
-}
-
 function parseSlotNumber(value) {
   if (typeof value === "number" && Number.isInteger(value) && value >= 1) {
     return value;
@@ -35,11 +31,55 @@ function parseSlotNumber(value) {
   return null;
 }
 
-export function useBeerList() {
-  const [beers, setBeers] = useState(() => loadBeers());
+function parseAbv(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const n = typeof value === "number" ? value : Number.parseFloat(String(value));
+  if (!Number.isFinite(n)) return null;
+  return n;
+}
 
-  const addBeer = useCallback((input) => {
+/**
+ * @param {import("firebase/auth").User | null} user - signed-in bartender, or null in Spin Mode
+ */
+export function useBeerList(user) {
+  const [beers, setBeers] = useState(() => loadBeers());
+  const uid = user?.uid ?? null;
+
+  // Bartender signed in → load their cloud list onto this device.
+  useEffect(() => {
+    if (!uid) return;
+
+    let cancelled = false;
+
+    fetchBeerList(uid)
+      .then((remote) => {
+        if (cancelled || !remote || remote.length === 0) return;
+        saveBeers(remote);
+        setBeers(remote);
+      })
+      .catch(() => {
+        // Offline / rules / missing doc — keep whatever is in localStorage.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [uid]);
+
+  // Always write localStorage; also write Firestore when signed in.
+  function persist(next) {
+    const sorted = sortByNumber(next).slice(0, MAX_BEERS);
+    saveBeers(sorted);
+    if (uid) {
+      saveBeerList(uid, sorted).catch(() => {});
+    }
+    return sorted;
+  }
+
+  function addBeer(input) {
     setBeers((current) => {
+      if (current.length >= MAX_BEERS) return current;
+
       const slot = parseSlotNumber(input.number) ?? nextBeerNumber(current);
       if (current.some((beer) => beer.number === slot)) {
         return current;
@@ -59,9 +99,9 @@ export function useBeerList() {
       if (!beer.name) return current;
       return persist([...current, beer]);
     });
-  }, []);
+  }
 
-  const updateBeer = useCallback((id, input) => {
+  function updateBeer(id, input) {
     setBeers((current) => {
       const existing = current.find((beer) => beer.id === id);
       if (!existing) return current;
@@ -94,16 +134,19 @@ export function useBeerList() {
       if (updated && !updated.name) return current;
       return persist(next);
     });
-  }, []);
+  }
 
-  const deleteBeer = useCallback((id) => {
+  function deleteBeer(id) {
     setBeers((current) => persist(current.filter((beer) => beer.id !== id)));
-  }, []);
+  }
 
-  const resetToDemo = useCallback(() => {
-    const next = resetBeers();
-    setBeers(normalizeBeerList(next));
-  }, []);
+  function resetToDemo() {
+    const next = normalizeBeerList(resetBeers());
+    setBeers(next);
+    if (uid) {
+      saveBeerList(uid, next).catch(() => {});
+    }
+  }
 
   return {
     beers,
@@ -113,11 +156,4 @@ export function useBeerList() {
     resetToDemo,
     nextNumber: nextBeerNumber(beers),
   };
-}
-
-function parseAbv(value) {
-  if (value === null || value === undefined || value === "") return null;
-  const n = typeof value === "number" ? value : Number.parseFloat(String(value));
-  if (!Number.isFinite(n)) return null;
-  return n;
 }

@@ -1,0 +1,20 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // One beer list per bartender: beer_lists/{uid}
+    // Anyone can read (Spin Mode uses the device cache; optional public fetch).
+    // Only that signed-in user can write their own doc.
+    match /beer_lists/{uid} {
+      allow read: if true;
+
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.userId == uid
+        && request.resource.data.beers is list
+        && request.resource.data.beers.size() <= 20;
+
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}

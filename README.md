@@ -8,10 +8,13 @@ Designed primarily for an iPad behind the bar — bartender maintains the tap li
 
 - React + Vite (static site)
 - HTML Canvas wheel
-- Browser `localStorage` for the beer list
+- Firestore `beer_lists/{uid}` — one tap list per bartender account
+- Browser `localStorage` as the device cache (Spin Mode)
 - Firebase Authentication (email/password + Google) for bartender Edit access
 
-Copy `.env` keys from Firebase project settings (`VITE_FIREBASE_*`). Enable Email/Password and Google in the Firebase console and create or allow a bartender account before signing in.
+Copy `.env.example` → `.env` and fill Firebase project settings (`VITE_FIREBASE_*`). Enable Email/Password and Google in the Firebase console and create bartender accounts before signing in.
+
+Deploy security rules from [`firestore.rules`](firestore.rules) (see `firebase.json`) so lists are publicly readable and only the owning bartender can write their doc.
 
 ## Develop
 
@@ -38,6 +41,7 @@ npm run preview
 - Crypto-backed random selection (animation lands on a pre-chosen winner)
 - Result reveal with optional surprise message
 - Optional “Remove this beer” after a spin
+- Cloud-synced tap list (one Firestore read per load; edits sync when signed in)
 - Bartender edit page (Firebase sign-in): sticky list + form; Controls for reset-to-demo and sign out
 - Touch-friendly controls and `prefers-reduced-motion` support
 
