@@ -78,6 +78,65 @@
   box-shadow: var(--shadow-sm);
 }
 
+.bartender-unlock__password {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
+.bartender-unlock__password input {
+  width: 100%;
+  padding-right: calc(var(--touch-min) + var(--space-2));
+}
+
+.bartender-unlock__visibility {
+  position: absolute;
+  top: 50%;
+  right: var(--space-1);
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: #4a4a4a;
+  cursor: pointer;
+}
+
+.bartender-unlock__visibility::before {
+  content: "";
+  display: block;
+  width: 22px;
+  height: 22px;
+  background-color: currentColor;
+  -webkit-mask: url("../assets/icons/eye.svg") center / contain no-repeat;
+  mask: url("../assets/icons/eye.svg") center / contain no-repeat;
+}
+
+.bartender-unlock__visibility[aria-pressed="true"]::before {
+  -webkit-mask-image: url("../assets/icons/eye-off.svg");
+  mask-image: url("../assets/icons/eye-off.svg");
+}
+
+.bartender-unlock__visibility:hover:not(:disabled),
+.bartender-unlock__visibility:focus-visible {
+  color: var(--color-ink);
+}
+
+.bartender-unlock__visibility:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.bartender-unlock__visibility:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .bartender-unlock__field input::placeholder {
   color: #8a8a8a;
   opacity: 1;

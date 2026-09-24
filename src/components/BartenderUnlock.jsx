@@ -23,6 +23,7 @@ function friendlyAuthError(error) {
 export default function BartenderUnlock({ open, onSignIn, onCancel }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const emailRef = useRef(null);
@@ -31,6 +32,7 @@ export default function BartenderUnlock({ open, onSignIn, onCancel }) {
     if (!open) return;
     setEmail("");
     setPassword("");
+    setShowPassword(false);
     setError("");
     setSubmitting(false);
     const id = window.requestAnimationFrame(() => {
@@ -113,17 +115,27 @@ export default function BartenderUnlock({ open, onSignIn, onCancel }) {
             htmlFor="bartender-password"
           >
             <span>Password</span>
-            <input
-              id="bartender-password"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              disabled={submitting}
-              onChange={(event) => {
-                setPassword(event.target.value);
-                if (error) setError("");
-              }}
-            />
+            <div className="bartender-unlock__password">
+              <input
+                id="bartender-password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                value={password}
+                disabled={submitting}
+                onChange={(event) => {
+                  setPassword(event.target.value);
+                  if (error) setError("");
+                }}
+              />
+              <button
+                type="button"
+                className="bartender-unlock__visibility"
+                onClick={() => setShowPassword((visible) => !visible)}
+                disabled={submitting}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+              />
+            </div>
           </label>
           {error ? (
             <p className="bartender-unlock__error" role="alert">
