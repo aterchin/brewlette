@@ -33,7 +33,6 @@ export default function BartenderUnlock({
   open,
   onSignIn,
   onSignInGoogle,
-  onSignInFacebook,
   onCancel,
 }) {
   const [email, setEmail] = useState("");
@@ -42,7 +41,6 @@ export default function BartenderUnlock({
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const emailRef = useRef(null);
-  const hasOauth = Boolean(onSignInGoogle || onSignInFacebook);
 
   useEffect(() => {
     if (!open) return;
@@ -96,19 +94,6 @@ export default function BartenderUnlock({
     setError("");
     try {
       await onSignInGoogle();
-    } catch (err) {
-      const message = friendlyAuthError(err);
-      if (message) setError(message);
-      setSubmitting(false);
-    }
-  }
-
-  async function handleFacebook() {
-    if (submitting || !onSignInFacebook) return;
-    setSubmitting(true);
-    setError("");
-    try {
-      await onSignInFacebook();
     } catch (err) {
       const message = friendlyAuthError(err);
       if (message) setError(message);
@@ -192,31 +177,19 @@ export default function BartenderUnlock({
             >
               {submitting ? "Signing in…" : "Sign in"}
             </button>
-            {hasOauth ? (
+            {onSignInGoogle ? (
               <>
                 <p className="bartender-unlock__divider" role="separator">
                   <span>or</span>
                 </p>
-                {onSignInGoogle ? (
-                  <button
-                    type="button"
-                    className="btn btn-ghost bartender-unlock__oauth bartender-unlock__oauth--google"
-                    onClick={handleGoogle}
-                    disabled={submitting}
-                  >
-                    Continue with Google
-                  </button>
-                ) : null}
-                {onSignInFacebook ? (
-                  <button
-                    type="button"
-                    className="btn btn-ghost bartender-unlock__oauth bartender-unlock__oauth--facebook"
-                    onClick={handleFacebook}
-                    disabled={submitting}
-                  >
-                    Continue with Facebook
-                  </button>
-                ) : null}
+                <button
+                  type="button"
+                  className="btn btn-ghost bartender-unlock__oauth bartender-unlock__oauth--google"
+                  onClick={handleGoogle}
+                  disabled={submitting}
+                >
+                  Continue with Google
+                </button>
               </>
             ) : null}
             <button

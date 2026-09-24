@@ -23,7 +23,6 @@ function App() {
     loading: authLoading,
     signIn,
     signInWithGoogle,
-    signInWithFacebook,
     signOut,
   } = useAuth();
 
@@ -79,11 +78,6 @@ function App() {
 
   async function handleSignInGoogle() {
     await signInWithGoogle();
-    openEditPage();
-  }
-
-  async function handleSignInFacebook() {
-    await signInWithFacebook();
     openEditPage();
   }
 
@@ -154,7 +148,6 @@ function App() {
         open={unlockOpen}
         onSignIn={handleSignIn}
         onSignInGoogle={handleSignInGoogle}
-        onSignInFacebook={handleSignInFacebook}
         onCancel={() => setUnlockOpen(false)}
       />
     </div>
