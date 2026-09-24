@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import {
+  GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut as firebaseSignOut,
 } from "firebase/auth";
 import { auth } from "../firebase.js";
 
-/** Firebase Auth state + email/password helpers for the bartender Edit gate. */
+const googleProvider = new GoogleAuthProvider();
+
+/** Firebase Auth state + sign-in helpers for the bartender Edit gate. */
 export function useAuth() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,9 +26,13 @@ export function useAuth() {
     await signInWithEmailAndPassword(auth, email.trim(), password);
   }
 
+  async function signInWithGoogle() {
+    await signInWithPopup(auth, googleProvider);
+  }
+
   async function signOut() {
     await firebaseSignOut(auth);
   }
 
-  return { user, loading, signIn, signOut };
+  return { user, loading, signIn, signInWithGoogle, signOut };
 }

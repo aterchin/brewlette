@@ -165,3 +165,38 @@
 .bartender-unlock__actions .btn {
   width: 100%;
 }
+
+.bartender-unlock__divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+  color: #5a5a5a;
+  font-size: var(--font-size-sm);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.bartender-unlock__divider::before,
+.bartender-unlock__divider::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  background: var(--color-border-chunky);
+}
+
+.bartender-unlock__oauth {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.bartender-unlock__oauth--google::before {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: url("../assets/icons/google.svg") center / contain no-repeat;
+  flex-shrink: 0;
+}

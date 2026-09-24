@@ -17,10 +17,24 @@ function friendlyAuthError(error) {
   if (code === "auth/network-request-failed") {
     return "Network error. Try again.";
   }
+  if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") {
+    return "";
+  }
+  if (code === "auth/popup-blocked") {
+    return "Popup blocked. Allow popups and try again.";
+  }
+  if (code === "auth/account-exists-with-different-credential") {
+    return "Use the sign-in method you used before.";
+  }
   return "Couldn’t sign in.";
 }
 
-export default function BartenderUnlock({ open, onSignIn, onCancel }) {
+export default function BartenderUnlock({
+  open,
+  onSignIn,
+  onSignInGoogle,
+  onCancel,
+}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -70,6 +84,19 @@ export default function BartenderUnlock({ open, onSignIn, onCancel }) {
       setPassword("");
     } catch (err) {
       setError(friendlyAuthError(err));
+      setSubmitting(false);
+    }
+  }
+
+  async function handleGoogle() {
+    if (submitting || !onSignInGoogle) return;
+    setSubmitting(true);
+    setError("");
+    try {
+      await onSignInGoogle();
+    } catch (err) {
+      const message = friendlyAuthError(err);
+      if (message) setError(message);
       setSubmitting(false);
     }
   }
@@ -150,6 +177,21 @@ export default function BartenderUnlock({ open, onSignIn, onCancel }) {
             >
               {submitting ? "Signing in…" : "Sign in"}
             </button>
+            {onSignInGoogle ? (
+              <>
+                <p className="bartender-unlock__divider" role="separator">
+                  <span>or</span>
+                </p>
+                <button
+                  type="button"
+                  className="btn btn-ghost bartender-unlock__oauth bartender-unlock__oauth--google"
+                  onClick={handleGoogle}
+                  disabled={submitting}
+                >
+                  Continue with Google
+                </button>
+              </>
+            ) : null}
             <button
               type="button"
               className="btn btn-ghost"

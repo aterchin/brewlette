@@ -18,7 +18,8 @@ function App() {
     resetToDemo,
     nextNumber,
   } = useBeerList();
-  const { user, loading: authLoading, signIn, signOut } = useAuth();
+  const { user, loading: authLoading, signIn, signInWithGoogle, signOut } =
+    useAuth();
 
   const [editOpen, setEditOpen] = useState(false);
   const [unlockOpen, setUnlockOpen] = useState(false);
@@ -67,6 +68,11 @@ function App() {
 
   async function handleSignIn(email, password) {
     await signIn(email, password);
+    openEditPage();
+  }
+
+  async function handleSignInGoogle() {
+    await signInWithGoogle();
     openEditPage();
   }
 
@@ -136,6 +142,7 @@ function App() {
       <BartenderUnlock
         open={unlockOpen}
         onSignIn={handleSignIn}
+        onSignInGoogle={handleSignInGoogle}
         onCancel={() => setUnlockOpen(false)}
       />
     </div>
