@@ -5,6 +5,7 @@ import {
   MAX_BEERS,
   nextBeerNumber,
   normalizeBeerList,
+  parseBeerNumber,
   resetBeers,
   saveBeers,
   sortByNumber,
@@ -18,17 +19,6 @@ function createId(name) {
     .slice(0, 24);
   const suffix = Math.random().toString(36).slice(2, 8);
   return `${slug || "beer"}-${suffix}`;
-}
-
-function parseSlotNumber(value) {
-  if (typeof value === "number" && Number.isInteger(value) && value >= 1) {
-    return value;
-  }
-  if (typeof value === "string" && value.trim() !== "") {
-    const n = Number.parseInt(value, 10);
-    if (Number.isInteger(n) && n >= 1) return n;
-  }
-  return null;
 }
 
 function parseAbv(value) {
@@ -80,8 +70,8 @@ export function useBeerList(user) {
     setBeers((current) => {
       if (current.length >= MAX_BEERS) return current;
 
-      const slot = parseSlotNumber(input.number) ?? nextBeerNumber(current);
-      if (current.some((beer) => beer.number === slot)) {
+      const slot = parseBeerNumber(input.number) ?? nextBeerNumber(current);
+      if (slot == null || current.some((beer) => beer.number === slot)) {
         return current;
       }
 
@@ -108,7 +98,7 @@ export function useBeerList(user) {
 
       const slot =
         input.number !== undefined
-          ? parseSlotNumber(input.number)
+          ? parseBeerNumber(input.number)
           : existing.number;
       if (slot == null) return current;
 

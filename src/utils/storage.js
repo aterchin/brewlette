@@ -17,40 +17,49 @@ function isValidBeer(beer) {
   return abvOk;
 }
 
-function parseNumber(value) {
-  if (typeof value === "number" && Number.isInteger(value) && value >= 1) {
-    return value;
+/** Whole number in 1..MAX_BEERS, or null. */
+export function parseBeerNumber(value) {
+  let n = null;
+  if (typeof value === "number") {
+    n = value;
+  } else if (typeof value === "string" && value.trim() !== "") {
+    n = Number.parseInt(value, 10);
   }
-  if (typeof value === "string" && value.trim() !== "") {
-    const n = Number.parseInt(value, 10);
-    if (Number.isInteger(n) && n >= 1) return n;
-  }
+  if (Number.isInteger(n) && n >= 1 && n <= MAX_BEERS) return n;
   return null;
 }
 
 /**
- * Normalize beers and ensure each has a unique positive integer `number`.
- * Missing/invalid numbers get the next free slot; duplicates are remapped.
+ * Normalize beers and ensure each has a unique `number` in 1..MAX_BEERS.
+ * Missing/invalid/out-of-range numbers get the next free slot; duplicates are remapped.
  */
 export function normalizeBeerList(beers) {
   const used = new Set();
   let nextFree = 1;
 
+  function isTaken(n) {
+    return used.has(n) || reserved.has(n);
+  }
+
   function claim(preferred) {
     let n = preferred;
     if (n == null || used.has(n)) {
-      while (used.has(nextFree)) nextFree += 1;
+      while (isTaken(nextFree)) nextFree += 1;
       n = nextFree;
     }
     used.add(n);
-    while (used.has(nextFree)) nextFree += 1;
     return n;
   }
 
-  const normalized = beers.filter(isValidBeer).map((beer, index) => {
+  const valid = beers.filter(isValidBeer).slice(0, MAX_BEERS);
+  const reserved = new Set(
+    valid.map((beer) => parseBeerNumber(beer.number)).filter((n) => n != null),
+  );
+
+  const normalized = valid.map((beer) => {
     const abv =
       typeof beer.abv === "number" && Number.isFinite(beer.abv) ? beer.abv : null;
-    const preferred = parseNumber(beer.number) ?? index + 1;
+    const preferred = parseBeerNumber(beer.number);
 
     return {
       id: String(beer.id),
@@ -64,16 +73,26 @@ export function normalizeBeerList(beers) {
     };
   });
 
-  return sortByNumber(normalized).slice(0, MAX_BEERS);
+  return sortByNumber(normalized);
 }
 
 export function sortByNumber(beers) {
   return [...beers].sort((a, b) => a.number - b.number || a.name.localeCompare(b.name));
 }
 
+/**
+ * Suggested number for a new beer: one past the highest, or the lowest gap
+ * once the top slot is taken. Null when every slot in 1..MAX_BEERS is used.
+ */
 export function nextBeerNumber(beers) {
   if (!beers.length) return 1;
-  return Math.max(...beers.map((b) => b.number)) + 1;
+  const used = new Set(beers.map((b) => b.number));
+  const afterHighest = Math.max(...used) + 1;
+  if (afterHighest <= MAX_BEERS) return afterHighest;
+  for (let n = 1; n <= MAX_BEERS; n += 1) {
+    if (!used.has(n)) return n;
+  }
+  return null;
 }
 
 /**

@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import BeerForm from "./BeerForm.jsx";
 import ConfirmDialog from "./ConfirmDialog.jsx";
+import { MAX_BEERS } from "../utils/storage.js";
 import "./BeerEditor.css";
 
 /**
@@ -29,6 +30,7 @@ export default function BeerListWorkspace({
     (showAdd ? null : beers[0]) ||
     null;
   const isFormOpen = Boolean(editingBeer) || showAdd;
+  const isListFull = beers.length >= MAX_BEERS;
 
   const usedNumbers = beers
     .filter((beer) => !editingBeer || beer.id !== editingBeer.id)
@@ -119,9 +121,16 @@ export default function BeerListWorkspace({
               className="btn btn-sm btn-primary"
               onClick={startAdd}
               aria-pressed={showAdd}
+              disabled={isListFull}
+              aria-describedby={isListFull ? "beer-list-full" : undefined}
             >
               Add beer
             </button>
+            {isListFull ? (
+              <p id="beer-list-full" className="beer-editor__limit">
+                List is full ({MAX_BEERS} max). Delete a beer to add another.
+              </p>
+            ) : null}
           </div>
 
           <ul className="beer-editor__nav">

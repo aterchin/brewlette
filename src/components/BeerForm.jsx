@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { MAX_BEERS } from "../utils/storage.js";
 import "./BeerForm.css";
 
 const emptyForm = {
@@ -64,9 +65,15 @@ export default function BeerForm({
       return;
     }
 
-    const slot = Number.parseInt(String(form.number).trim(), 10);
-    if (!Number.isInteger(slot) || slot < 1) {
-      setError("Number must be a whole number 1 or higher.");
+    const rawNumber = String(form.number).trim();
+    const slot = Number(rawNumber);
+    if (
+      rawNumber === "" ||
+      !Number.isInteger(slot) ||
+      slot < 1 ||
+      slot > MAX_BEERS
+    ) {
+      setError(`Number must be a whole number from 1 to ${MAX_BEERS}.`);
       return;
     }
 
@@ -110,7 +117,7 @@ export default function BeerForm({
         label="Number"
         htmlFor="beer-number"
         required
-        hint="Tap / slot number. Gaps are fine (e.g. skip 12)."
+        hint={`Tap / slot number, 1–${MAX_BEERS}. Gaps are fine (e.g. skip 12).`}
       >
         <input
           id="beer-number"
