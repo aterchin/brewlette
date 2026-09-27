@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import BackButton from "./BackButton.jsx";
 import BeerForm from "./BeerForm.jsx";
 import ConfirmDialog from "./ConfirmDialog.jsx";
 import { MAX_BEERS } from "../utils/storage.js";
@@ -16,6 +17,8 @@ export default function BeerListWorkspace({
   onUpdate,
   onDelete,
   topbarActions,
+  onBack,
+  backLabel = "Back",
   idleTitle = "Pick a beer",
   idleCopy = "Select a beer from the list to edit it, or add a new one. The list updates as you type.",
   emptyListCopy,
@@ -104,6 +107,7 @@ export default function BeerListWorkspace({
   return (
     <section className="beer-editor" aria-label={title}>
       <header className="beer-editor__topbar">
+        {onBack ? <BackButton onClick={onBack} label={backLabel} /> : null}
         <div className="beer-editor__topbar-copy">
           <h2>{title}</h2>
           <p>{subtitle}</p>
@@ -217,7 +221,7 @@ export default function BeerListWorkspace({
                     closeForm();
                   }
                 }}
-                onCancel={closeForm}
+                onCancel={editingBeer ? undefined : closeForm}
                 onDelete={
                   editingBeer ? () => requestDelete(editingBeer) : undefined
                 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import BartenderControls from "./BartenderControls.jsx";
 import BeerListWorkspace from "./BeerListWorkspace.jsx";
+import GearIcon from "./GearIcon.jsx";
 
 export default function BeerEditor({
   beers,
@@ -35,25 +36,18 @@ export default function BeerEditor({
       onAdd={onAdd}
       onUpdate={onUpdate}
       onDelete={onDelete}
+      onBack={onClose}
+      backLabel="Back to wheel"
       topbarActions={
-        <>
-          <button
-            type="button"
-            className="btn btn-sm btn-ghost"
-            onClick={() => setView("controls")}
-          >
-            Controls
-          </button>
-          {onClose ? (
-            <button
-              type="button"
-              className="btn btn-sm btn-ghost"
-              onClick={onClose}
-            >
-              Done √
-            </button>
-          ) : null}
-        </>
+        <button
+          type="button"
+          className="beer-editor__gear"
+          onClick={() => setView("controls")}
+          aria-label="Controls"
+          title="Controls"
+        >
+          <GearIcon size={26} />
+        </button>
       }
     />
   );

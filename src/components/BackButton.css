@@ -1,0 +1,15 @@
+.back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  color: var(--color-marquee);
+  border-radius: var(--radius-sm);
+}
+
+.back-btn:hover,
+.back-btn:focus-visible {
+  color: var(--color-accent);
+}

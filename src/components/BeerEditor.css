@@ -17,10 +17,13 @@
 
 .beer-editor__topbar {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-3);
+}
+
+.beer-editor__topbar-copy {
+  flex: 1;
+  min-width: 0;
 }
 
 .beer-editor__topbar-copy h2 {
@@ -40,8 +43,26 @@
 .beer-editor__topbar-actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-2);
   flex-shrink: 0;
+}
+
+.beer-editor__gear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  color: var(--color-marquee);
+  opacity: 0.7;
+  border-radius: var(--radius-sm);
+}
+
+.beer-editor__gear:hover,
+.beer-editor__gear:focus-visible {
+  opacity: 1;
+  color: var(--color-accent);
 }
 
 .beer-editor__workspace {

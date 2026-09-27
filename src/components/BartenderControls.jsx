@@ -1,4 +1,5 @@
 import { useState } from "react";
+import BackButton from "./BackButton.jsx";
 import ConfirmDialog from "./ConfirmDialog.jsx";
 import "./BartenderControls.css";
 
@@ -32,18 +33,10 @@ export default function BartenderControls({
   return (
     <section className="bartender-controls" aria-label="Bartender controls">
       <header className="bartender-controls__topbar">
+        <BackButton onClick={onBack} label="Back to beer list" />
         <div className="bartender-controls__topbar-copy">
           <h2>Controls</h2>
           <p>Administrative settings</p>
-        </div>
-        <div className="bartender-controls__topbar-actions">
-          <button
-            type="button"
-            className="btn btn-sm btn-ghost"
-            onClick={onBack}
-          >
-            Done √
-          </button>
         </div>
       </header>
 

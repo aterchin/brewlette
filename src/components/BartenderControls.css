@@ -17,10 +17,13 @@
 
 .bartender-controls__topbar {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-3);
+}
+
+.bartender-controls__topbar-copy {
+  flex: 1;
+  min-width: 0;
 }
 
 .bartender-controls__topbar-copy h2 {
@@ -35,12 +38,6 @@
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   font-size: var(--font-size-sm);
-}
-
-.bartender-controls__topbar-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
 }
 
 .bartender-controls__body {
