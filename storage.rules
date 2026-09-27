@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Marquee photos: marquee_scans/{uid}/{scanId}/photo-1 | photo-2
+    // Only the owner can read, upload, or delete. Images only, under 8MB.
+    match /marquee_scans/{uid}/{scanId}/{fileName} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+
+      allow write: if request.auth != null
+        && request.auth.uid == uid
+        && fileName.matches('photo-[12]')
+        && request.resource.size < 8 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp|heic)');
+    }
+  }
+}
