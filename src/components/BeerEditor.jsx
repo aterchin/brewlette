@@ -43,7 +43,7 @@ export default function BeerEditor({
               className="btn btn-sm btn-ghost"
               onClick={onClose}
             >
-              Back to wheel
+              Done √
             </button>
           ) : null}
           <button

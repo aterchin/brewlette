@@ -24,7 +24,10 @@ export default function BeerListWorkspace({
   const [draft, setDraft] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
 
-  const editingBeer = beers.find((beer) => beer.id === editingId) || null;
+  const editingBeer =
+    beers.find((beer) => beer.id === editingId) ||
+    (showAdd ? null : beers[0]) ||
+    null;
   const isFormOpen = Boolean(editingBeer) || showAdd;
 
   const usedNumbers = beers
@@ -198,10 +201,12 @@ export default function BeerListWorkspace({
                 onSubmit={(values) => {
                   if (editingBeer) {
                     onUpdate(editingBeer.id, values);
+                    setEditingId(editingBeer.id);
+                    setDraft(null);
                   } else {
                     onAdd(values);
+                    closeForm();
                   }
-                  closeForm();
                 }}
                 onCancel={closeForm}
                 onDelete={
