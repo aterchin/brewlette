@@ -43,7 +43,7 @@ export function useBeerList(user) {
 
     fetchBeerList(uid)
       .then((remote) => {
-        if (cancelled || !remote || remote.length === 0) return;
+        if (cancelled || !remote) return;
         saveBeers(remote);
         setBeers(remote);
       })
@@ -130,6 +130,10 @@ export function useBeerList(user) {
     setBeers((current) => persist(current.filter((beer) => beer.id !== id)));
   }
 
+  function deleteAllBeers() {
+    setBeers(persist([]));
+  }
+
   function resetToDemo() {
     const next = normalizeBeerList(resetBeers());
     setBeers(next);
@@ -143,6 +147,7 @@ export function useBeerList(user) {
     addBeer,
     updateBeer,
     deleteBeer,
+    deleteAllBeers,
     resetToDemo,
     nextNumber: nextBeerNumber(beers),
   };

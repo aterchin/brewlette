@@ -104,7 +104,7 @@ export function cloneSampleBeers() {
 
 /**
  * Load beers from localStorage.
- * Falls back to the sample set when missing or malformed.
+ * Falls back to the sample set when missing or malformed; a saved empty list stays empty.
  */
 export function loadBeers() {
   try {
@@ -114,8 +114,11 @@ export function loadBeers() {
     }
 
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
+    if (!Array.isArray(parsed)) {
       return cloneSampleBeers();
+    }
+    if (parsed.length === 0) {
+      return [];
     }
 
     const beers = normalizeBeerList(parsed);

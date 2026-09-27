@@ -38,7 +38,7 @@ Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, 
 ## UX invariants
 
 - Wheel-first Spin Mode; Edit entry is a bottom-right gear icon outside the game column
-- Edit is its **own page** (game hidden): sticky compact list left, form right; list updates live as fields change
+- Edit is its **own page** (game hidden): full-width beer list; tapping a beer or Add opens a full-screen form (X cancel left of Save check) — no split view
 - Firebase email/password or Google gates Edit; session persists via Firebase Auth
 - **Controls** screen (from edit top bar): Reset to demo, sign out — not a second beer editor
 - One beer list per bartender (`beer_lists/{uid}` + `brewlette.beers.v1` device cache); `sampleBeers.js` is demo/reset only
@@ -47,7 +47,6 @@ Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, 
 - Empty / 1-beer / corrupt storage / long names must not break
 - Optional “Remove this beer” after spin — never auto-remove
 - Beers have bartender-assigned `number` (unique, gaps OK); list/wheel sort by number — not array index / up-down reorder
-- Edit page: pick from sticky list or Add; form on the right
 - No editable defaults list — bartenders maintain one list only
 
 ## Product docs

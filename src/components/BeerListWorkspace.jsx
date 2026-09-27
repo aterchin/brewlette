@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import BackButton from "./BackButton.jsx";
 import BeerForm from "./BeerForm.jsx";
 import ConfirmDialog from "./ConfirmDialog.jsx";
@@ -6,7 +6,7 @@ import { MAX_BEERS } from "../utils/storage.js";
 import "./BeerEditor.css";
 
 /**
- * Sticky list + form workspace for the live beer list.
+ * Beer list page; picking a beer (or Add) swaps in a full-screen form.
  */
 export default function BeerListWorkspace({
   title,
@@ -16,22 +16,18 @@ export default function BeerListWorkspace({
   onAdd,
   onUpdate,
   onDelete,
+  onDeleteAll,
   topbarActions,
   onBack,
   backLabel = "Back",
-  idleTitle = "Pick a beer",
-  idleCopy = "Select a beer from the list to edit it, or add a new one. The list updates as you type.",
   emptyListCopy,
 }) {
   const [editingId, setEditingId] = useState(null);
   const [showAdd, setShowAdd] = useState(false);
-  const [draft, setDraft] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
+  const [deleteAllOpen, setDeleteAllOpen] = useState(false);
 
-  const editingBeer =
-    beers.find((beer) => beer.id === editingId) ||
-    (showAdd ? null : beers[0]) ||
-    null;
+  const editingBeer = beers.find((beer) => beer.id === editingId) || null;
   const isFormOpen = Boolean(editingBeer) || showAdd;
   const isListFull = beers.length >= MAX_BEERS;
 
@@ -39,34 +35,21 @@ export default function BeerListWorkspace({
     .filter((beer) => !editingBeer || beer.id !== editingBeer.id)
     .map((beer) => beer.number);
 
-  const handleDraftChange = useCallback((nextDraft) => {
-    setDraft(nextDraft);
-  }, []);
-
   function closeForm() {
     setEditingId(null);
     setShowAdd(false);
-    setDraft(null);
   }
 
   function selectBeer(id) {
     setShowAdd(false);
     setEditingId(id);
-    setDraft(null);
+    window.scrollTo(0, 0);
   }
 
   function startAdd() {
     setEditingId(null);
     setShowAdd(true);
-    setDraft(null);
-  }
-
-  function requestDelete(beer) {
-    setPendingDelete(beer);
-  }
-
-  function cancelDelete() {
-    setPendingDelete(null);
+    window.scrollTo(0, 0);
   }
 
   function confirmDelete() {
@@ -76,165 +59,110 @@ export default function BeerListWorkspace({
     closeForm();
   }
 
-  function displayForBeer(beer) {
-    if (editingBeer && beer.id === editingBeer.id && draft) {
-      const number =
-        draft.number?.trim() !== "" ? draft.number.trim() : beer.number;
-      const name = draft.name?.trim() !== "" ? draft.name.trim() : beer.name;
-      const brewery =
-        draft.brewery != null ? draft.brewery.trim() : beer.brewery;
-      const style = draft.style != null ? draft.style.trim() : beer.style;
-      return { number, name, brewery, style };
-    }
-    return {
-      number: beer.number,
-      name: beer.name,
-      brewery: beer.brewery,
-      style: beer.style,
-    };
-  }
-
-  const addPreview =
-    showAdd && draft
-      ? {
-          number: draft.number?.trim() || nextNumber,
-          name: draft.name?.trim() || "New beer",
-          brewery: draft.brewery?.trim() || "",
-          style: draft.style?.trim() || "",
-        }
-      : null;
-
   return (
     <section className="beer-editor" aria-label={title}>
-      <header className="beer-editor__topbar">
-        {onBack ? <BackButton onClick={onBack} label={backLabel} /> : null}
-        <div className="beer-editor__topbar-copy">
-          <h2>{title}</h2>
-          <p>{subtitle}</p>
+      {isFormOpen ? (
+        <div className="beer-editor__panel">
+          <BeerForm
+            key={editingBeer ? editingBeer.id : "add"}
+            title={editingBeer ? "Edit" : "Add"}
+            initial={editingBeer || undefined}
+            defaultNumber={editingBeer ? undefined : nextNumber}
+            usedNumbers={usedNumbers}
+            submitLabel={editingBeer ? "Save changes" : "Add beer"}
+            cancelLabel="Cancel"
+            onSubmit={(values) => {
+              if (editingBeer) {
+                onUpdate(editingBeer.id, values);
+              } else {
+                onAdd(values);
+              }
+              closeForm();
+            }}
+            onCancel={closeForm}
+            onDelete={
+              editingBeer ? () => setPendingDelete(editingBeer) : undefined
+            }
+          />
         </div>
-        {topbarActions ? (
-          <div className="beer-editor__topbar-actions">{topbarActions}</div>
-        ) : null}
-      </header>
-
-      <div className="beer-editor__workspace">
-        <aside className="beer-editor__sidebar">
-          <div className="beer-editor__sidebar-actions">
-            <button
-              type="button"
-              className="btn btn-sm btn-primary"
-              onClick={startAdd}
-              aria-pressed={showAdd}
-              disabled={isListFull}
-              aria-describedby={isListFull ? "beer-list-full" : undefined}
-            >
-              Add beer
-            </button>
-            {isListFull ? (
-              <p id="beer-list-full" className="beer-editor__limit">
-                List is full ({MAX_BEERS} max). Delete a beer to add another.
-              </p>
+      ) : (
+        <>
+          <header className="beer-editor__topbar">
+            {onBack ? <BackButton onClick={onBack} label={backLabel} /> : null}
+            <div className="beer-editor__topbar-copy">
+              <h2>{title}</h2>
+              <p>{subtitle}</p>
+            </div>
+            {topbarActions ? (
+              <div className="beer-editor__topbar-actions">{topbarActions}</div>
             ) : null}
-          </div>
+          </header>
 
-          <ul className="beer-editor__nav">
-            {beers.length === 0 && !addPreview ? (
-              <li className="beer-editor__nav-empty">
-                <p>{emptyListCopy || "No beers yet. Add one to get started."}</p>
-              </li>
-            ) : null}
+          <div className="beer-editor__list">
+            <div className="beer-editor__list-actions">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={startAdd}
+                disabled={isListFull}
+                aria-describedby={isListFull ? "beer-list-full" : undefined}
+              >
+                Add beer
+              </button>
+              {isListFull ? (
+                <p id="beer-list-full" className="beer-editor__limit">
+                  List is full ({MAX_BEERS} max). Delete a beer to add another.
+                </p>
+              ) : null}
+            </div>
 
-            {beers.map((beer) => {
-              const display = displayForBeer(beer);
-              const selected = editingBeer?.id === beer.id;
-              return (
+            <ul className="beer-editor__nav">
+              {beers.length === 0 ? (
+                <li className="beer-editor__nav-empty">
+                  <p>{emptyListCopy || "No beers yet. Add one to get started."}</p>
+                </li>
+              ) : null}
+
+              {beers.map((beer) => (
                 <li key={beer.id}>
                   <button
                     type="button"
-                    className={`beer-editor__nav-item${selected ? " beer-editor__nav-item--selected" : ""}`}
+                    className="beer-editor__nav-item"
                     onClick={() => selectBeer(beer.id)}
-                    aria-current={selected ? "true" : undefined}
                   >
                     <span className="beer-editor__nav-number" aria-hidden="true">
-                      #{display.number}
+                      #{beer.number}
                     </span>
                     <span className="beer-editor__nav-copy">
                       <strong>
                         <span className="visually-hidden">
-                          Number {display.number}.{" "}
+                          Number {beer.number}.{" "}
                         </span>
-                        {display.name}
+                        {beer.name}
                       </strong>
                       <span>
-                        {[display.brewery, display.style]
+                        {[beer.brewery, beer.style]
                           .filter(Boolean)
                           .join(" · ") || "No details"}
                       </span>
                     </span>
                   </button>
                 </li>
-              );
-            })}
+              ))}
+            </ul>
 
-            {addPreview ? (
-              <li>
-                <div
-                  className="beer-editor__nav-item beer-editor__nav-item--selected beer-editor__nav-item--draft"
-                  aria-current="true"
-                >
-                  <span className="beer-editor__nav-number" aria-hidden="true">
-                    #{addPreview.number}
-                  </span>
-                  <span className="beer-editor__nav-copy">
-                    <strong>{addPreview.name}</strong>
-                    <span>
-                      {[addPreview.brewery, addPreview.style]
-                        .filter(Boolean)
-                        .join(" · ") || "Draft"}
-                    </span>
-                  </span>
-                </div>
-              </li>
+            {onDeleteAll && beers.length > 0 ? (
+              <button
+                type="button"
+                className="btn btn-danger beer-editor__delete-all"
+                onClick={() => setDeleteAllOpen(true)}
+              >
+                Delete all beers
+              </button>
             ) : null}
-          </ul>
-        </aside>
-
-        <div className="beer-editor__detail">
-          {isFormOpen ? (
-            <div className="beer-editor__panel">
-              <BeerForm
-                key={editingBeer ? editingBeer.id : "add"}
-                title={editingBeer ? "Edit" : "Add"}
-                initial={editingBeer || undefined}
-                defaultNumber={editingBeer ? undefined : nextNumber}
-                usedNumbers={usedNumbers}
-                submitLabel={editingBeer ? "Save changes" : "Add beer"}
-                cancelLabel="Cancel"
-                onDraftChange={handleDraftChange}
-                onSubmit={(values) => {
-                  if (editingBeer) {
-                    onUpdate(editingBeer.id, values);
-                    setEditingId(editingBeer.id);
-                    setDraft(null);
-                  } else {
-                    onAdd(values);
-                    closeForm();
-                  }
-                }}
-                onCancel={editingBeer ? undefined : closeForm}
-                onDelete={
-                  editingBeer ? () => requestDelete(editingBeer) : undefined
-                }
-              />
-            </div>
-          ) : (
-            <div className="beer-editor__idle">
-              <h3>{idleTitle}</h3>
-              <p>{idleCopy}</p>
-            </div>
-          )}
-        </div>
-      </div>
+          </div>
+        </>
+      )}
 
       <ConfirmDialog
         open={Boolean(pendingDelete)}
@@ -246,7 +174,19 @@ export default function BeerListWorkspace({
         }
         confirmLabel="Delete"
         onConfirm={confirmDelete}
-        onCancel={cancelDelete}
+        onCancel={() => setPendingDelete(null)}
+      />
+
+      <ConfirmDialog
+        open={deleteAllOpen}
+        title="Delete all beers?"
+        message={`Remove all ${beers.length} beer${beers.length === 1 ? "" : "s"} from your list? This can't be undone.`}
+        confirmLabel="Delete all"
+        onConfirm={() => {
+          onDeleteAll();
+          setDeleteAllOpen(false);
+        }}
+        onCancel={() => setDeleteAllOpen(false)}
       />
     </section>
   );

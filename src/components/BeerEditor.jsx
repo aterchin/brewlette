@@ -8,6 +8,7 @@ export default function BeerEditor({
   onAdd,
   onUpdate,
   onDelete,
+  onDeleteAll,
   onReset,
   nextNumber,
   onClose,
@@ -36,6 +37,7 @@ export default function BeerEditor({
       onAdd={onAdd}
       onUpdate={onUpdate}
       onDelete={onDelete}
+      onDeleteAll={onDeleteAll}
       onBack={onClose}
       backLabel="Back to wheel"
       topbarActions={

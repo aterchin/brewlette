@@ -17,10 +17,10 @@ Brewlette is a beer roulette / spinning-wheel web app for use on an iPad behind 
 | Mode | Who | Job |
 |------|-----|-----|
 | **Spin** (default) | Customers / bar floor | Dominated by the canvas wheel + Spin; theatrical result reveal |
-| **Edit** | Bartender | Full edit page: sticky compact list (left) + form (right) |
+| **Edit** | Bartender | Full edit page: full-width beer list; tap a beer or Add for a full-screen form |
 | **Controls** | Bartender | From Edit top bar: reset to demo sample list, sign out |
 
-Subtle bottom-right gear icon — outside the game column. Firebase Auth (email/password or Google) unlocks Edit; Spin Mode stays public. Edit is its **own page** (game hidden): sticky compact beer list on the left updates live as fields change; editable form on the right. **Controls** is a third screen for admin actions only — not a second beer-list editor.
+Subtle bottom-right gear icon — outside the game column. Firebase Auth (email/password or Google) unlocks Edit; Spin Mode stays public. Edit is its **own page** (game hidden): a full-width beer list; tapping a beer or Add replaces it with a full-screen form (X cancels, check saves, both return to the list). **Controls** is a third screen for admin actions only — not a second beer-list editor.
 
 ## Beer model
 
@@ -86,6 +86,7 @@ Record changes from the original build idea here so future chats don’t re-liti
 | 2026-09-23 | One live beer list only; built-in `sampleBeers.js` is demo/reset fodder — no editable defaults list / `brewlette.defaults.v1` |
 | 2026-09-24 | Firebase Auth (email/password + Google) replaces soft PIN for Edit; Controls shows account + sign out; beers still local; Facebook dropped |
 | 2026-09-24 | Firestore `beer_lists/{uid}` per bartender + localStorage device cache; public read; owner-only writes; max 20 beers; field `surprise` |
+| 2026-09-27 | Split edit view dropped: full-width list; tapping a beer or Add opens a full-screen form (X cancel + Save check); capped at `--content-max` ≥768px |
 
 ## Backlog
 

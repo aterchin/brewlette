@@ -42,7 +42,7 @@ npm run preview
 - Result reveal with optional surprise message
 - Optional “Remove this beer” after a spin
 - Cloud-synced tap list (one Firestore read per load; edits sync when signed in)
-- Bartender edit page (Firebase sign-in): sticky list + form; Controls for reset-to-demo and sign out
+- Bartender edit page (Firebase sign-in): beer list with full-screen edit form; Controls for reset-to-demo and sign out
 - Touch-friendly controls and `prefers-reduced-motion` support
 
 ## Product notes

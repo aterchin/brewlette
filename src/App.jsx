@@ -23,6 +23,7 @@ function App() {
     addBeer,
     updateBeer,
     deleteBeer,
+    deleteAllBeers,
     resetToDemo,
     nextNumber,
   } = useBeerList(user);
@@ -101,6 +102,7 @@ function App() {
           onAdd={addBeer}
           onUpdate={updateBeer}
           onDelete={deleteBeer}
+          onDeleteAll={deleteAllBeers}
           onReset={resetToDemo}
           nextNumber={nextNumber}
           onClose={closeEdit}
