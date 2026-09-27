@@ -37,6 +37,13 @@ export default function BeerEditor({
       onDelete={onDelete}
       topbarActions={
         <>
+          <button
+            type="button"
+            className="btn btn-sm btn-ghost"
+            onClick={() => setView("controls")}
+          >
+            Controls
+          </button>
           {onClose ? (
             <button
               type="button"
@@ -46,13 +53,6 @@ export default function BeerEditor({
               Done √
             </button>
           ) : null}
-          <button
-            type="button"
-            className="btn btn-sm btn-ghost"
-            onClick={() => setView("controls")}
-          >
-            Controls
-          </button>
         </>
       }
     />

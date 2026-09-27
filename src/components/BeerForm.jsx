@@ -13,6 +13,7 @@ const emptyForm = {
 };
 
 export default function BeerForm({
+  title,
   initial,
   onSubmit,
   onCancel,
@@ -113,6 +114,35 @@ export default function BeerForm({
 
   return (
     <form className="beer-form" onSubmit={handleSubmit} noValidate>
+      <div className="beer-form__header">
+        {title ? <h3 className="beer-form__title">{title}</h3> : null}
+        <div className="beer-form__actions">
+          {onDelete && (
+            <IconButton
+              label={deleteLabel}
+              variant="delete"
+              onClick={onDelete}
+            >
+              <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6" />
+            </IconButton>
+          )}
+          {onCancel && (
+            <IconButton label={cancelLabel} variant="cancel" onClick={onCancel}>
+              <path d="M6 6l12 12M18 6L6 18" />
+            </IconButton>
+          )}
+          <IconButton
+            type="submit"
+            label={submitLabel || (initial ? "Save beer" : "Add beer")}
+            variant="save"
+          >
+            <path d="M4 12.5l5 5L20 6.5" />
+          </IconButton>
+        </div>
+      </div>
+
+      {error && <p className="beer-form__error" role="alert">{error}</p>}
+
       <Field
         label="Number"
         htmlFor="beer-number"
@@ -191,25 +221,34 @@ export default function BeerForm({
           rows={2}
         />
       </Field>
-
-      {error && <p className="beer-form__error" role="alert">{error}</p>}
-
-      <div className="beer-form__actions">
-        <button type="submit" className="btn btn-primary">
-          {submitLabel || (initial ? "Save beer" : "Add beer")}
-        </button>
-        {onCancel && (
-          <button type="button" className="btn btn-ghost" onClick={onCancel}>
-            {cancelLabel}
-          </button>
-        )}
-        {onDelete && (
-          <button type="button" className="btn btn-danger" onClick={onDelete}>
-            {deleteLabel}
-          </button>
-        )}
-      </div>
     </form>
+  );
+}
+
+function IconButton({ label, variant, type = "button", onClick, children }) {
+  return (
+    <button
+      type={type}
+      className={`beer-form__icon-btn beer-form__icon-btn--${variant}`}
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+    >
+      <svg
+        viewBox="0 0 24 24"
+        width="24"
+        height="24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.75"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
+        aria-hidden="true"
+        focusable="false"
+      >
+        {children}
+      </svg>
+    </button>
   );
 }
 

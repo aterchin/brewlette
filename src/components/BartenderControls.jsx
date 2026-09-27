@@ -42,7 +42,7 @@ export default function BartenderControls({
             className="btn btn-sm btn-ghost"
             onClick={onBack}
           >
-            Back
+            Done √
           </button>
         </div>
       </header>

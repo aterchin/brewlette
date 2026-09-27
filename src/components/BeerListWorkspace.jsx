@@ -198,9 +198,9 @@ export default function BeerListWorkspace({
         <div className="beer-editor__detail">
           {isFormOpen ? (
             <div className="beer-editor__panel">
-              <h3>{editingBeer ? "Edit beer" : "Add beer"}</h3>
               <BeerForm
                 key={editingBeer ? editingBeer.id : "add"}
+                title={editingBeer ? "Edit" : "Add"}
                 initial={editingBeer || undefined}
                 defaultNumber={editingBeer ? undefined : nextNumber}
                 usedNumbers={usedNumbers}
