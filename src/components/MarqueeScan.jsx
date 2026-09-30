@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import BackButton from "./BackButton.jsx";
 import {
+  deleteMarqueePhoto,
+  loadLastScan,
+  saveLastScan,
   uploadMarqueeScan,
   validateMarqueeImage,
 } from "../utils/marqueeUpload.js";
@@ -8,49 +11,92 @@ import "./BartenderControls.css";
 
 /**
  * Upload 1–2 photos of the beer marquee as one scan.
+ * The last saved scan is remembered on this device and shown on return.
  */
 export default function MarqueeScan({ uid, onBack }) {
-  const [photos, setPhotos] = useState([null, null]);
+  // Saved in Firebase: { scanId, photos: [{ path, url } | null, ...] } or null
+  const [saved, setSaved] = useState(() => loadLastScan(uid));
+  // Picked on this visit, not uploaded yet: [File | null, File | null]
+  const [pending, setPending] = useState([null, null]);
   const [errors, setErrors] = useState(["", ""]);
-  const [status, setStatus] = useState("idle"); // idle | uploading | done | error
-  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState("idle"); // idle | uploading | error
+  const [errorMessage, setErrorMessage] = useState("");
 
-  function setPhoto(index, file) {
-    const nextPhotos = [...photos];
+  function updateSaved(nextSaved) {
+    setSaved(nextSaved);
+    saveLastScan(uid, nextSaved);
+  }
+
+  function pickPhoto(index, file) {
+    const error = validateMarqueeImage(file);
+    const nextPending = [...pending];
     const nextErrors = [...errors];
-    const error = file ? validateMarqueeImage(file) : null;
 
-    nextPhotos[index] = error ? null : file;
+    nextPending[index] = error ? null : file;
     nextErrors[index] = error || "";
 
-    setPhotos(nextPhotos);
+    setPending(nextPending);
     setErrors(nextErrors);
     setStatus("idle");
-    setMessage("");
+    setErrorMessage("");
+  }
+
+  async function removePhoto(index) {
+    // Not uploaded yet: just drop it.
+    if (pending[index]) {
+      const nextPending = [...pending];
+      nextPending[index] = null;
+      setPending(nextPending);
+      return;
+    }
+
+    const photo = saved?.photos[index];
+    if (!photo) return;
+
+    setStatus("uploading");
+    setErrorMessage("");
+    try {
+      await deleteMarqueePhoto(photo.path);
+    } catch (error) {
+      // Already gone in Storage is fine; anything else, stop.
+      if (error?.code !== "storage/object-not-found") {
+        console.error(error);
+        setStatus("error");
+        setErrorMessage("Couldn’t remove photo. Try again.");
+        return;
+      }
+    }
+
+    const nextPhotos = [...saved.photos];
+    nextPhotos[index] = null;
+    // Both slots empty: forget the scan so the next upload starts a new one.
+    updateSaved(nextPhotos.some(Boolean) ? { ...saved, photos: nextPhotos } : null);
+    setStatus("idle");
   }
 
   async function handleUpload() {
-    const files = photos.filter(Boolean);
-    if (files.length === 0 || status === "uploading") return;
+    if (!pending.some(Boolean) || status === "uploading") return;
 
     setStatus("uploading");
-    setMessage("");
+    setErrorMessage("");
     try {
-      const result = await uploadMarqueeScan(uid, files);
-      setStatus("done");
-      setMessage(
-        `Saved ${result.images.length} photo${result.images.length === 1 ? "" : "s"}.`,
+      const result = await uploadMarqueeScan(uid, pending, saved?.scanId);
+      const nextPhotos = result.photos.map(
+        (photo, i) => photo || saved?.photos[i] || null,
       );
-      setPhotos([null, null]);
+      updateSaved({ scanId: result.scanId, photos: nextPhotos });
+      setPending([null, null]);
+      setStatus("idle");
     } catch (error) {
       console.error(error);
       setStatus("error");
-      setMessage("Upload failed. Check your connection and try again.");
+      setErrorMessage("Upload failed. Check your connection and try again.");
     }
   }
 
-  const hasPhoto = photos.some(Boolean);
-  const uploading = status === "uploading";
+  const busy = status === "uploading";
+  const hasPending = pending.some(Boolean);
+  const savedCount = saved ? saved.photos.filter(Boolean).length : 0;
 
   return (
     <section className="bartender-controls" aria-label="Scan marquee">
@@ -65,31 +111,33 @@ export default function MarqueeScan({ uid, onBack }) {
       <div className="bartender-controls__body">
         <PhotoSlot
           label="Photo 1"
-          file={photos[0]}
+          file={pending[0]}
+          savedUrl={saved?.photos[0]?.url}
           error={errors[0]}
-          disabled={uploading}
-          onChange={(file) => setPhoto(0, file)}
+          disabled={busy}
+          onPick={(file) => pickPhoto(0, file)}
+          onRemove={() => removePhoto(0)}
         />
         <PhotoSlot
           label="Photo 2 (optional)"
           hint="Wall too wide? Add a second shot."
-          file={photos[1]}
+          file={pending[1]}
+          savedUrl={saved?.photos[1]?.url}
           error={errors[1]}
-          disabled={uploading}
-          onChange={(file) => setPhoto(1, file)}
+          disabled={busy}
+          onPick={(file) => pickPhoto(1, file)}
+          onRemove={() => removePhoto(1)}
         />
 
         <div className="bartender-controls__panel">
-          {message ? (
-            <p
-              className={
-                status === "error"
-                  ? "bartender-controls__error"
-                  : "bartender-controls__copy"
-              }
-              role={status === "error" ? "alert" : "status"}
-            >
-              {message}
+          {status === "error" ? (
+            <p className="bartender-controls__error" role="alert">
+              {errorMessage}
+            </p>
+          ) : null}
+          {status !== "error" && savedCount > 0 && !hasPending ? (
+            <p className="bartender-controls__copy" role="status">
+              Saved {savedCount} photo{savedCount === 1 ? "" : "s"}.
             </p>
           ) : null}
           <div className="bartender-controls__actions">
@@ -97,9 +145,9 @@ export default function MarqueeScan({ uid, onBack }) {
               type="button"
               className="btn scoop btn-primary"
               onClick={handleUpload}
-              disabled={!hasPhoto || uploading}
+              disabled={!hasPending || busy}
             >
-              {uploading ? "Uploading…" : "Upload photos"}
+              {busy ? "Working…" : "Upload photos"}
             </button>
           </div>
         </div>
@@ -108,7 +156,7 @@ export default function MarqueeScan({ uid, onBack }) {
   );
 }
 
-function PhotoSlot({ label, hint, file, error, disabled, onChange }) {
+function PhotoSlot({ label, hint, file, savedUrl, error, disabled, onPick, onRemove }) {
   const previewUrl = useMemo(
     () => (file ? URL.createObjectURL(file) : null),
     [file],
@@ -120,10 +168,14 @@ function PhotoSlot({ label, hint, file, error, disabled, onChange }) {
   }, [previewUrl]);
 
   function handleChange(event) {
-    onChange(event.target.files?.[0] || null);
+    const picked = event.target.files?.[0];
+    if (picked) onPick(picked);
     // Clear so picking the same file again still fires onChange.
     event.target.value = "";
   }
+
+  // A newly picked photo wins over the saved one until it's uploaded.
+  const imageUrl = previewUrl || savedUrl;
 
   return (
     <div className="bartender-controls__panel">
@@ -144,18 +196,21 @@ function PhotoSlot({ label, hint, file, error, disabled, onChange }) {
         </p>
       ) : null}
 
-      {previewUrl ? (
+      {imageUrl ? (
         <div>
           <img
-            src={previewUrl}
-            alt={`${label} preview`}
+            src={imageUrl}
+            alt={`${label} ${previewUrl ? "preview" : "saved"}`}
             style={{ display: "block", maxWidth: "100%", maxHeight: 240, marginTop: 12 }}
           />
+          <p className="bartender-controls__copy">
+            {previewUrl ? "Not uploaded yet" : "Saved"}
+          </p>
           <div className="bartender-controls__actions">
             <button
               type="button"
               className="btn scoop btn-ghost"
-              onClick={() => onChange(null)}
+              onClick={onRemove}
               disabled={disabled}
             >
               Remove

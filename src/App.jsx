@@ -106,6 +106,7 @@ function App() {
           onReset={resetToDemo}
           nextNumber={nextNumber}
           onClose={closeEdit}
+          uid={user.uid}
           userEmail={user.email}
           onSignOut={handleSignOut}
         />
