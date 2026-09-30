@@ -1,4 +1,11 @@
-import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  getMetadata,
+  listAll,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import { storage } from "../firebase.js";
 
 // Keep these in sync with storage.rules.
@@ -6,7 +13,19 @@ export const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 export const MAX_IMAGES_PER_SCAN = 2;
 export const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic"];
 
-const LAST_SCAN_KEY = "brewlette.marqueeScan.v1";
+/** Fixed path per slot: marquee_scans/{uid}/photo-1, photo-2 */
+function photoPath(uid, index) {
+  return `marquee_scans/${uid}/photo-${index + 1}`;
+}
+
+/**
+ * Download URL with the file's generation appended.
+ * Storage bumps `generation` on every overwrite, so the browser can't show a stale cached image.
+ */
+async function versionedUrl(fileRef, generation) {
+  const url = await getDownloadURL(fileRef);
+  return `${url}&v=${generation}`;
+}
 
 /**
  * Check one photo before upload.
@@ -24,12 +43,38 @@ export function validateMarqueeImage(file) {
 }
 
 /**
- * Upload photos into one scan: marquee_scans/{uid}/{scanId}/photo-1, photo-2
- * `files` is one entry per slot ([file | null, file | null]); slot N -> photo-N.
- * Pass an existing scanId to replace photos in that scan.
- * Returns { scanId, photos: [{ path, url } | null, ...] } for the uploaded slots only.
+ * Load this user's current photos from Storage.
+ * Lists the folder first so empty slots don't trigger 404s.
+ * Returns [{ path, generation, url } | null, ...] — null for an empty slot.
  */
-export async function uploadMarqueeScan(uid, files, scanId = crypto.randomUUID()) {
+export async function loadMarqueePhotos(uid) {
+  const folder = await listAll(ref(storage, `marquee_scans/${uid}`));
+  const existingPaths = folder.items.map((item) => item.fullPath);
+  const photos = [];
+
+  for (let i = 0; i < MAX_IMAGES_PER_SCAN; i += 1) {
+    const path = photoPath(uid, i);
+    if (!existingPaths.includes(path)) {
+      photos.push(null);
+      continue;
+    }
+    const fileRef = ref(storage, path);
+    const metadata = await getMetadata(fileRef);
+    photos.push({
+      path,
+      generation: metadata.generation,
+      url: await versionedUrl(fileRef, metadata.generation),
+    });
+  }
+
+  return photos;
+}
+
+/**
+ * Upload photos by slot ([file | null, file | null]); slot N overwrites photo-N.
+ * Returns [{ path, generation, url } | null, ...] for the uploaded slots only.
+ */
+export async function uploadMarqueePhotos(uid, files) {
   const photos = [];
 
   for (let i = 0; i < MAX_IMAGES_PER_SCAN; i += 1) {
@@ -38,61 +83,23 @@ export async function uploadMarqueeScan(uid, files, scanId = crypto.randomUUID()
       photos.push(null);
       continue;
     }
-    const path = `marquee_scans/${uid}/${scanId}/photo-${i + 1}`;
-    const result = await uploadBytes(ref(storage, path), file, {
-      contentType: file.type,
+    const fileRef = ref(storage, photoPath(uid, i));
+    const result = await uploadBytes(fileRef, file, { contentType: file.type });
+    photos.push({
+      path: fileRef.fullPath,
+      generation: result.metadata.generation,
+      url: await versionedUrl(fileRef, result.metadata.generation),
     });
-    const url = await getDownloadURL(result.ref);
-    photos.push({ path, url });
   }
 
-  return { scanId, photos };
+  return photos;
 }
 
 export async function deleteMarqueePhoto(path) {
-  await deleteObject(ref(storage, path));
-}
-
-function isValidPhoto(photo) {
-  return (
-    photo === null ||
-    (photo &&
-      typeof photo.path === "string" &&
-      typeof photo.url === "string")
-  );
-}
-
-/**
- * Last saved scan on this device for this user, or null.
- * Shape: { scanId, photos: [{ path, url } | null, { path, url } | null] }
- */
-export function loadLastScan(uid) {
   try {
-    const raw = localStorage.getItem(`${LAST_SCAN_KEY}.${uid}`);
-    if (!raw) return null;
-    const scan = JSON.parse(raw);
-    if (
-      typeof scan?.scanId !== "string" ||
-      !Array.isArray(scan.photos) ||
-      scan.photos.length !== MAX_IMAGES_PER_SCAN ||
-      !scan.photos.every(isValidPhoto)
-    ) {
-      return null;
-    }
-    return scan;
-  } catch {
-    return null;
-  }
-}
-
-export function saveLastScan(uid, scan) {
-  try {
-    if (scan) {
-      localStorage.setItem(`${LAST_SCAN_KEY}.${uid}`, JSON.stringify(scan));
-    } else {
-      localStorage.removeItem(`${LAST_SCAN_KEY}.${uid}`);
-    }
-  } catch {
-    // Storage full or blocked — the photos are still in Firebase.
+    await deleteObject(ref(storage, path));
+  } catch (error) {
+    // Already gone is fine.
+    if (error?.code !== "storage/object-not-found") throw error;
   }
 }

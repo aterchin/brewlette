@@ -2,30 +2,43 @@ import { useEffect, useMemo, useState } from "react";
 import BackButton from "./BackButton.jsx";
 import {
   deleteMarqueePhoto,
-  loadLastScan,
-  saveLastScan,
-  uploadMarqueeScan,
+  loadMarqueePhotos,
+  uploadMarqueePhotos,
   validateMarqueeImage,
 } from "../utils/marqueeUpload.js";
 import "./BartenderControls.css";
 
 /**
- * Upload 1–2 photos of the beer marquee as one scan.
- * The last saved scan is remembered on this device and shown on return.
+ * Upload 1–2 photos of the beer marquee.
+ * Saved photos are loaded from Storage each time the page opens.
  */
 export default function MarqueeScan({ uid, onBack }) {
-  // Saved in Firebase: { scanId, photos: [{ path, url } | null, ...] } or null
-  const [saved, setSaved] = useState(() => loadLastScan(uid));
+  // In Storage: [{ path, generation, url } | null, ...]
+  const [saved, setSaved] = useState([null, null]);
   // Picked on this visit, not uploaded yet: [File | null, File | null]
   const [pending, setPending] = useState([null, null]);
   const [errors, setErrors] = useState(["", ""]);
-  const [status, setStatus] = useState("idle"); // idle | uploading | error
+  const [status, setStatus] = useState("loading"); // loading | idle | uploading | error
   const [errorMessage, setErrorMessage] = useState("");
 
-  function updateSaved(nextSaved) {
-    setSaved(nextSaved);
-    saveLastScan(uid, nextSaved);
-  }
+  useEffect(() => {
+    let cancelled = false;
+    loadMarqueePhotos(uid)
+      .then((photos) => {
+        if (cancelled) return;
+        setSaved(photos);
+        setStatus("idle");
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        console.error(error);
+        setStatus("error");
+        setErrorMessage("Couldn’t load saved photos.");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [uid]);
 
   function pickPhoto(index, file) {
     const error = validateMarqueeImage(file);
@@ -50,7 +63,7 @@ export default function MarqueeScan({ uid, onBack }) {
       return;
     }
 
-    const photo = saved?.photos[index];
+    const photo = saved[index];
     if (!photo) return;
 
     setStatus("uploading");
@@ -58,19 +71,15 @@ export default function MarqueeScan({ uid, onBack }) {
     try {
       await deleteMarqueePhoto(photo.path);
     } catch (error) {
-      // Already gone in Storage is fine; anything else, stop.
-      if (error?.code !== "storage/object-not-found") {
-        console.error(error);
-        setStatus("error");
-        setErrorMessage("Couldn’t remove photo. Try again.");
-        return;
-      }
+      console.error(error);
+      setStatus("error");
+      setErrorMessage("Couldn’t remove photo. Try again.");
+      return;
     }
 
-    const nextPhotos = [...saved.photos];
-    nextPhotos[index] = null;
-    // Both slots empty: forget the scan so the next upload starts a new one.
-    updateSaved(nextPhotos.some(Boolean) ? { ...saved, photos: nextPhotos } : null);
+    const nextSaved = [...saved];
+    nextSaved[index] = null;
+    setSaved(nextSaved);
     setStatus("idle");
   }
 
@@ -80,11 +89,8 @@ export default function MarqueeScan({ uid, onBack }) {
     setStatus("uploading");
     setErrorMessage("");
     try {
-      const result = await uploadMarqueeScan(uid, pending, saved?.scanId);
-      const nextPhotos = result.photos.map(
-        (photo, i) => photo || saved?.photos[i] || null,
-      );
-      updateSaved({ scanId: result.scanId, photos: nextPhotos });
+      const uploaded = await uploadMarqueePhotos(uid, pending);
+      setSaved(uploaded.map((photo, i) => photo || saved[i]));
       setPending([null, null]);
       setStatus("idle");
     } catch (error) {
@@ -94,9 +100,9 @@ export default function MarqueeScan({ uid, onBack }) {
     }
   }
 
-  const busy = status === "uploading";
+  const busy = status === "loading" || status === "uploading";
   const hasPending = pending.some(Boolean);
-  const savedCount = saved ? saved.photos.filter(Boolean).length : 0;
+  const savedCount = saved.filter(Boolean).length;
 
   return (
     <section className="bartender-controls" aria-label="Scan marquee">
@@ -112,7 +118,7 @@ export default function MarqueeScan({ uid, onBack }) {
         <PhotoSlot
           label="Photo 1"
           file={pending[0]}
-          savedUrl={saved?.photos[0]?.url}
+          savedUrl={saved[0]?.url}
           error={errors[0]}
           disabled={busy}
           onPick={(file) => pickPhoto(0, file)}
@@ -122,7 +128,7 @@ export default function MarqueeScan({ uid, onBack }) {
           label="Photo 2 (optional)"
           hint="Wall too wide? Add a second shot."
           file={pending[1]}
-          savedUrl={saved?.photos[1]?.url}
+          savedUrl={saved[1]?.url}
           error={errors[1]}
           disabled={busy}
           onPick={(file) => pickPhoto(1, file)}
@@ -147,7 +153,11 @@ export default function MarqueeScan({ uid, onBack }) {
               onClick={handleUpload}
               disabled={!hasPending || busy}
             >
-              {busy ? "Working…" : "Upload photos"}
+              {status === "loading"
+                ? "Loading…"
+                : status === "uploading"
+                  ? "Working…"
+                  : "Upload photos"}
             </button>
           </div>
         </div>
