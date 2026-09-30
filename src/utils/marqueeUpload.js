@@ -13,9 +13,20 @@ export const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 export const MAX_IMAGES_PER_SCAN = 2;
 export const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic"];
 
+// Keep in sync with IMG_SIZES in extensions/storage-resize-images.env.
+export const RESIZED_SIZE = "200x200";
+
 /** Fixed path per slot: marquee_scans/{uid}/photo-1, photo-2 */
 function photoPath(uid, index) {
   return `marquee_scans/${uid}/photo-${index + 1}`;
+}
+
+/**
+ * Where the Resize Images extension writes its copy: photo-1 -> photo-1_200x200.
+ * It appears a few seconds after upload; HEIC never gets one (unsupported by the extension).
+ */
+function resizedPath(path) {
+  return `${path}_${RESIZED_SIZE}`;
 }
 
 /**
@@ -45,6 +56,7 @@ export function validateMarqueeImage(file) {
 /**
  * Load this user's current photos from Storage.
  * Lists the folder first so empty slots don't trigger 404s.
+ * `url` is the resized copy when it's ready, otherwise the original.
  * Returns [{ path, generation, url } | null, ...] — null for an empty slot.
  */
 export async function loadMarqueePhotos(uid) {
@@ -63,11 +75,27 @@ export async function loadMarqueePhotos(uid) {
     photos.push({
       path,
       generation: metadata.generation,
-      url: await versionedUrl(fileRef, metadata.generation),
+      url:
+        (existingPaths.includes(resizedPath(path)) &&
+          (await freshResizedUrl(path, metadata))) ||
+        (await versionedUrl(fileRef, metadata.generation)),
     });
   }
 
   return photos;
+}
+
+/**
+ * URL of the resized copy, or null if it predates the current original
+ * (photo was just replaced and the extension hasn't caught up yet).
+ */
+async function freshResizedUrl(path, originalMetadata) {
+  const resizedRef = ref(storage, resizedPath(path));
+  const resizedMetadata = await getMetadata(resizedRef);
+  if (new Date(resizedMetadata.updated) < new Date(originalMetadata.updated)) {
+    return null;
+  }
+  return versionedUrl(resizedRef, resizedMetadata.generation);
 }
 
 /**
@@ -95,7 +123,12 @@ export async function uploadMarqueePhotos(uid, files) {
   return photos;
 }
 
+/** Deletes the original and its resized copy. */
 export async function deleteMarqueePhoto(path) {
+  await Promise.all([deleteIfExists(path), deleteIfExists(resizedPath(path))]);
+}
+
+async function deleteIfExists(path) {
   try {
     await deleteObject(ref(storage, path));
   } catch (error) {

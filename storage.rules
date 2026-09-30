@@ -4,6 +4,7 @@ service firebase.storage {
   match /b/{bucket}/o {
     // Marquee photos: marquee_scans/{uid}/photo-1 | photo-2
     // Only the owner can read, list, upload, or delete. Images only, under 8MB.
+    // The Resize Images extension writes photo-N_200x200 copies with admin access (bypasses these rules).
 
     // Recursive match so listing the folder itself (listAll) is covered too.
     match /marquee_scans/{uid}/{allPaths=**} {
