@@ -49,7 +49,7 @@ export default function BartenderControls({
           <div className="bartender-controls__actions">
             <button
               type="button"
-              className="btn btn-danger"
+              className="btn scoop btn-danger"
               onClick={() => setResetConfirmOpen(true)}
             >
               Reset to demo
@@ -73,7 +73,7 @@ export default function BartenderControls({
             <div className="bartender-controls__actions">
               <button
                 type="button"
-                className="btn btn-ghost"
+                className="btn scoop btn-ghost"
                 onClick={handleSignOut}
                 disabled={signingOut}
               >

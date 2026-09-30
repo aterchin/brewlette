@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   buildWheelSegments,
   easeMechanical,
@@ -50,6 +50,7 @@ export default function BeerWheel({
   const animRef = useRef(null);
   const sizeRef = useRef(320);
   const lockRef = useRef(false);
+  const [secondsLeft, setSecondsLeft] = useState(null);
 
   function pointerAngle() {
     return measurePointerAngleDeg(canvasRef.current, pointerRef.current);
@@ -129,9 +130,17 @@ export default function BeerWheel({
       : BASE_SPIN_MS + pickRandomItem(SPIN_DURATION_OFFSETS_SEC) * 1000;
     const delta = to - from;
     const start = performance.now();
+    let shownSeconds = Math.ceil(duration / 1000);
+    setSecondsLeft(shownSeconds);
 
     const tick = (now) => {
-      const t = Math.min(1, (now - start) / duration);
+      const elapsed = now - start;
+      const t = Math.min(1, elapsed / duration);
+      const remaining = Math.max(1, Math.ceil((duration - elapsed) / 1000));
+      if (remaining !== shownSeconds) {
+        shownSeconds = remaining;
+        setSecondsLeft(remaining);
+      }
       const eased = reduced ? easeMechanical(t) : easeMechanicalSpin(t);
       const current = from + delta * eased;
       rotationRef.current = current;
@@ -147,6 +156,7 @@ export default function BeerWheel({
       } else {
         rotationRef.current = to;
         lockRef.current = false;
+        setSecondsLeft(null);
         onSpinComplete?.(winner, winnerIndex);
       }
     };
@@ -171,11 +181,15 @@ export default function BeerWheel({
       </div>
       <button
         type="button"
-        className="btn btn-primary beer-wheel__spin"
+        className="btn btn-primary scoop beer-wheel__spin"
         onClick={spin}
         disabled={disabled || spinning || beers.length === 0}
       >
-        {spinning ? "Spinning…" : "Spin"}
+        {spinning && secondsLeft != null ? (
+          <span className="beer-wheel__countdown">{secondsLeft}</span>
+        ) : (
+          "Spin"
+        )}
       </button>
     </div>
   );

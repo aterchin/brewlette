@@ -80,11 +80,12 @@
   --space-12: 3rem;
   --space-16: 4rem;
 
-  /* Radius — mostly sharp; polaroid is square */
+  /* Radius — mostly sharp */
   --radius-sm: 0;
   --radius-md: 2px;
   --radius-lg: 2px;
-  --radius-pill: 2px;
+  --radius-pill: 12px;
+  --radius-funky: 20px;
 
   /* Shadows — hard, gritty, zero blur */
   --shadow-sm: 2px 2px 0 0 rgba(0, 0, 0, 0.55);

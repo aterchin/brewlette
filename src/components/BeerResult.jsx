@@ -73,11 +73,11 @@ export default function BeerResult({ beer, onSpinAgain }) {
         <div className="beer-result__actions">
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn squircle btn-primary"
             onClick={handleSpinAgain}
             disabled={leaving}
           >
-            Spin again
+            Spin again.
           </button>
         </div>
       </section>
@@ -128,7 +128,7 @@ export default function BeerResult({ beer, onSpinAgain }) {
       <div className="beer-result__actions">
         <button
           type="button"
-          className="btn btn-primary"
+          className="btn btn-primary scoop"
           onClick={handleSpinAgain}
           disabled={leaving}
         >

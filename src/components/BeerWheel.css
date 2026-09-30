@@ -56,3 +56,31 @@
   font-size: var(--font-size-xl);
   padding: var(--space-4) var(--space-8);
 }
+
+.beer-wheel__countdown {
+  font-family: var(--font-family-number);
+  font-weight: var(--font-weight-bold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.beer-wheel__spin:disabled {
+  animation: blurAndScale 7s var(--ease-out);
+}
+
+@keyframes blurAndScale {
+  0% {
+    transform: scale(1);
+    filter: blur(0px);
+    visibility: hidden;
+  }
+  1% {
+    transform: scale(0.7);
+    filter: blur(1px);
+    visibility: visible;
+  }
+  100% {
+    transform: scale(1);
+    filter: blur(0px);
+  }
+}

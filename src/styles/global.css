@@ -177,6 +177,53 @@ img {
   box-shadow: var(--shadow-sm);
 }
 
+@supports (corner-shape: squircle) {
+  .btn.squircle {
+    border-radius: var(--radius-funky);
+    corner-shape: squircle;
+    border: none;
+  }
+  .btn.bevel {
+    border-radius: var(--radius-funky);
+    corner-shape: bevel;
+    border: none;
+  }
+  .btn.scoop {
+    border-radius: var(--radius-funky);
+    corner-shape: scoop;
+    border: none;
+  }
+  /* Border is the button background peeking out around an inset ::after fill;
+     real borders don't paint reliably on concave corner shapes. */
+  .btn.scoop.btn-ghost {
+    position: relative;
+    isolation: isolate;
+  }
+  .btn.scoop.btn-ghost,
+  .btn.scoop.btn-ghost:hover:not(:disabled) {
+    background: var(--color-border-chunky);
+  }
+  .btn.scoop.btn-ghost::after {
+    content: "";
+    position: absolute;
+    inset: var(--border-chunky);
+    z-index: -1;
+    /* r − b(√2 − 1) keeps the ring width even across the concave diagonal */
+    border-radius: calc(var(--radius-funky) - var(--border-chunky) * 0.414);
+    corner-shape: scoop;
+    background: var(--color-marquee);
+    transition: background-color var(--duration-fast) var(--ease-mechanical);
+  }
+  .btn.scoop.btn-ghost:hover:not(:disabled)::after {
+    background: #fff;
+  }
+  .btn.notch {
+    border-radius: var(--radius-funky);
+    corner-shape: notch;
+    border: none;
+  }
+}
+
 .btn-primary {
   background: var(--color-accent);
   color: var(--color-ink);
