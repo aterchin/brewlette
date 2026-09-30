@@ -56,8 +56,8 @@ export function validateMarqueeImage(file) {
 /**
  * Load this user's current photos from Storage.
  * Lists the folder first so empty slots don't trigger 404s.
- * `url` is the resized copy when it's ready, otherwise the original.
- * Returns [{ path, generation, url } | null, ...] — null for an empty slot.
+ * `url` is the resized copy when it's ready (`resized: true`), otherwise the original.
+ * Returns [{ path, generation, url, originalUrl, resized } | null, ...] — null for an empty slot.
  */
 export async function loadMarqueePhotos(uid) {
   const folder = await listAll(ref(storage, `marquee_scans/${uid}`));
@@ -72,13 +72,16 @@ export async function loadMarqueePhotos(uid) {
     }
     const fileRef = ref(storage, path);
     const metadata = await getMetadata(fileRef);
+    const originalUrl = await versionedUrl(fileRef, metadata.generation);
+    const resizedUrl =
+      existingPaths.includes(resizedPath(path)) &&
+      (await freshResizedUrl(path, metadata));
     photos.push({
       path,
       generation: metadata.generation,
-      url:
-        (existingPaths.includes(resizedPath(path)) &&
-          (await freshResizedUrl(path, metadata))) ||
-        (await versionedUrl(fileRef, metadata.generation)),
+      url: resizedUrl || originalUrl,
+      originalUrl,
+      resized: Boolean(resizedUrl),
     });
   }
 
@@ -100,7 +103,8 @@ async function freshResizedUrl(path, originalMetadata) {
 
 /**
  * Upload photos by slot ([file | null, file | null]); slot N overwrites photo-N.
- * Returns [{ path, generation, url } | null, ...] for the uploaded slots only.
+ * Returns [{ path, generation, url, originalUrl, resized } | null, ...] for the uploaded slots only.
+ * The resized copy doesn't exist yet, so `url` is the original.
  */
 export async function uploadMarqueePhotos(uid, files) {
   const photos = [];
@@ -113,10 +117,13 @@ export async function uploadMarqueePhotos(uid, files) {
     }
     const fileRef = ref(storage, photoPath(uid, i));
     const result = await uploadBytes(fileRef, file, { contentType: file.type });
+    const originalUrl = await versionedUrl(fileRef, result.metadata.generation);
     photos.push({
       path: fileRef.fullPath,
       generation: result.metadata.generation,
-      url: await versionedUrl(fileRef, result.metadata.generation),
+      url: originalUrl,
+      originalUrl,
+      resized: false,
     });
   }
 

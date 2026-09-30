@@ -8,13 +8,19 @@ import {
 } from "../utils/marqueeUpload.js";
 import "./BartenderControls.css";
 
+// The resize extension usually finishes within a few seconds of upload.
+const RESIZE_POLL_MS = 3000;
+const RESIZE_POLL_TRIES = 6;
+
 /**
  * Upload 1–2 photos of the beer marquee.
  * Saved photos are loaded from Storage each time the page opens.
  */
 export default function MarqueeScan({ uid, onBack }) {
-  // In Storage: [{ path, generation, url } | null, ...]
+  // In Storage: [{ path, generation, url, originalUrl, resized } | null, ...]
   const [saved, setSaved] = useState([null, null]);
+  // Bumped after each upload to start checking for resized copies; 0 = not polling.
+  const [resizePoll, setResizePoll] = useState(0);
   // Picked on this visit, not uploaded yet: [File | null, File | null]
   const [pending, setPending] = useState([null, null]);
   const [errors, setErrors] = useState(["", ""]);
@@ -39,6 +45,33 @@ export default function MarqueeScan({ uid, onBack }) {
       cancelled = true;
     };
   }, [uid]);
+
+  useEffect(() => {
+    if (!resizePoll) return undefined;
+    let cancelled = false;
+    let tries = 0;
+    let timer;
+
+    function check() {
+      tries += 1;
+      loadMarqueePhotos(uid)
+        .then((photos) => {
+          if (cancelled) return;
+          setSaved(photos);
+          const waiting = photos.some((photo) => photo && !photo.resized);
+          if (waiting && tries < RESIZE_POLL_TRIES) {
+            timer = setTimeout(check, RESIZE_POLL_MS);
+          }
+        })
+        .catch((error) => console.error(error));
+    }
+
+    timer = setTimeout(check, RESIZE_POLL_MS);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [uid, resizePoll]);
 
   function pickPhoto(index, file) {
     const error = validateMarqueeImage(file);
@@ -66,6 +99,8 @@ export default function MarqueeScan({ uid, onBack }) {
     const photo = saved[index];
     if (!photo) return;
 
+    // A poll finishing mid-delete would bring the photo back.
+    setResizePoll(0);
     setStatus("uploading");
     setErrorMessage("");
     try {
@@ -93,6 +128,7 @@ export default function MarqueeScan({ uid, onBack }) {
       setSaved(uploaded.map((photo, i) => photo || saved[i]));
       setPending([null, null]);
       setStatus("idle");
+      setResizePoll((n) => n + 1);
     } catch (error) {
       console.error(error);
       setStatus("error");
@@ -118,7 +154,7 @@ export default function MarqueeScan({ uid, onBack }) {
         <PhotoSlot
           label="Photo 1"
           file={pending[0]}
-          savedUrl={saved[0]?.url}
+          saved={saved[0]}
           error={errors[0]}
           disabled={busy}
           onPick={(file) => pickPhoto(0, file)}
@@ -128,7 +164,7 @@ export default function MarqueeScan({ uid, onBack }) {
           label="Photo 2 (optional)"
           hint="Wall too wide? Add a second shot."
           file={pending[1]}
-          savedUrl={saved[1]?.url}
+          saved={saved[1]}
           error={errors[1]}
           disabled={busy}
           onPick={(file) => pickPhoto(1, file)}
@@ -166,7 +202,7 @@ export default function MarqueeScan({ uid, onBack }) {
   );
 }
 
-function PhotoSlot({ label, hint, file, savedUrl, error, disabled, onPick, onRemove }) {
+function PhotoSlot({ label, hint, file, saved, error, disabled, onPick, onRemove }) {
   const previewUrl = useMemo(
     () => (file ? URL.createObjectURL(file) : null),
     [file],
@@ -185,7 +221,20 @@ function PhotoSlot({ label, hint, file, savedUrl, error, disabled, onPick, onRem
   }
 
   // A newly picked photo wins over the saved one until it's uploaded.
-  const imageUrl = previewUrl || savedUrl;
+  const imageUrl = previewUrl || saved?.url;
+  const image = imageUrl ? (
+    <img
+      src={imageUrl}
+      alt={`${label} ${previewUrl ? "preview" : "saved"}`}
+      style={{
+        display: "block",
+        maxWidth: 200,
+        maxHeight: 200,
+        marginTop: 12,
+        border: "var(--border-chunky) solid var(--color-ink)",
+      }}
+    />
+  ) : null;
 
   return (
     <div className="bartender-controls__panel">
@@ -208,13 +257,21 @@ function PhotoSlot({ label, hint, file, savedUrl, error, disabled, onPick, onRem
 
       {imageUrl ? (
         <div>
-          <img
-            src={imageUrl}
-            alt={`${label} ${previewUrl ? "preview" : "saved"}`}
-            style={{ display: "block", maxWidth: "100%", maxHeight: 240, marginTop: 12 }}
-          />
+          {previewUrl ? (
+            image
+          ) : (
+            <a
+              href={saved.originalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Open full-size ${label}`}
+              style={{ display: "inline-block" }}
+            >
+              {image}
+            </a>
+          )}
           <p className="bartender-controls__copy">
-            {previewUrl ? "Not uploaded yet" : "Saved"}
+            {previewUrl ? "Not uploaded yet" : "Saved — tap to open full size"}
           </p>
           <div className="bartender-controls__actions">
             <button
