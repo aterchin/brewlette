@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
@@ -32,6 +33,20 @@ if (missingEnvVars.length > 0) {
 }
 
 export const app = initializeApp(firebaseConfig);
+
+// Must be set before initializeAppCheck. The SDK then logs a debug token to the
+// browser console; register it under App Check > Manage debug tokens.
+if (import.meta.env.DEV) {
+  self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+}
+
+// Must run before any other Firebase service makes a request.
+initializeAppCheck(app, {
+  provider: new ReCaptchaEnterpriseProvider(
+    import.meta.env.VITE_RECAPTCHA_ENTERPRISE_SITE_KEY || "RECAPTCHA_ENTERPRISE_SITE_KEY",
+  ),
+  isTokenAutoRefreshEnabled: true,
+});
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
