@@ -141,7 +141,7 @@ export default function MarqueeScan({ uid, onBack }) {
   return (
     <section className="bartender-controls" aria-label="Scan marquee">
       <header className="bartender-controls__topbar">
-        <BackButton onClick={onBack} label="Back to beer list" />
+        <BackButton onClick={onBack} label="Back to controls" />
         <div className="bartender-controls__topbar-copy">
           <h2>Scan marquee</h2>
           <p>Upload 1 or 2 photos of your beer wall</p>

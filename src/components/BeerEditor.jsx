@@ -20,13 +20,14 @@ export default function BeerEditor({
   const [view, setView] = useState("list");
 
   if (view === "scan") {
-    return <MarqueeScan uid={uid} onBack={() => setView("list")} />;
+    return <MarqueeScan uid={uid} onBack={() => setView("controls")} />;
   }
 
   if (view === "controls") {
     return (
       <BartenderControls
         onBack={() => setView("list")}
+        onScanMarquee={() => setView("scan")}
         onReset={onReset}
         userEmail={userEmail}
         onSignOut={onSignOut}
@@ -47,24 +48,15 @@ export default function BeerEditor({
       onBack={onClose}
       backLabel="Back to wheel"
       topbarActions={
-        <>
-          <button
-            type="button"
-            className="btn scoop btn-ghost"
-            onClick={() => setView("scan")}
-          >
-            Scan marquee
-          </button>
-          <button
-            type="button"
-            className="beer-editor__gear"
-            onClick={() => setView("controls")}
-            aria-label="Controls"
-            title="Controls"
-          >
-            <GearIcon size={26} />
-          </button>
-        </>
+        <button
+          type="button"
+          className="beer-editor__gear"
+          onClick={() => setView("controls")}
+          aria-label="Controls"
+          title="Controls"
+        >
+          <GearIcon size={26} />
+        </button>
       }
     />
   );

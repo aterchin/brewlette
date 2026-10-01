@@ -5,6 +5,7 @@ import "./BartenderControls.css";
 
 export default function BartenderControls({
   onBack,
+  onScanMarquee,
   onReset,
   userEmail,
   onSignOut,
@@ -41,8 +42,24 @@ export default function BartenderControls({
       </header>
 
       <div className="bartender-controls__body">
-        <div className="bartender-controls__panel">
-          <h3>Demo list</h3>
+        {onScanMarquee ? (
+          <div className="bartender-controls__panel bartender-controls__panel--row">
+            <p className="bartender-controls__copy">
+              Photograph the marquee to keep a record of what’s on tap.
+            </p>
+            <div className="bartender-controls__actions">
+              <button
+                type="button"
+                className="btn scoop btn-ghost"
+                onClick={onScanMarquee}
+              >
+                Scan marquee
+              </button>
+            </div>
+          </div>
+        ) : null}
+
+        <div className="bartender-controls__panel bartender-controls__panel--row">
           <p className="bartender-controls__copy">
             Replace the current wheel with the built-in sample beer list.
           </p>
@@ -58,18 +75,19 @@ export default function BartenderControls({
         </div>
 
         {onSignOut ? (
-          <div className="bartender-controls__panel">
-            <h3>Account</h3>
-            <p className="bartender-controls__copy">
-              {userEmail
-                ? `Signed in as ${userEmail}`
-                : "Signed in to edit the beer list."}
-            </p>
-            {signOutError ? (
-              <p className="bartender-controls__error" role="alert">
-                {signOutError}
+          <div className="bartender-controls__panel bartender-controls__panel--row">
+            <div className="bartender-controls__copy">
+              <p>
+                {userEmail
+                  ? `Signed in as ${userEmail}`
+                  : "Signed in to edit the beer list."}
               </p>
-            ) : null}
+              {signOutError ? (
+                <p className="bartender-controls__error" role="alert">
+                  {signOutError}
+                </p>
+              ) : null}
+            </div>
             <div className="bartender-controls__actions">
               <button
                 type="button"
