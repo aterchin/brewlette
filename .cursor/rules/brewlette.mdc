@@ -57,3 +57,5 @@ Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, 
 ## Git
 
 Small focused commits. Push when the user asks.
+
+After committing, if the commit touches anything that deploys beyond Hosting (`firestore.rules`, `storage.rules`, `extensions/`, non-`hosting` keys in `firebase.json`, `cors.json`) or adds Firestore/Storage/Auth usage that rules or console settings must cover, say so and give the `firebase deploy --only …` targets. Full checklist: [`/firebase-deploy-check`](../commands/firebase-deploy-check.md).
