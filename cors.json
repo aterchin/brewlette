@@ -1,6 +1,11 @@
 [
   {
-    "origin": ["http://localhost:5173", "http://192.168.1.154:5173"],
+    "origin": [
+      "http://localhost:5173",
+      "http://192.168.1.154:5173",
+      "https://brewlette-2e222.web.app",
+      "https://brewlette-2e222.firebaseapp.com"
+    ],
     "method": ["GET"],
     "maxAgeSeconds": 3600
   }
