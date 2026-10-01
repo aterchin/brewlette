@@ -17,6 +17,23 @@ function isValidBeer(beer) {
   return abvOk;
 }
 
+export function createBeerId(name) {
+  const slug = String(name || "beer")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 24);
+  const suffix = Math.random().toString(36).slice(2, 8);
+  return `${slug || "beer"}-${suffix}`;
+}
+
+export function parseAbv(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const n = typeof value === "number" ? value : Number.parseFloat(String(value));
+  if (!Number.isFinite(n)) return null;
+  return n;
+}
+
 /** Whole number in 1..MAX_BEERS, or null. */
 export function parseBeerNumber(value) {
   let n = null;
@@ -74,6 +91,27 @@ export function normalizeBeerList(beers) {
   });
 
   return sortByNumber(normalized);
+}
+
+/**
+ * Turn raw beers read from a marquee photo into a saveable list: adds ids,
+ * drops nameless entries, caps at MAX_BEERS, and makes numbers unique.
+ */
+export function beersFromScan(scanned) {
+  const text = (value) => (typeof value === "string" ? value.trim() : "");
+  const beers = (Array.isArray(scanned) ? scanned : [])
+    .filter((beer) => text(beer?.name))
+    .map((beer) => ({
+      id: createBeerId(beer.name),
+      number: beer.number,
+      name: text(beer.name),
+      brewery: text(beer.brewery),
+      style: text(beer.style),
+      abv: parseAbv(beer.abv),
+      description: text(beer.description),
+      surprise: "",
+    }));
+  return normalizeBeerList(beers);
 }
 
 export function sortByNumber(beers) {

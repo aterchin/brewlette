@@ -10,6 +10,7 @@ export default function BeerEditor({
   onUpdate,
   onDelete,
   onDeleteAll,
+  onReplace,
   onReset,
   nextNumber,
   onClose,
@@ -20,7 +21,17 @@ export default function BeerEditor({
   const [view, setView] = useState("list");
 
   if (view === "scan") {
-    return <MarqueeScan uid={uid} onBack={() => setView("controls")} />;
+    return (
+      <MarqueeScan
+        uid={uid}
+        currentCount={beers.length}
+        onBack={() => setView("controls")}
+        onReplace={(next) => {
+          onReplace(next);
+          setView("list");
+        }}
+      />
+    );
   }
 
   if (view === "controls") {

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import BackButton from "./BackButton.jsx";
+import ScanReview from "./ScanReview.jsx";
 import { extractBeersFromImages } from "../utils/marqueeOcr.js";
+import { beersFromScan } from "../utils/storage.js";
 import {
   deleteMarqueePhoto,
   loadMarqueeBlobs,
@@ -19,7 +21,7 @@ const RESIZE_POLL_TRIES = 6;
  * Upload 1–2 photos of the beer marquee. Picking a photo uploads it right away.
  * Saved photos are loaded from Storage each time the page opens.
  */
-export default function MarqueeScan({ uid, onBack }) {
+export default function MarqueeScan({ uid, currentCount, onBack, onReplace }) {
   // In Storage: [{ path, originalUrl, resizedUrl } | null, ...]
   const [saved, setSaved] = useState([null, null]);
   // Local blob URLs of just-uploaded photos, shown until the resized copy exists.
@@ -28,8 +30,8 @@ export default function MarqueeScan({ uid, onBack }) {
   const [resizePoll, setResizePoll] = useState(0);
   const [status, setStatus] = useState("loading"); // loading | idle | uploading | removing | reading | error
   const [errorMessage, setErrorMessage] = useState("");
-  // Beers Gemini read from the current photos; null until "Read board" runs.
-  const [readBeers, setReadBeers] = useState(null);
+  // { beers, skippedCount } from the last "Read board"; null shows the photo page.
+  const [review, setReview] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -102,7 +104,6 @@ export default function MarqueeScan({ uid, onBack }) {
     setResizePoll(0);
     setStatus("uploading");
     setErrorMessage("");
-    setReadBeers(null);
     try {
       const photo = await uploadMarqueePhoto(uid, index, file);
       const preview = URL.createObjectURL(file);
@@ -125,7 +126,6 @@ export default function MarqueeScan({ uid, onBack }) {
     setResizePoll(0);
     setStatus("removing");
     setErrorMessage("");
-    setReadBeers(null);
     try {
       await deleteMarqueePhoto(photo.path);
       setSaved((current) => current.map((p, i) => (i === index ? null : p)));
@@ -144,10 +144,11 @@ export default function MarqueeScan({ uid, onBack }) {
     setResizePoll(0);
     setStatus("reading");
     setErrorMessage("");
-    setReadBeers(null);
     try {
       const blobs = await loadMarqueeBlobs(paths);
-      setReadBeers(await extractBeersFromImages(blobs));
+      const scanned = await extractBeersFromImages(blobs);
+      const beers = beersFromScan(scanned);
+      setReview({ beers, skippedCount: scanned.length - beers.length });
       setStatus("idle");
     } catch (error) {
       console.error(error);
@@ -167,6 +168,18 @@ export default function MarqueeScan({ uid, onBack }) {
     savedCount > 0
       ? `Saved ${savedCount} photo${savedCount === 1 ? "" : "s"}. Tap one to open full size.`
       : "Wall too wide? Add a second shot.";
+
+  if (review) {
+    return (
+      <ScanReview
+        beers={review.beers}
+        skippedCount={review.skippedCount}
+        currentCount={currentCount}
+        onReplace={onReplace}
+        onCancel={() => setReview(null)}
+      />
+    );
+  }
 
   return (
     <section className="bartender-controls" aria-label="Scan marquee">
@@ -217,12 +230,6 @@ export default function MarqueeScan({ uid, onBack }) {
             Read board
           </button>
         </div>
-
-        {readBeers ? (
-          <pre className="marquee-scan__result" aria-label="Beers read from the board">
-            {JSON.stringify(readBeers, null, 2)}
-          </pre>
-        ) : null}
       </div>
 
       {busyLabel ? (

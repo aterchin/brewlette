@@ -1,0 +1,13 @@
+/* Read-only cards: reuse the beer list look without the tap affordance. */
+.scan-review__item {
+  cursor: default;
+}
+
+.scan-review__item:hover {
+  background: var(--color-marquee);
+}
+
+.beer-editor__nav-copy > .scan-review__description {
+  margin-top: var(--space-1);
+  color: #5a5a5a;
+}

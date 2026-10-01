@@ -127,21 +127,6 @@
   margin-top: var(--space-4);
 }
 
-/* Raw Gemini output for testing; replaced by the review screen later. */
-.marquee-scan__result {
-  max-height: 24rem;
-  margin: var(--space-4) 0 0;
-  padding: var(--space-4);
-  overflow: auto;
-  background: #fff;
-  color: var(--color-ink);
-  border: var(--border-chunky) solid var(--color-border-chunky);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
 /* Blocks every tap while an action is in flight. */
 .marquee-scan__overlay {
   position: fixed;

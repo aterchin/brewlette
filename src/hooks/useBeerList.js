@@ -1,31 +1,20 @@
 import { useEffect, useState } from "react";
 import { fetchBeerList, saveBeerList } from "../utils/beerListCloud.js";
 import {
+  createBeerId,
   loadBeers,
   MAX_BEERS,
   nextBeerNumber,
   normalizeBeerList,
+  parseAbv,
   parseBeerNumber,
   resetBeers,
   saveBeers,
   sortByNumber,
 } from "../utils/storage.js";
 
-function createId(name) {
-  const slug = String(name || "beer")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "")
-    .slice(0, 24);
-  const suffix = Math.random().toString(36).slice(2, 8);
-  return `${slug || "beer"}-${suffix}`;
-}
-
-function parseAbv(value) {
-  if (value === null || value === undefined || value === "") return null;
-  const n = typeof value === "number" ? value : Number.parseFloat(String(value));
-  if (!Number.isFinite(n)) return null;
-  return n;
+function surpriseKey(beer) {
+  return `${beer.name}|${beer.brewery}`.trim().toLowerCase();
 }
 
 /**
@@ -76,7 +65,7 @@ export function useBeerList(user) {
       }
 
       const beer = {
-        id: createId(input.name),
+        id: createBeerId(input.name),
         number: slot,
         name: String(input.name || "").trim(),
         brewery: String(input.brewery || "").trim(),
@@ -134,6 +123,24 @@ export function useBeerList(user) {
     setBeers(persist([]));
   }
 
+  /**
+   * Swap in a whole new list (e.g. from a marquee scan). Surprises carry over
+   * for beers with the same name and brewery.
+   */
+  function replaceBeers(next) {
+    setBeers((current) => {
+      const surprises = new Map(
+        current.filter((beer) => beer.surprise).map((beer) => [surpriseKey(beer), beer.surprise]),
+      );
+      return persist(
+        normalizeBeerList(next).map((beer) => ({
+          ...beer,
+          surprise: beer.surprise || surprises.get(surpriseKey(beer)) || "",
+        })),
+      );
+    });
+  }
+
   function resetToDemo() {
     const next = normalizeBeerList(resetBeers());
     setBeers(next);
@@ -148,6 +155,7 @@ export function useBeerList(user) {
     updateBeer,
     deleteBeer,
     deleteAllBeers,
+    replaceBeers,
     resetToDemo,
     nextNumber: nextBeerNumber(beers),
   };
