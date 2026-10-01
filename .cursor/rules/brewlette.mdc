@@ -52,7 +52,7 @@ Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, 
 ## Product docs
 
 - Living brief: [`PRODUCT.md`](../../PRODUCT.md)
-- Local build spec gitignored — do not commit it
+- `DEPLOY.md` is a local prod checklist, gitignored — do not commit it
 
 ## Git
 

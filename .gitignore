@@ -27,4 +27,4 @@ dist-ssr
 *.sw?
 
 # Local planning docs (not part of the app)
-Brewlette-Cursor-Build-Spec.md
+DEPLOY.md
