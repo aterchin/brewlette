@@ -11,6 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
+
+# Firebase CLI deploy cache
+.firebase/
 .env
 .env.*
 !.env.example
