@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import BackButton from "./BackButton.jsx";
+import { extractBeersFromImages } from "../utils/marqueeOcr.js";
 import {
   deleteMarqueePhoto,
+  loadMarqueeBlobs,
   loadMarqueePhotos,
   uploadMarqueePhoto,
   validateMarqueeImage,
@@ -24,8 +26,10 @@ export default function MarqueeScan({ uid, onBack }) {
   const [previews, setPreviews] = useState([null, null]);
   // Bumped after each upload to start checking for resized copies; 0 = not polling.
   const [resizePoll, setResizePoll] = useState(0);
-  const [status, setStatus] = useState("loading"); // loading | idle | uploading | removing | error
+  const [status, setStatus] = useState("loading"); // loading | idle | uploading | removing | reading | error
   const [errorMessage, setErrorMessage] = useState("");
+  // Beers Gemini read from the current photos; null until "Read board" runs.
+  const [readBeers, setReadBeers] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -83,7 +87,7 @@ export default function MarqueeScan({ uid, onBack }) {
     });
   }, [saved, previews]);
 
-  const busy = status === "loading" || status === "uploading" || status === "removing";
+  const busy = ["loading", "uploading", "removing", "reading"].includes(status);
 
   async function uploadPhoto(index, file) {
     if (busy) return;
@@ -98,6 +102,7 @@ export default function MarqueeScan({ uid, onBack }) {
     setResizePoll(0);
     setStatus("uploading");
     setErrorMessage("");
+    setReadBeers(null);
     try {
       const photo = await uploadMarqueePhoto(uid, index, file);
       const preview = URL.createObjectURL(file);
@@ -120,6 +125,7 @@ export default function MarqueeScan({ uid, onBack }) {
     setResizePoll(0);
     setStatus("removing");
     setErrorMessage("");
+    setReadBeers(null);
     try {
       await deleteMarqueePhoto(photo.path);
       setSaved((current) => current.map((p, i) => (i === index ? null : p)));
@@ -131,7 +137,31 @@ export default function MarqueeScan({ uid, onBack }) {
     }
   }
 
-  const busyLabel = { loading: "Loading…", uploading: "Uploading…", removing: "Removing…" }[status];
+  async function readBoard() {
+    const paths = saved.filter(Boolean).map((photo) => photo.path);
+    if (!paths.length || busy) return;
+
+    setResizePoll(0);
+    setStatus("reading");
+    setErrorMessage("");
+    setReadBeers(null);
+    try {
+      const blobs = await loadMarqueeBlobs(paths);
+      setReadBeers(await extractBeersFromImages(blobs));
+      setStatus("idle");
+    } catch (error) {
+      console.error(error);
+      setStatus("error");
+      setErrorMessage("Couldn’t read the board. Try again.");
+    }
+  }
+
+  const busyLabel = {
+    loading: "Loading…",
+    uploading: "Uploading…",
+    removing: "Removing…",
+    reading: "Reading board…",
+  }[status];
   const savedCount = saved.filter(Boolean).length;
   const statusText =
     savedCount > 0
@@ -176,6 +206,23 @@ export default function MarqueeScan({ uid, onBack }) {
         <p className="bartender-controls__copy marquee-scan__status" role="status">
           {statusText}
         </p>
+
+        <div className="marquee-scan__read">
+          <button
+            type="button"
+            className="btn scoop btn-primary"
+            onClick={readBoard}
+            disabled={busy || savedCount === 0}
+          >
+            Read board
+          </button>
+        </div>
+
+        {readBeers ? (
+          <pre className="marquee-scan__result" aria-label="Beers read from the board">
+            {JSON.stringify(readBeers, null, 2)}
+          </pre>
+        ) : null}
       </div>
 
       {busyLabel ? (
