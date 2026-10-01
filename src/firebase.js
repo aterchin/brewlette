@@ -34,10 +34,10 @@ if (missingEnvVars.length > 0) {
 
 export const app = initializeApp(firebaseConfig);
 
-// Must be set before initializeAppCheck. The SDK then logs a debug token to the
-// browser console; register it under App Check > Manage debug tokens.
+// Must be set before initializeAppCheck. With no fixed token, the SDK generates one
+// per browser and logs it to the console; register it under App Check > Manage debug tokens.
 if (import.meta.env.DEV) {
-  self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+  self.FIREBASE_APPCHECK_DEBUG_TOKEN = import.meta.env.VITE_APPCHECK_DEBUG_TOKEN || true;
 }
 
 // Must run before any other Firebase service makes a request.
