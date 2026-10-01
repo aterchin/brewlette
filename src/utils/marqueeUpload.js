@@ -1,5 +1,6 @@
 import {
   deleteObject,
+  getBlob,
   getDownloadURL,
   getMetadata,
   listAll,
@@ -92,6 +93,14 @@ export async function uploadMarqueePhoto(uid, index, file) {
   await uploadBytes(ref(storage, path), file, { contentType: file.type });
   const { url } = await fileInfo(path);
   return { path, originalUrl: url, resizedUrl: null };
+}
+
+/**
+ * Download original photos as Blobs (for sending to Gemini).
+ * Needs CORS on the bucket — see cors.json.
+ */
+export function loadMarqueeBlobs(paths) {
+  return Promise.all(paths.map((path) => getBlob(ref(storage, path))));
 }
 
 /** Deletes the original and its resized copy. */
