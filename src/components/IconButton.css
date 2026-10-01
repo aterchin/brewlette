@@ -1,0 +1,58 @@
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  border: var(--border-chunky) solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--color-ink);
+  transition:
+    background-color var(--duration-fast) var(--ease-mechanical),
+    color var(--duration-fast) var(--ease-mechanical),
+    transform var(--duration-fast) var(--ease-mechanical),
+    box-shadow var(--duration-fast) var(--ease-mechanical);
+}
+
+.icon-btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+}
+
+.icon-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.icon-btn--save {
+  background: var(--color-accent);
+  border-color: var(--color-border-chunky);
+  box-shadow: var(--shadow-md);
+}
+
+.icon-btn--save:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.icon-btn--save:active:not(:disabled) {
+  box-shadow: var(--shadow-sm);
+}
+
+.icon-btn--cancel {
+  background: #fff;
+  border-color: var(--color-border-chunky);
+  box-shadow: var(--shadow-sm);
+}
+
+.icon-btn--cancel:active:not(:disabled) {
+  box-shadow: none;
+}
+
+.icon-btn--delete {
+  background: transparent;
+  color: #5a5a5a;
+}
+
+.icon-btn--delete:hover:not(:disabled),
+.icon-btn--delete:focus-visible {
+  color: var(--color-schlitz);
+}

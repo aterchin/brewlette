@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { MAX_BEERS } from "../utils/storage.js";
+import IconButton from "./IconButton.jsx";
 import "./BeerForm.css";
 
 const emptyForm = {
@@ -222,33 +223,6 @@ export default function BeerForm({
         />
       </Field>
     </form>
-  );
-}
-
-function IconButton({ label, variant, type = "button", onClick, children }) {
-  return (
-    <button
-      type={type}
-      className={`beer-form__icon-btn beer-form__icon-btn--${variant}`}
-      onClick={onClick}
-      aria-label={label}
-      title={label}
-    >
-      <svg
-        viewBox="0 0 24 24"
-        width="24"
-        height="24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.75"
-        strokeLinecap="square"
-        strokeLinejoin="miter"
-        aria-hidden="true"
-        focusable="false"
-      >
-        {children}
-      </svg>
-    </button>
   );
 }
 

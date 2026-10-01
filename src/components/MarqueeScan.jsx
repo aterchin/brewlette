@@ -1,30 +1,30 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import BackButton from "./BackButton.jsx";
 import {
   deleteMarqueePhoto,
   loadMarqueePhotos,
-  uploadMarqueePhotos,
+  uploadMarqueePhoto,
   validateMarqueeImage,
 } from "../utils/marqueeUpload.js";
 import "./BartenderControls.css";
+import "./MarqueeScan.css";
 
 // The resize extension usually finishes within a few seconds of upload.
 const RESIZE_POLL_MS = 3000;
 const RESIZE_POLL_TRIES = 6;
 
 /**
- * Upload 1–2 photos of the beer marquee.
+ * Upload 1–2 photos of the beer marquee. Picking a photo uploads it right away.
  * Saved photos are loaded from Storage each time the page opens.
  */
 export default function MarqueeScan({ uid, onBack }) {
-  // In Storage: [{ path, generation, url, originalUrl, resized } | null, ...]
+  // In Storage: [{ path, originalUrl, resizedUrl } | null, ...]
   const [saved, setSaved] = useState([null, null]);
+  // Local blob URLs of just-uploaded photos, shown until the resized copy exists.
+  const [previews, setPreviews] = useState([null, null]);
   // Bumped after each upload to start checking for resized copies; 0 = not polling.
   const [resizePoll, setResizePoll] = useState(0);
-  // Picked on this visit, not uploaded yet: [File | null, File | null]
-  const [pending, setPending] = useState([null, null]);
-  const [errors, setErrors] = useState(["", ""]);
-  const [status, setStatus] = useState("loading"); // loading | idle | uploading | error
+  const [status, setStatus] = useState("loading"); // loading | idle | uploading | removing | error
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function MarqueeScan({ uid, onBack }) {
         .then((photos) => {
           if (cancelled) return;
           setSaved(photos);
-          const waiting = photos.some((photo) => photo && !photo.resized);
+          const waiting = photos.some((photo) => photo && !photo.resizedUrl);
           if (waiting && tries < RESIZE_POLL_TRIES) {
             timer = setTimeout(check, RESIZE_POLL_MS);
           }
@@ -73,60 +73,36 @@ export default function MarqueeScan({ uid, onBack }) {
     };
   }, [uid, resizePoll]);
 
-  function pickPhoto(index, file) {
-    const error = validateMarqueeImage(file);
-    const nextPending = [...pending];
-    const nextErrors = [...errors];
+  // Drop a preview once its photo is removed or the resized copy arrives.
+  useEffect(() => {
+    previews.forEach((url, i) => {
+      if (url && (!saved[i] || saved[i].resizedUrl)) {
+        URL.revokeObjectURL(url);
+        setPreviews((current) => current.map((p, j) => (j === i ? null : p)));
+      }
+    });
+  }, [saved, previews]);
 
-    nextPending[index] = error ? null : file;
-    nextErrors[index] = error || "";
+  const busy = status === "loading" || status === "uploading" || status === "removing";
 
-    setPending(nextPending);
-    setErrors(nextErrors);
-    setStatus("idle");
-    setErrorMessage("");
-  }
-
-  async function removePhoto(index) {
-    // Not uploaded yet: just drop it.
-    if (pending[index]) {
-      const nextPending = [...pending];
-      nextPending[index] = null;
-      setPending(nextPending);
+  async function uploadPhoto(index, file) {
+    if (busy) return;
+    const invalid = validateMarqueeImage(file);
+    if (invalid) {
+      setStatus("error");
+      setErrorMessage(invalid);
       return;
     }
 
-    const photo = saved[index];
-    if (!photo) return;
-
-    // A poll finishing mid-delete would bring the photo back.
+    // A poll finishing mid-upload would overwrite the new photo with stale data.
     setResizePoll(0);
     setStatus("uploading");
     setErrorMessage("");
     try {
-      await deleteMarqueePhoto(photo.path);
-    } catch (error) {
-      console.error(error);
-      setStatus("error");
-      setErrorMessage("Couldn’t remove photo. Try again.");
-      return;
-    }
-
-    const nextSaved = [...saved];
-    nextSaved[index] = null;
-    setSaved(nextSaved);
-    setStatus("idle");
-  }
-
-  async function handleUpload() {
-    if (!pending.some(Boolean) || status === "uploading") return;
-
-    setStatus("uploading");
-    setErrorMessage("");
-    try {
-      const uploaded = await uploadMarqueePhotos(uid, pending);
-      setSaved(uploaded.map((photo, i) => photo || saved[i]));
-      setPending([null, null]);
+      const photo = await uploadMarqueePhoto(uid, index, file);
+      const preview = URL.createObjectURL(file);
+      setPreviews((current) => current.map((p, i) => (i === index ? preview : p)));
+      setSaved((current) => current.map((p, i) => (i === index ? photo : p)));
       setStatus("idle");
       setResizePoll((n) => n + 1);
     } catch (error) {
@@ -136,9 +112,31 @@ export default function MarqueeScan({ uid, onBack }) {
     }
   }
 
-  const busy = status === "loading" || status === "uploading";
-  const hasPending = pending.some(Boolean);
+  async function removePhoto(index) {
+    const photo = saved[index];
+    if (!photo || busy) return;
+
+    // A poll finishing mid-delete would bring the photo back.
+    setResizePoll(0);
+    setStatus("removing");
+    setErrorMessage("");
+    try {
+      await deleteMarqueePhoto(photo.path);
+      setSaved((current) => current.map((p, i) => (i === index ? null : p)));
+      setStatus("idle");
+    } catch (error) {
+      console.error(error);
+      setStatus("error");
+      setErrorMessage("Couldn’t remove photo. Try again.");
+    }
+  }
+
+  const busyLabel = { loading: "Loading…", uploading: "Uploading…", removing: "Removing…" }[status];
   const savedCount = saved.filter(Boolean).length;
+  const statusText =
+    savedCount > 0
+      ? `Saved ${savedCount} photo${savedCount === 1 ? "" : "s"}. Tap one to open full size.`
+      : "Wall too wide? Add a second shot.";
 
   return (
     <section className="bartender-controls" aria-label="Scan marquee">
@@ -150,69 +148,46 @@ export default function MarqueeScan({ uid, onBack }) {
         </div>
       </header>
 
-      <div className="bartender-controls__body">
-        <PhotoSlot
-          label="Photo 1"
-          file={pending[0]}
-          saved={saved[0]}
-          error={errors[0]}
-          disabled={busy}
-          onPick={(file) => pickPhoto(0, file)}
-          onRemove={() => removePhoto(0)}
-        />
-        <PhotoSlot
-          label="Photo 2 (optional)"
-          hint="Wall too wide? Add a second shot."
-          file={pending[1]}
-          saved={saved[1]}
-          error={errors[1]}
-          disabled={busy}
-          onPick={(file) => pickPhoto(1, file)}
-          onRemove={() => removePhoto(1)}
-        />
-
-        <div className="bartender-controls__panel">
-          {status === "error" ? (
-            <p className="bartender-controls__error" role="alert">
-              {errorMessage}
-            </p>
-          ) : null}
-          {status !== "error" && savedCount > 0 && !hasPending ? (
-            <p className="bartender-controls__copy" role="status">
-              Saved {savedCount} photo{savedCount === 1 ? "" : "s"}.
-            </p>
-          ) : null}
-          <div className="bartender-controls__actions">
-            <button
-              type="button"
-              className="btn scoop btn-primary"
-              onClick={handleUpload}
-              disabled={!hasPending || busy}
-            >
-              {status === "loading"
-                ? "Loading…"
-                : status === "uploading"
-                  ? "Working…"
-                  : "Upload photos"}
-            </button>
-          </div>
+      <div className="bartender-controls__panel">
+        <div className="marquee-scan__grid">
+          <PhotoSlot
+            label="Photo 1"
+            saved={saved[0]}
+            preview={previews[0]}
+            disabled={busy}
+            onPick={(file) => uploadPhoto(0, file)}
+            onRemove={() => removePhoto(0)}
+          />
+          <PhotoSlot
+            label="Photo 2 (optional)"
+            saved={saved[1]}
+            preview={previews[1]}
+            disabled={busy}
+            onPick={(file) => uploadPhoto(1, file)}
+            onRemove={() => removePhoto(1)}
+          />
         </div>
+
+        {status === "error" ? (
+          <p className="bartender-controls__error marquee-scan__status" role="alert">
+            {errorMessage}
+          </p>
+        ) : null}
+        <p className="bartender-controls__copy marquee-scan__status" role="status">
+          {statusText}
+        </p>
       </div>
+
+      {busyLabel ? (
+        <div className="marquee-scan__overlay" role="status" aria-live="polite">
+          <p className="marquee-scan__overlay-card">{busyLabel}</p>
+        </div>
+      ) : null}
     </section>
   );
 }
 
-function PhotoSlot({ label, hint, file, saved, error, disabled, onPick, onRemove }) {
-  const previewUrl = useMemo(
-    () => (file ? URL.createObjectURL(file) : null),
-    [file],
-  );
-
-  useEffect(() => {
-    if (!previewUrl) return undefined;
-    return () => URL.revokeObjectURL(previewUrl);
-  }, [previewUrl]);
-
+function PhotoSlot({ label, saved, preview, disabled, onPick, onRemove }) {
   function handleChange(event) {
     const picked = event.target.files?.[0];
     if (picked) onPick(picked);
@@ -220,71 +195,53 @@ function PhotoSlot({ label, hint, file, saved, error, disabled, onPick, onRemove
     event.target.value = "";
   }
 
-  // A newly picked photo wins over the saved one until it's uploaded.
-  const imageUrl = previewUrl || saved?.url;
-  const image = imageUrl ? (
-    <img
-      src={imageUrl}
-      alt={`${label} ${previewUrl ? "preview" : "saved"}`}
-      style={{
-        display: "block",
-        maxWidth: 200,
-        maxHeight: 200,
-        marginTop: 12,
-        border: "var(--border-chunky) solid var(--color-ink)",
-      }}
-    />
-  ) : null;
-
-  return (
-    <div className="bartender-controls__panel">
-      <h3>{label}</h3>
-      {hint ? <p className="bartender-controls__copy">{hint}</p> : null}
-
+  const tile = saved ? (
+    <div className="marquee-scan__tile">
+      <a
+        className="marquee-scan__link"
+        href={saved.originalUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Open full-size ${label}`}
+      >
+        <img
+          className="marquee-scan__img"
+          src={saved.resizedUrl || preview || saved.originalUrl}
+          alt={label}
+        />
+      </a>
+    </div>
+  ) : (
+    <label className="marquee-scan__tile marquee-scan__tile--empty">
       <input
         type="file"
         accept="image/*"
+        className="marquee-scan__file"
         onChange={handleChange}
         disabled={disabled}
-        aria-label={label}
+        aria-label={`Add ${label}`}
       />
+      <span className="marquee-scan__plus" aria-hidden="true">+</span>
+      <span className="marquee-scan__label">{label}</span>
+    </label>
+  );
 
-      {error ? (
-        <p className="bartender-controls__error" role="alert">
-          {error}
-        </p>
-      ) : null}
-
-      {imageUrl ? (
-        <div>
-          {previewUrl ? (
-            image
-          ) : (
-            <a
-              href={saved.originalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Open full-size ${label}`}
-              style={{ display: "inline-block" }}
-            >
-              {image}
-            </a>
-          )}
-          <p className="bartender-controls__copy">
-            {previewUrl ? "Not uploaded yet" : "Saved — tap to open full size"}
-          </p>
-          <div className="bartender-controls__actions">
-            <button
-              type="button"
-              className="btn scoop btn-ghost"
-              onClick={onRemove}
-              disabled={disabled}
-            >
-              Remove
-            </button>
-          </div>
-        </div>
-      ) : null}
+  return (
+    <div className="marquee-scan__slot">
+      {tile}
+      <div className="marquee-scan__actions">
+        {saved ? (
+          <button
+            type="button"
+            className="marquee-scan__remove"
+            onClick={onRemove}
+            disabled={disabled}
+            aria-label={`Remove ${label}`}
+          >
+            Remove
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }

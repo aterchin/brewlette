@@ -14,7 +14,7 @@ export const MAX_IMAGES_PER_SCAN = 2;
 export const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic"];
 
 // Keep in sync with IMG_SIZES in extensions/storage-resize-images.env.
-export const RESIZED_SIZE = "200x200";
+export const RESIZED_SIZE = "640x640";
 
 /** Fixed path per slot: marquee_scans/{uid}/photo-1, photo-2 */
 function photoPath(uid, index) {
@@ -22,7 +22,7 @@ function photoPath(uid, index) {
 }
 
 /**
- * Where the Resize Images extension writes its copy: photo-1 -> photo-1_200x200.
+ * Where the Resize Images extension writes its copy: photo-1 -> photo-1_640x640.
  * It appears a few seconds after upload; HEIC never gets one (unsupported by the extension).
  */
 function resizedPath(path) {
@@ -30,12 +30,16 @@ function resizedPath(path) {
 }
 
 /**
- * Download URL with the file's generation appended.
+ * Download URL (with the file's generation appended) and last-updated time.
  * Storage bumps `generation` on every overwrite, so the browser can't show a stale cached image.
  */
-async function versionedUrl(fileRef, generation) {
-  const url = await getDownloadURL(fileRef);
-  return `${url}&v=${generation}`;
+async function fileInfo(path) {
+  const fileRef = ref(storage, path);
+  const [url, { generation, updated }] = await Promise.all([
+    getDownloadURL(fileRef),
+    getMetadata(fileRef),
+  ]);
+  return { url: `${url}&v=${generation}`, updated: new Date(updated) };
 }
 
 /**
@@ -56,78 +60,38 @@ export function validateMarqueeImage(file) {
 /**
  * Load this user's current photos from Storage.
  * Lists the folder first so empty slots don't trigger 404s.
- * `url` is the resized copy when it's ready (`resized: true`), otherwise the original.
- * Returns [{ path, generation, url, originalUrl, resized } | null, ...] — null for an empty slot.
+ * Returns [{ path, originalUrl, resizedUrl } | null, ...] — null for an empty slot,
+ * `resizedUrl` null until the extension has made a copy of the current original.
  */
 export async function loadMarqueePhotos(uid) {
   const folder = await listAll(ref(storage, `marquee_scans/${uid}`));
   const existingPaths = folder.items.map((item) => item.fullPath);
-  const photos = [];
 
-  for (let i = 0; i < MAX_IMAGES_PER_SCAN; i += 1) {
-    const path = photoPath(uid, i);
-    if (!existingPaths.includes(path)) {
-      photos.push(null);
-      continue;
-    }
-    const fileRef = ref(storage, path);
-    const metadata = await getMetadata(fileRef);
-    const originalUrl = await versionedUrl(fileRef, metadata.generation);
-    const resizedUrl =
-      existingPaths.includes(resizedPath(path)) &&
-      (await freshResizedUrl(path, metadata));
-    photos.push({
-      path,
-      generation: metadata.generation,
-      url: resizedUrl || originalUrl,
-      originalUrl,
-      resized: Boolean(resizedUrl),
-    });
-  }
-
-  return photos;
+  return Promise.all(
+    Array.from({ length: MAX_IMAGES_PER_SCAN }, async (_, i) => {
+      const path = photoPath(uid, i);
+      if (!existingPaths.includes(path)) return null;
+      const hasResized = existingPaths.includes(resizedPath(path));
+      const [original, resized] = await Promise.all([
+        fileInfo(path),
+        hasResized ? fileInfo(resizedPath(path)) : null,
+      ]);
+      // An older copy can outlive its photo if the extension finished after a quick remove.
+      const fresh = resized && resized.updated >= original.updated;
+      return { path, originalUrl: original.url, resizedUrl: fresh ? resized.url : null };
+    }),
+  );
 }
 
 /**
- * URL of the resized copy, or null if it predates the current original
- * (photo was just replaced and the extension hasn't caught up yet).
+ * Upload one photo into slot `index`.
+ * Returns { path, originalUrl, resizedUrl: null }.
  */
-async function freshResizedUrl(path, originalMetadata) {
-  const resizedRef = ref(storage, resizedPath(path));
-  const resizedMetadata = await getMetadata(resizedRef);
-  if (new Date(resizedMetadata.updated) < new Date(originalMetadata.updated)) {
-    return null;
-  }
-  return versionedUrl(resizedRef, resizedMetadata.generation);
-}
-
-/**
- * Upload photos by slot ([file | null, file | null]); slot N overwrites photo-N.
- * Returns [{ path, generation, url, originalUrl, resized } | null, ...] for the uploaded slots only.
- * The resized copy doesn't exist yet, so `url` is the original.
- */
-export async function uploadMarqueePhotos(uid, files) {
-  const photos = [];
-
-  for (let i = 0; i < MAX_IMAGES_PER_SCAN; i += 1) {
-    const file = files[i];
-    if (!file) {
-      photos.push(null);
-      continue;
-    }
-    const fileRef = ref(storage, photoPath(uid, i));
-    const result = await uploadBytes(fileRef, file, { contentType: file.type });
-    const originalUrl = await versionedUrl(fileRef, result.metadata.generation);
-    photos.push({
-      path: fileRef.fullPath,
-      generation: result.metadata.generation,
-      url: originalUrl,
-      originalUrl,
-      resized: false,
-    });
-  }
-
-  return photos;
+export async function uploadMarqueePhoto(uid, index, file) {
+  const path = photoPath(uid, index);
+  await uploadBytes(ref(storage, path), file, { contentType: file.type });
+  const { url } = await fileInfo(path);
+  return { path, originalUrl: url, resizedUrl: null };
 }
 
 /** Deletes the original and its resized copy. */
