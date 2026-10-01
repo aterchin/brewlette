@@ -1,5 +1,7 @@
 {
-  "projects": {},
+  "projects": {
+    "default": "brewlette-2e222"
+  },
   "targets": {},
   "etags": {
     "brewlette-2e222": {
