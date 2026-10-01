@@ -86,7 +86,6 @@ export function normalizeBeerList(beers) {
       style: typeof beer.style === "string" ? beer.style : "",
       abv,
       description: typeof beer.description === "string" ? beer.description : "",
-      surprise: typeof beer.surprise === "string" ? beer.surprise : "",
     };
   });
 
@@ -109,7 +108,6 @@ export function beersFromScan(scanned) {
       style: text(beer.style),
       abv: parseAbv(beer.abv),
       description: text(beer.description),
-      surprise: "",
     }));
   return normalizeBeerList(beers);
 }

@@ -88,7 +88,7 @@ export default function ScanReview({ beers, skippedCount, currentCount, onReplac
       <ConfirmDialog
         open={confirmOpen}
         title="Replace beer list?"
-        message={`Replace your ${plural(currentCount, "beer")} with these ${beers.length}? Surprises carry over for beers with the same name and brewery.`}
+        message={`Replace your ${plural(currentCount, "beer")} with these ${beers.length}?`}
         confirmLabel="Replace"
         onConfirm={() => {
           setConfirmOpen(false);

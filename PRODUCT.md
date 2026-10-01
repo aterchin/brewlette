@@ -32,8 +32,7 @@ Subtle bottom-right gear icon — outside the game column. Firebase Auth (email/
   brewery: string,
   style: string,
   abv: number | null,
-  description: string,
-  surprise: string     // optional fun payoff; omit UI if empty
+  description: string
 }
 ```
 
@@ -47,7 +46,7 @@ One live list per signed-in bartender. Source of truth: Firestore `beer_lists/{u
 |-------|------|--------|
 | `userId` | string | Same as document id (the bartender’s Auth UID) |
 | `updatedAt` | timestamp | Server timestamp on write |
-| `beers` | array | Up to 20 beer maps (`id`, `number`, `name` required; optional `brewery`, `style`, `abv`, `description`, `surprise`) |
+| `beers` | array | Up to 20 beer maps (`id`, `number`, `name` required; optional `brewery`, `style`, `abv`, `description`) |
 
 Public read; write only if `request.auth.uid == uid`. Rules live in [`firestore.rules`](firestore.rules).
 
@@ -56,7 +55,7 @@ Public read; write only if `request.auth.uid == uid`. Rules live in [`firestore.
 1. Lock against a second spin while animating  
 2. Choose winner with `crypto.getRandomValues`  
 3. Animate the wheel to land on that beer  
-4. Reveal name → brewery/style/ABV → description → delayed surprise  
+4. Reveal name → brewery/style/ABV → description  
 5. Optional **Remove this beer** (persist + return to spin) — never automatic  
 
 ## Design north star
@@ -85,14 +84,13 @@ Record changes from the original build idea here so future chats don’t re-liti
 | 2026-09-22 | Admin actions live on a separate Controls screen (reset, change password) — not in the beer-list flow |
 | 2026-09-23 | One live beer list only; built-in `sampleBeers.js` is demo/reset fodder — no editable defaults list / `brewlette.defaults.v1` |
 | 2026-09-24 | Firebase Auth (email/password + Google) replaces soft PIN for Edit; Controls shows account + sign out; beers still local; Facebook dropped |
-| 2026-09-24 | Firestore `beer_lists/{uid}` per bartender + localStorage device cache; public read; owner-only writes; max 20 beers; field `surprise` |
+| 2026-09-24 | Firestore `beer_lists/{uid}` per bartender + localStorage device cache; public read; owner-only writes; max 20 beers |
 | 2026-09-27 | Split edit view dropped: full-width list; tapping a beer or Add opens a full-screen form (X cancel + Save check); capped at `--content-max` ≥768px |
+| 2026-09-30 | Beer `surprise` field removed (model, form, result reveal); green zero always shows SPIN AGAIN |
 
 ## Backlog
 
 - [ ] Focus / presentation mode — hide Edit and secondary chrome while spinning (no fullscreen API required)
 - [ ] Multiple saved lists, shareable URLs, QR, public/customer mode
 - [ ] Beer images, price, IBU, ratings
-- [ ] Richer surprise types (challenge, discount, bartender instruction) — keep `surprise` a string until needed
-
 Do not implement backlog items unless explicitly requested.

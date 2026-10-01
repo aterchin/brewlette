@@ -11,8 +11,7 @@
  *   brewery: string,
  *   style: string,
  *   abv: number | null,
- *   description: string,
- *   surprise: string     // optional fun payoff after a spin
+ *   description: string
  * }
  */
 
@@ -26,7 +25,6 @@ export const sampleBeers = [
     abv: 4.8,
     description:
       "Cologne specialty lager brewed with water, malt, and hops extract following a distinct family formula as well as the German Purity Law of 1516",
-    surprise: "",
   },
   {
     id: "jever-pilsener",
@@ -37,7 +35,6 @@ export const sampleBeers = [
     abv: 4.9,
     description:
       "Classic Northern German Pilsner with a dry, bitter, and refreshing finish",
-    surprise: "",
   },
   {
     id: "sierra-nevada-oktoberfest",
@@ -48,7 +45,6 @@ export const sampleBeers = [
     abv: 6.0,
     description:
       "Lightly toasted malt, herbal, crisp. Collaboration with Brauerei Gutmann. Authentic Märzen style",
-    surprise: "",
   },
   {
     id: "spaten-oktoberfest-marzen",
@@ -58,7 +54,6 @@ export const sampleBeers = [
     style: "Märzen / Oktoberfest",
     abv: 5.9,
     description: "Medium body, aromatic, traditional amber Marzen style beer",
-    surprise: "",
   },
   {
     id: "half-acre-lagertown",
@@ -69,7 +64,6 @@ export const sampleBeers = [
     abv: 5.8,
     description:
       "Marzen (Oktoberfest) - Clean, malty, smooth, easy drinking crisp finish",
-    surprise: "",
   },
   {
     id: "schilling-konstantin",
@@ -79,7 +73,6 @@ export const sampleBeers = [
     style: "Märzen / Oktoberfest",
     abv: 5.0,
     description: "Light bodied Marzen style festbier",
-    surprise: "",
   },
   {
     id: "ommegang-grande-tripel",
@@ -89,7 +82,6 @@ export const sampleBeers = [
     style: "Belgian Tripel",
     abv: 9.0,
     description: "Belgian Tripel - Spiced, complex, smooth golden ale",
-    surprise: "",
   },
   {
     id: "allgauer-oberdorfer-festbier",
@@ -99,7 +91,6 @@ export const sampleBeers = [
     style: "Festbier / Oktoberfest",
     abv: 5.4,
     description: "Festbier style. Bready, toasted malt, caramel accents",
-    surprise: "",
   },
   {
     id: "paulaner-oktoberfest",
@@ -109,7 +100,6 @@ export const sampleBeers = [
     style: "Märzen / Oktoberfest",
     abv: 5.8,
     description: "Amber Marzen style Okt-Fest",
-    surprise: "",
   },
   {
     id: "lawsons-oktoberfest",
@@ -119,7 +109,6 @@ export const sampleBeers = [
     style: "Märzen / Oktoberfest",
     abv: 6.5,
     description: "Marzen-style Oktoberfest beer",
-    surprise: "",
   },
   {
     id: "shacksbury-cider-dry",
@@ -129,7 +118,6 @@ export const sampleBeers = [
     style: "Cider",
     abv: 5.2,
     description: "Dry cider - crisp, clean, and refreshing",
-    surprise: "",
   },
   // Slot 12 blank / crossed out on board — gap left intentional
   {
@@ -140,7 +128,6 @@ export const sampleBeers = [
     style: "NEIPA / Hazy IPA",
     abv: 6.1,
     description: "IPA - New England / Hazy IPA",
-    surprise: "",
   },
   {
     id: "allagash-haunted-house",
@@ -150,7 +137,6 @@ export const sampleBeers = [
     style: "Black IPA",
     abv: 6.1,
     description: "Black IPA / Hoppy Dark Ale with coffee-like roasted notes",
-    surprise: "",
   },
   {
     id: "grimm-tesseract",
@@ -161,7 +147,6 @@ export const sampleBeers = [
     abv: 8.0,
     description:
       "Double IPA - New England style double dry hopped hazy DIPA",
-    surprise: "",
   },
   {
     id: "weihenstephaner-hefeweissbier",
@@ -172,7 +157,6 @@ export const sampleBeers = [
     abv: 5.4,
     description:
       "The gold standard of wheat beer from the world's oldest brewery. Fruity, banana & clove aromas",
-    surprise: "",
   },
   {
     id: "grimm-no-hands-now",
@@ -182,7 +166,6 @@ export const sampleBeers = [
     style: "Sour / Berliner Weisse",
     abv: 3.8,
     description: "Sour Ale - Berliner Weisse style",
-    surprise: "",
   },
   {
     id: "hacker-pschorr-oktoberfest-marzen",
@@ -192,7 +175,6 @@ export const sampleBeers = [
     style: "Märzen / Oktoberfest",
     abv: 5.8,
     description: "Classic Munich Marzen style lager",
-    surprise: "",
   },
   {
     id: "drekker-smol-blue-razz",
@@ -202,6 +184,5 @@ export const sampleBeers = [
     style: "Fruit Sour",
     abv: 6.0,
     description: "Sour Fruit Beer - Slushy style sour with raspberry notes",
-    surprise: "",
   },
 ];

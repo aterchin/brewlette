@@ -13,10 +13,6 @@ import {
   sortByNumber,
 } from "../utils/storage.js";
 
-function surpriseKey(beer) {
-  return `${beer.name}|${beer.brewery}`.trim().toLowerCase();
-}
-
 /**
  * @param {import("firebase/auth").User | null} user - signed-in bartender, or null in Spin Mode
  */
@@ -72,7 +68,6 @@ export function useBeerList(user) {
         style: String(input.style || "").trim(),
         abv: parseAbv(input.abv),
         description: String(input.description || "").trim(),
-        surprise: String(input.surprise || "").trim(),
       };
 
       if (!beer.name) return current;
@@ -105,7 +100,6 @@ export function useBeerList(user) {
           style: String(input.style ?? beer.style).trim(),
           abv: parseAbv(input.abv !== undefined ? input.abv : beer.abv),
           description: String(input.description ?? beer.description).trim(),
-          surprise: String(input.surprise ?? beer.surprise).trim(),
         };
       });
 
@@ -123,22 +117,9 @@ export function useBeerList(user) {
     setBeers(persist([]));
   }
 
-  /**
-   * Swap in a whole new list (e.g. from a marquee scan). Surprises carry over
-   * for beers with the same name and brewery.
-   */
+  /** Swap in a whole new list (e.g. from a marquee scan). */
   function replaceBeers(next) {
-    setBeers((current) => {
-      const surprises = new Map(
-        current.filter((beer) => beer.surprise).map((beer) => [surpriseKey(beer), beer.surprise]),
-      );
-      return persist(
-        normalizeBeerList(next).map((beer) => ({
-          ...beer,
-          surprise: beer.surprise || surprises.get(surpriseKey(beer)) || "",
-        })),
-      );
-    });
+    setBeers(persist(normalizeBeerList(next)));
   }
 
   function resetToDemo() {

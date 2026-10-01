@@ -1,12 +1,11 @@
 /** Degrees in a full circle. */
 export const FULL_CIRCLE = 360;
 
-/** Green-zero pocket — not a tap; result is surprise-only (default SPIN AGAIN). */
+/** Green-zero pocket — not a tap; result just says SPIN AGAIN. */
 export const WHEEL_ZERO = Object.freeze({
   id: "__wheel_zero__",
   number: 0,
   isZero: true,
-  surprise: "SPIN AGAIN",
 });
 
 /**

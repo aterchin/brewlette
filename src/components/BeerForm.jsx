@@ -10,7 +10,6 @@ const emptyForm = {
   style: "",
   abv: "",
   description: "",
-  surprise: "",
 };
 
 export default function BeerForm({
@@ -38,7 +37,6 @@ export default function BeerForm({
         style: initial.style || "",
         abv: initial.abv == null ? "" : String(initial.abv),
         description: initial.description || "",
-        surprise: initial.surprise || "",
       });
     } else {
       setForm({
@@ -101,7 +99,6 @@ export default function BeerForm({
       style: form.style.trim(),
       abv,
       description: form.description.trim(),
-      surprise: form.surprise.trim(),
     });
 
     if (!initial) {
@@ -210,16 +207,6 @@ export default function BeerForm({
           value={form.description}
           onChange={handleChange}
           rows={3}
-        />
-      </Field>
-
-      <Field label="Surprise message" htmlFor="beer-surprise">
-        <textarea
-          id="beer-surprise"
-          name="surprise"
-          value={form.surprise}
-          onChange={handleChange}
-          rows={2}
         />
       </Field>
     </form>

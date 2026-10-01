@@ -6,7 +6,6 @@ const FADE_OUT_MS = 280;
 
 export default function BeerResult({ beer, onSpinAgain }) {
   const [showDetails, setShowDetails] = useState(false);
-  const [showSurprise, setShowSurprise] = useState(false);
   const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
@@ -14,19 +13,15 @@ export default function BeerResult({ beer, onSpinAgain }) {
 
     if (prefersReducedMotion()) {
       setShowDetails(true);
-      setShowSurprise(true);
       return undefined;
     }
 
     setShowDetails(false);
-    setShowSurprise(false);
 
     const detailsTimer = window.setTimeout(() => setShowDetails(true), 700);
-    const surpriseTimer = window.setTimeout(() => setShowSurprise(true), 1300);
 
     return () => {
       window.clearTimeout(detailsTimer);
-      window.clearTimeout(surpriseTimer);
     };
   }, [beer?.id]);
 
@@ -58,17 +53,16 @@ export default function BeerResult({ beer, onSpinAgain }) {
     .join(" ");
 
   if (beer.isZero) {
-    const message = beer.surprise?.trim() || "SPIN AGAIN";
     return (
       <section className={className} aria-live="polite">
-        <p className="visually-hidden">Zero. {message}.</p>
+        <p className="visually-hidden">Zero. Spin again.</p>
         <p className="beer-result__number">#0</p>
         <h2
           className={`beer-result__name beer-result__zero-message ${
-            showSurprise ? "is-visible" : ""
+            showDetails ? "is-visible" : ""
           }`}
         >
-          {message}
+          SPIN AGAIN
         </h2>
         <div className="beer-result__actions">
           <button
@@ -88,8 +82,6 @@ export default function BeerResult({ beer, onSpinAgain }) {
     typeof beer.abv === "number" && Number.isFinite(beer.abv)
       ? `${formatAbv(beer.abv)}% ABV`
       : null;
-
-  const surprise = beer.surprise?.trim();
 
   return (
     <section className={className} aria-live="polite">
@@ -116,14 +108,6 @@ export default function BeerResult({ beer, onSpinAgain }) {
           <p className="beer-result__description">{beer.description}</p>
         )}
       </div>
-
-      {surprise && (
-        <blockquote
-          className={`beer-result__surprise ${showSurprise ? "is-visible" : ""}`}
-        >
-          “{surprise}”
-        </blockquote>
-      )}
 
       <div className="beer-result__actions">
         <button

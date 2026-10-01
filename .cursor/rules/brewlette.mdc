@@ -14,7 +14,7 @@ Follow [`.cursorrules`](../.cursorrules) for visual system (“Taproom Roulette�
 - React + Vite + JavaScript
 - HTML Canvas wheel; CSS design tokens in `src/styles/`
 - Beer list: Firestore `beer_lists/{uid}` via `src/utils/beerListCloud.js`; `localStorage` device cache via `src/utils/storage.js`
-- Each signed-in bartender owns their list; max 20 beers; beer field is `surprise` (not `message`)
+- Each signed-in bartender owns their list; max 20 beers
 - Firebase Auth (email/password + Google) for the Edit gate — `src/firebase.js`, `hooks/useAuth.js`
 - Static Vite site — **no** Next.js or custom backend
 - Soft bartender PIN is retired; do not reintroduce client-only password storage
