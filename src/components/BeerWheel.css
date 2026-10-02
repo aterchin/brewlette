@@ -51,36 +51,24 @@
   border-radius: 50%;
 }
 
-.beer-wheel__spin {
-  min-width: 12rem;
-  font-size: var(--font-size-xl);
-  padding: var(--space-4) var(--space-8);
+.beer-wheel__canvas.is-ready {
+  cursor: pointer;
 }
 
-.beer-wheel__countdown {
-  font-family: var(--font-family-number);
+.beer-wheel__canvas:focus-visible {
+  outline-offset: 6px;
+}
+
+.beer-wheel__hint {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  transition: opacity var(--duration-med) var(--ease-mechanical);
 }
 
-.beer-wheel__spin:disabled {
-  animation: blurAndScale 7s var(--ease-out);
-}
-
-@keyframes blurAndScale {
-  0% {
-    transform: scale(1);
-    filter: blur(0px);
-    visibility: hidden;
-  }
-  1% {
-    transform: scale(0.7);
-    filter: blur(1px);
-    visibility: visible;
-  }
-  100% {
-    transform: scale(1);
-    filter: blur(0px);
-  }
+/* Keeps its space so the wheel doesn't jump while spinning */
+.beer-wheel__hint.is-hidden {
+  opacity: 0;
 }
