@@ -78,7 +78,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-1);
 }
 
 .beer-editor__nav-empty {
@@ -103,7 +103,6 @@
   background: var(--color-marquee);
   color: var(--color-ink);
   border-radius: 0;
-  box-shadow: var(--shadow-sm);
   cursor: pointer;
 }
 
@@ -150,7 +149,6 @@
   background: var(--color-marquee);
   color: var(--color-ink);
   border-radius: 0;
-  box-shadow: var(--shadow-lg);
 }
 
 /* Row ⇄ form morph: the card grows/shrinks while contents stay pinned top-left */
@@ -162,7 +160,6 @@
 ::view-transition-image-pair(beer-sheet) {
   overflow: clip;
   background: var(--color-marquee);
-  box-shadow: var(--shadow-lg);
 }
 
 ::view-transition-old(beer-sheet),
@@ -177,7 +174,7 @@
 }
 
 ::view-transition-new(beer-sheet) {
-  animation: beer-sheet-fade-in 300ms 120ms ease-out both;
+  animation: beer-sheet-fade-in 260ms 160ms ease-out both;
 }
 
 ::view-transition-old(root),
