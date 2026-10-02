@@ -1,6 +1,4 @@
-import { useState } from "react";
 import BackButton from "./BackButton.jsx";
-import ConfirmDialog from "./ConfirmDialog.jsx";
 import { MAX_BEERS } from "../utils/storage.js";
 import "./BartenderControls.css";
 import "./BeerEditor.css";
@@ -12,22 +10,23 @@ function plural(n, word) {
 
 /**
  * Beers read from the marquee, shown before they replace the bartender's list.
+ * This screen is the confirmation, so "Put on the wheel" replaces right away.
  * `beers` is already normalized (ids, unique numbers, max MAX_BEERS).
  */
 export default function ScanReview({ beers, skippedCount, currentCount, onReplace, onCancel }) {
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const found = beers.length > 0;
 
   return (
     <section className="bartender-controls" aria-label="Review scanned beers">
       <header className="bartender-controls__topbar">
         <BackButton onClick={onCancel} label="Back to photos" />
         <div className="bartender-controls__topbar-copy">
-          <h2>Review beers</h2>
-          <p>{plural(beers.length, "beer")} read from the board</p>
+          <h2>{found ? "Look it over" : "No beers found"}</h2>
+          <p>{found ? `${plural(beers.length, "beer")} on the board` : "Try another photo"}</p>
         </div>
       </header>
 
-      {beers.length > 0 ? (
+      {found ? (
         <ul className="beer-editor__nav">
           {beers.map((beer) => (
             <li key={beer.id} className="beer-editor__nav-item scan-review__item">
@@ -51,51 +50,44 @@ export default function ScanReview({ beers, skippedCount, currentCount, onReplac
             </li>
           ))}
         </ul>
+      ) : (
+        <div className="bartender-controls__panel">
+          <p className="bartender-controls__copy scan-review__empty">
+            A straighter, closer shot of the board usually does it.
+          </p>
+        </div>
+      )}
+
+      {skippedCount > 0 ? (
+        <p className="scan-review__skipped">
+          Skipped {skippedCount} {skippedCount === 1 ? "entry" : "entries"} (unreadable
+          name, or over the {MAX_BEERS}-beer limit).
+        </p>
       ) : null}
 
-      <div className="bartender-controls__panel">
-        {beers.length === 0 ? (
-          <p className="bartender-controls__copy">
-            No beers found. Try a straighter, closer photo of the board.
-          </p>
+      <div className="action-bar">
+        {found ? (
+          <>
+            <button
+              type="button"
+              className="btn btn-primary btn-xl"
+              onClick={() => onReplace(beers)}
+            >
+              Put on the wheel
+            </button>
+            {currentCount > 0 ? (
+              <p className="action-bar__note">
+                Replaces your current {plural(currentCount, "beer")}. You can fix mistakes in
+                the beer list.
+              </p>
+            ) : null}
+          </>
         ) : (
-          <p className="bartender-controls__copy">
-            Check the list above. You can fix any mistakes in the beer list after replacing.
-          </p>
+          <button type="button" className="btn btn-primary btn-xl" onClick={onCancel}>
+            Try another photo
+          </button>
         )}
-        {skippedCount > 0 ? (
-          <p className="bartender-controls__copy">
-            Skipped {skippedCount} {skippedCount === 1 ? "entry" : "entries"} (unreadable
-            name, or over the {MAX_BEERS}-beer limit).
-          </p>
-        ) : null}
-
-        <div className="bartender-controls__actions">
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => setConfirmOpen(true)}
-            disabled={beers.length === 0}
-          >
-            Replace list
-          </button>
-          <button type="button" className="btn btn-ghost" onClick={onCancel}>
-            Discard
-          </button>
-        </div>
       </div>
-
-      <ConfirmDialog
-        open={confirmOpen}
-        title="Replace beer list?"
-        message={`Replace your ${plural(currentCount, "beer")} with these ${beers.length}?`}
-        confirmLabel="Replace"
-        onConfirm={() => {
-          setConfirmOpen(false);
-          onReplace(beers);
-        }}
-        onCancel={() => setConfirmOpen(false)}
-      />
     </section>
   );
 }

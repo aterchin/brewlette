@@ -11,3 +11,13 @@
   margin-top: var(--space-1);
   color: #5a5a5a;
 }
+
+.scan-review__empty {
+  margin: 0;
+}
+
+.scan-review__skipped {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}

@@ -1,16 +1,41 @@
-.marquee-scan__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.marquee-scan__step {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-4);
+}
+
+.marquee-scan__step-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.marquee-scan__step-head h3 {
+  font-size: var(--font-size-xl);
+  letter-spacing: var(--tracking-widest);
+  color: var(--color-marquee);
+}
+
+.marquee-scan__photos {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.marquee-scan__photos--pair {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .marquee-scan__tile {
   position: relative;
-  aspect-ratio: 1;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-  border-radius: var(--radius-md);
-  background: #fff;
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-lg);
+  background: var(--color-marquee);
+  box-shadow: var(--shadow-lg);
+}
+
+.marquee-scan__photos--pair .marquee-scan__tile {
+  aspect-ratio: 4 / 3;
 }
 
 .marquee-scan__tile--empty {
@@ -18,27 +43,56 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-  border: 2px dashed rgba(18, 22, 26, 0.3);
-  background: var(--color-marquee-sunk);
-  box-shadow: none;
+  gap: var(--space-3);
+  padding: var(--space-4);
   color: var(--color-ink);
   cursor: pointer;
-  transition: transform var(--duration-fast) var(--ease-mechanical);
+  transition:
+    transform var(--duration-fast) var(--ease-mechanical),
+    box-shadow var(--duration-fast) var(--ease-mechanical);
+}
+
+/* Inset dashed frame reads as "drop a photo here" without an outer outline. */
+.marquee-scan__tile--empty::before {
+  content: "";
+  position: absolute;
+  inset: var(--space-3);
+  border: 3px dashed rgba(18, 22, 26, 0.22);
+  border-radius: var(--radius-md);
+  pointer-events: none;
+}
+
+.marquee-scan__tile--empty:hover {
+  background: #fff;
 }
 
 .marquee-scan__tile--empty:active {
-  transform: translate(2px, 2px);
+  transform: translate(3px, 3px);
+  box-shadow: var(--shadow-sm);
 }
 
 .marquee-scan__tile--empty:focus-within {
   outline: 3px solid var(--color-accent);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 .marquee-scan__tile--empty:has(:disabled) {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+.marquee-scan__tile--compact {
+  flex-direction: row;
+  justify-content: flex-start;
+  aspect-ratio: auto;
+  min-height: 5.5rem;
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-marquee-sunk);
+  box-shadow: var(--shadow-md);
+}
+
+.marquee-scan__tile--compact:hover {
+  background: var(--color-marquee-sunk-hover);
 }
 
 /* Visually hidden but still focusable, so keyboard users can open the picker. */
@@ -50,28 +104,43 @@
   pointer-events: none;
 }
 
-.marquee-scan__plus {
-  font-family: var(--font-family-number);
-  font-size: var(--font-size-3xl);
-  line-height: 1;
+.marquee-scan__icon {
+  flex-shrink: 0;
+  color: var(--color-accent-deep);
 }
 
-.marquee-scan__label {
-  padding: 0 var(--space-2);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--tracking-wide);
+.marquee-scan__empty-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
   text-align: center;
+}
+
+.marquee-scan__tile--compact .marquee-scan__empty-copy {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.marquee-scan__empty-title {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
-.marquee-scan__link {
-  display: block;
-  width: 100%;
-  height: 100%;
+.marquee-scan__tile--compact .marquee-scan__empty-title {
+  font-size: var(--font-size-lg);
 }
 
-/* Crops to the square tile for display only; the stored photo is untouched. */
+.marquee-scan__empty-hint {
+  color: #3a3a3a;
+  font-size: var(--font-size-md);
+}
+
+/* Crops to the tile for display only; the stored photo is untouched. */
 .marquee-scan__img {
   display: block;
   width: 100%;
@@ -79,52 +148,35 @@
   object-fit: cover;
 }
 
-.marquee-scan__slot {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  min-width: 0;
-}
-
-/* Fixed height so tiles stay aligned whether or not Remove is shown. */
-.marquee-scan__actions {
-  display: flex;
-  justify-content: center;
-  min-height: var(--touch-min);
-}
-
 .marquee-scan__remove {
-  min-height: var(--touch-min);
-  padding: 0 var(--space-4);
-  background: none;
-  border: none;
-  color: #5a5a5a;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  cursor: pointer;
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  border-radius: var(--radius-pill);
+  background: rgba(11, 13, 17, 0.82);
+  color: var(--color-marquee);
+  box-shadow: var(--shadow-sm);
+  corner-shape: round;
 }
 
 .marquee-scan__remove:hover:not(:disabled),
 .marquee-scan__remove:focus-visible {
-  color: var(--color-schlitz);
+  background: var(--color-schlitz);
 }
 
-.marquee-scan__remove:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.marquee-scan__status {
-  margin: var(--space-4) 0 0;
-}
-
-.marquee-scan__read {
-  display: flex;
-  margin-top: var(--space-4);
+.marquee-scan__error {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-schlitz);
+  color: var(--color-marquee);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
 }
 
 /* Blocks every tap while an action is in flight. */
@@ -135,20 +187,69 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(11, 13, 17, 0.72);
+  padding: var(--space-4);
+  background: rgba(11, 13, 17, 0.8);
   cursor: wait;
   touch-action: none;
 }
 
 .marquee-scan__overlay-card {
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  max-width: 28rem;
   padding: var(--space-4) var(--space-6) var(--space-6);
   background: var(--color-marquee);
   color: var(--color-ink);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
+}
+
+.marquee-scan__overlay-card p {
+  margin: 0;
   font-family: var(--font-family-display);
   font-size: var(--font-size-xl);
+  font-weight: 700;
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
+}
+
+.marquee-scan__scanner {
+  position: relative;
+  width: min(24rem, 75vw);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--color-ink);
+}
+
+.marquee-scan__scanner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+}
+
+.marquee-scan__scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 4px;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 1px rgba(11, 13, 17, 0.4);
+  animation: marquee-scan-sweep 1.6s var(--ease-mechanical) infinite alternate;
+}
+
+@keyframes marquee-scan-sweep {
+  to {
+    top: calc(100% - 4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-scan__scanline {
+    display: none;
+  }
 }

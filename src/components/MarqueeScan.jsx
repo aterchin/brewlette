@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Camera, Plus, X } from "lucide-react";
 import BackButton from "./BackButton.jsx";
 import ScanReview from "./ScanReview.jsx";
 import { extractBeersFromImages } from "../utils/marqueeOcr.js";
@@ -161,13 +162,14 @@ export default function MarqueeScan({ uid, currentCount, onBack, onReplace }) {
     loading: "Loading…",
     uploading: "Uploading…",
     removing: "Removing…",
-    reading: "Reading board…",
+    reading: "Reading the board…",
   }[status];
   const savedCount = saved.filter(Boolean).length;
-  const statusText =
-    savedCount > 0
-      ? `Saved ${savedCount} photo${savedCount === 1 ? "" : "s"}. Tap one to open full size.`
-      : "Wall too wide? Add a second shot.";
+  const showSecondSlot = Boolean(saved[0] || saved[1]);
+  const pairLayout = Boolean(saved[1]);
+  const scanningIndex = saved.findIndex(Boolean);
+  const scanningSrc =
+    scanningIndex >= 0 ? photoSrc(saved[scanningIndex], previews[scanningIndex]) : null;
 
   if (review) {
     return (
@@ -182,66 +184,99 @@ export default function MarqueeScan({ uid, currentCount, onBack, onReplace }) {
   }
 
   return (
-    <section className="bartender-controls" aria-label="Scan marquee">
+    <section className="bartender-controls" aria-label="Scan your board">
       <header className="bartender-controls__topbar">
-        <BackButton onClick={onBack} label="Back to controls" />
+        <BackButton onClick={onBack} label="Back" />
         <div className="bartender-controls__topbar-copy">
-          <h2>Scan marquee</h2>
-          <p>Upload 1 or 2 photos of your beer wall</p>
+          <h2>Scan your board</h2>
         </div>
       </header>
 
-      <div className="bartender-controls__panel">
-        <div className="marquee-scan__grid">
+      <div className="marquee-scan__step">
+        <div className="marquee-scan__step-head">
+          <span className="step-badge" aria-hidden="true">1</span>
+          <h3>Snap the board</h3>
+        </div>
+
+        <div className={`marquee-scan__photos${pairLayout ? " marquee-scan__photos--pair" : ""}`}>
           <PhotoSlot
             label="Photo 1"
+            emptyTitle="Tap to add a photo"
             saved={saved[0]}
             preview={previews[0]}
             disabled={busy}
             onPick={(file) => uploadPhoto(0, file)}
             onRemove={() => removePhoto(0)}
           />
-          <PhotoSlot
-            label="Photo 2 (optional)"
-            saved={saved[1]}
-            preview={previews[1]}
-            disabled={busy}
-            onPick={(file) => uploadPhoto(1, file)}
-            onRemove={() => removePhoto(1)}
-          />
+          {showSecondSlot ? (
+            <PhotoSlot
+              label="Photo 2"
+              emptyTitle="Add another angle"
+              emptyHint="For wide boards"
+              compact={!pairLayout}
+              saved={saved[1]}
+              preview={previews[1]}
+              disabled={busy}
+              onPick={(file) => uploadPhoto(1, file)}
+              onRemove={() => removePhoto(1)}
+            />
+          ) : null}
         </div>
 
         {status === "error" ? (
-          <p className="bartender-controls__error marquee-scan__status" role="alert">
+          <p className="marquee-scan__error" role="alert">
             {errorMessage}
           </p>
         ) : null}
-        <p className="bartender-controls__copy marquee-scan__status" role="status">
-          {statusText}
-        </p>
+      </div>
 
-        <div className="marquee-scan__read">
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={readBoard}
-            disabled={busy || savedCount === 0}
-          >
-            Read board
-          </button>
-        </div>
+      <div className="action-bar">
+        <button
+          type="button"
+          className="btn btn-primary btn-xl"
+          onClick={readBoard}
+          disabled={busy || savedCount === 0}
+        >
+          <span className="step-badge" aria-hidden="true">2</span>
+          Read the board
+        </button>
+        {savedCount === 0 && status !== "loading" ? (
+          <p className="action-bar__note">Add a photo first</p>
+        ) : null}
       </div>
 
       {busyLabel ? (
         <div className="marquee-scan__overlay" role="status" aria-live="polite">
-          <p className="marquee-scan__overlay-card">{busyLabel}</p>
+          <div className="marquee-scan__overlay-card">
+            {status === "reading" && scanningSrc ? (
+              <div className="marquee-scan__scanner" aria-hidden="true">
+                <img src={scanningSrc} alt="" />
+                <span className="marquee-scan__scanline" />
+              </div>
+            ) : null}
+            <p>{busyLabel}</p>
+          </div>
         </div>
       ) : null}
     </section>
   );
 }
 
-function PhotoSlot({ label, saved, preview, disabled, onPick, onRemove }) {
+function photoSrc(saved, preview) {
+  return saved.resizedUrl || preview || saved.originalUrl;
+}
+
+function PhotoSlot({
+  label,
+  emptyTitle,
+  emptyHint,
+  compact = false,
+  saved,
+  preview,
+  disabled,
+  onPick,
+  onRemove,
+}) {
   function handleChange(event) {
     const picked = event.target.files?.[0];
     if (picked) onPick(picked);
@@ -249,24 +284,29 @@ function PhotoSlot({ label, saved, preview, disabled, onPick, onRemove }) {
     event.target.value = "";
   }
 
-  const tile = saved ? (
-    <div className="marquee-scan__tile">
-      <a
-        className="marquee-scan__link"
-        href={saved.originalUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={`Open full-size ${label}`}
-      >
-        <img
-          className="marquee-scan__img"
-          src={saved.resizedUrl || preview || saved.originalUrl}
-          alt={label}
-        />
-      </a>
-    </div>
-  ) : (
-    <label className="marquee-scan__tile marquee-scan__tile--empty">
+  if (saved) {
+    return (
+      <div className="marquee-scan__tile">
+        <img className="marquee-scan__img" src={photoSrc(saved, preview)} alt={label} />
+        <button
+          type="button"
+          className="marquee-scan__remove"
+          onClick={onRemove}
+          disabled={disabled}
+          aria-label={`Remove ${label}`}
+          title="Remove photo"
+        >
+          <X size={22} strokeWidth={2.75} aria-hidden="true" focusable="false" />
+        </button>
+      </div>
+    );
+  }
+
+  const Icon = compact ? Plus : Camera;
+  return (
+    <label
+      className={`marquee-scan__tile marquee-scan__tile--empty${compact ? " marquee-scan__tile--compact" : ""}`}
+    >
       <input
         type="file"
         accept="image/*"
@@ -275,27 +315,17 @@ function PhotoSlot({ label, saved, preview, disabled, onPick, onRemove }) {
         disabled={disabled}
         aria-label={`Add ${label}`}
       />
-      <span className="marquee-scan__plus" aria-hidden="true">+</span>
-      <span className="marquee-scan__label">{label}</span>
+      <Icon
+        className="marquee-scan__icon"
+        size={compact ? 28 : 56}
+        strokeWidth={2.25}
+        aria-hidden="true"
+        focusable="false"
+      />
+      <span className="marquee-scan__empty-copy">
+        <span className="marquee-scan__empty-title">{emptyTitle}</span>
+        {emptyHint ? <span className="marquee-scan__empty-hint">{emptyHint}</span> : null}
+      </span>
     </label>
-  );
-
-  return (
-    <div className="marquee-scan__slot">
-      {tile}
-      <div className="marquee-scan__actions">
-        {saved ? (
-          <button
-            type="button"
-            className="marquee-scan__remove"
-            onClick={onRemove}
-            disabled={disabled}
-            aria-label={`Remove ${label}`}
-          >
-            Remove
-          </button>
-        ) : null}
-      </div>
-    </div>
   );
 }
