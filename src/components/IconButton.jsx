@@ -1,14 +1,14 @@
 import "./IconButton.css";
 
-/** Square icon-only button. Variants: save | cancel | delete. Children are SVG paths. */
+/** Square icon-only button. Variants: save | cancel | delete. `icon` is a Lucide icon component. */
 export default function IconButton({
   label,
   variant,
+  icon: Icon,
   type = "button",
   onClick,
   disabled,
   className = "",
-  children,
 }) {
   return (
     <button
@@ -19,20 +19,7 @@ export default function IconButton({
       aria-label={label}
       title={label}
     >
-      <svg
-        viewBox="0 0 24 24"
-        width="24"
-        height="24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.75"
-        strokeLinecap="square"
-        strokeLinejoin="miter"
-        aria-hidden="true"
-        focusable="false"
-      >
-        {children}
-      </svg>
+      <Icon size={24} strokeWidth={2.75} aria-hidden="true" focusable="false" />
     </button>
   );
 }

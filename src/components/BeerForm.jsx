@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Check, Trash2, X } from "lucide-react";
 import { MAX_BEERS } from "../utils/storage.js";
 import IconButton from "./IconButton.jsx";
 import "./BeerForm.css";
@@ -119,23 +120,24 @@ export default function BeerForm({
             <IconButton
               label={deleteLabel}
               variant="delete"
+              icon={Trash2}
               onClick={onDelete}
-            >
-              <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6" />
-            </IconButton>
+            />
           )}
           {onCancel && (
-            <IconButton label={cancelLabel} variant="cancel" onClick={onCancel}>
-              <path d="M6 6l12 12M18 6L6 18" />
-            </IconButton>
+            <IconButton
+              label={cancelLabel}
+              variant="cancel"
+              icon={X}
+              onClick={onCancel}
+            />
           )}
           <IconButton
             type="submit"
             label={submitLabel || (initial ? "Save beer" : "Add beer")}
             variant="save"
-          >
-            <path d="M4 12.5l5 5L20 6.5" />
-          </IconButton>
+            icon={Check}
+          />
         </div>
       </div>
 

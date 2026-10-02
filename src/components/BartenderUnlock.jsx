@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import "./BartenderUnlock.css";
 
 function friendlyAuthError(error, mode) {
@@ -190,7 +191,13 @@ export default function BartenderUnlock({
               disabled={submitting}
               aria-label={showPassword ? "Hide password" : "Show password"}
               aria-pressed={showPassword}
-            />
+            >
+              {showPassword ? (
+                <EyeOff size={22} strokeWidth={2.5} aria-hidden="true" focusable="false" />
+              ) : (
+                <Eye size={22} strokeWidth={2.5} aria-hidden="true" focusable="false" />
+              )}
+            </button>
           </div>
         </label>
         {error ? (

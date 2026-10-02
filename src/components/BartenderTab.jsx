@@ -1,4 +1,4 @@
-import GearIcon from "./GearIcon.jsx";
+import { Settings } from "lucide-react";
 import "./BartenderTab.css";
 
 /**
@@ -20,7 +20,13 @@ export default function BartenderTab({
       aria-label="Edit beer list"
       title="Edit beer list"
     >
-      <GearIcon className="bartender-tab__icon" />
+      <Settings
+        className="bartender-tab__icon"
+        size={22}
+        strokeWidth={2.5}
+        aria-hidden="true"
+        focusable="false"
+      />
     </button>
   );
 }

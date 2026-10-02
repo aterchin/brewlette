@@ -103,21 +103,6 @@ body:has(.app-shell--sign-in) {
   cursor: pointer;
 }
 
-.bartender-unlock__visibility::before {
-  content: "";
-  display: block;
-  width: 22px;
-  height: 22px;
-  background-color: currentColor;
-  -webkit-mask: url("../assets/icons/eye.svg") center / contain no-repeat;
-  mask: url("../assets/icons/eye.svg") center / contain no-repeat;
-}
-
-.bartender-unlock__visibility[aria-pressed="true"]::before {
-  -webkit-mask-image: url("../assets/icons/eye-off.svg");
-  mask-image: url("../assets/icons/eye-off.svg");
-}
-
 .bartender-unlock__visibility:hover:not(:disabled),
 .bartender-unlock__visibility:focus-visible {
   color: var(--color-ink);

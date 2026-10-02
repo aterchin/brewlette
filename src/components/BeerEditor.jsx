@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { Settings } from "lucide-react";
 import BartenderControls from "./BartenderControls.jsx";
 import BeerListWorkspace from "./BeerListWorkspace.jsx";
-import GearIcon from "./GearIcon.jsx";
 import MarqueeScan from "./MarqueeScan.jsx";
 
 export default function BeerEditor({
@@ -66,7 +66,7 @@ export default function BeerEditor({
           aria-label="Controls"
           title="Controls"
         >
-          <GearIcon size={26} />
+          <Settings size={26} strokeWidth={2.5} aria-hidden="true" focusable="false" />
         </button>
       }
     />

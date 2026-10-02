@@ -1,3 +1,4 @@
+import { ArrowLeft } from "lucide-react";
 import "./BackButton.css";
 
 export default function BackButton({ onClick, label }) {
@@ -9,20 +10,7 @@ export default function BackButton({ onClick, label }) {
       aria-label={label}
       title={label}
     >
-      <svg
-        viewBox="0 0 24 24"
-        width="26"
-        height="26"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.75"
-        strokeLinecap="square"
-        strokeLinejoin="miter"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <path d="M20 12H5M11 5l-7 7 7 7" />
-      </svg>
+      <ArrowLeft size={26} strokeWidth={2.75} aria-hidden="true" focusable="false" />
     </button>
   );
 }
