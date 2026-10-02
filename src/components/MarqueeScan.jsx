@@ -222,7 +222,7 @@ export default function MarqueeScan({ uid, currentCount, onBack, onReplace }) {
       <div className="marquee-scan__step">
         <div className="marquee-scan__step-head">
           <span className="step-badge" aria-hidden="true">1</span>
-          <h3>Snap the board</h3>
+          <h3>Snap</h3>
         </div>
 
         <div className="marquee-scan__photos">
