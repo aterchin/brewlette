@@ -40,7 +40,8 @@ Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, 
 - Wheel-first Spin Mode; Edit entry is a bottom-right gear icon outside the game column
 - Edit is its **own page** (game hidden): full-width beer list; tapping a beer or Add opens a full-screen form (X cancel left of Save check) — no split view
 - Firebase email/password or Google gates Edit; session persists via Firebase Auth
-- **Controls** screen (from edit top bar): Reset to demo, sign out — not a second beer editor
+- **Bartender home** is the edit root after sign-in: Scan your board (primary), Beer list, quiet Sign out / Reset to demo — not a second beer editor
+- First-run tips: one bubble at a time via `hooks/useTip.js` (`brewlette.tips.v1`); only where the next step isn't obvious — don't add instruction copy instead of fixing layout
 - One beer list per bartender (`beer_lists/{uid}` + `brewlette.beers.v1` device cache); `sampleBeers.js` is demo/reset only
 - Touch targets ≥ 44px (prefer 48px); hover never required
 - `prefers-reduced-motion`: shorter spin, still show result

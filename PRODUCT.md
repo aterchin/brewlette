@@ -17,10 +17,13 @@ Brewlette is a beer roulette / spinning-wheel web app for use on an iPad behind 
 | Mode | Who | Job |
 |------|-----|-----|
 | **Spin** (default) | Customers / bar floor | Dominated by the canvas wheel + Spin; theatrical result reveal |
-| **Edit** | Bartender | Full edit page: full-width beer list; tap a beer or Add for a full-screen form |
-| **Controls** | Bartender | From Edit top bar: reset to demo sample list, sign out |
+| **Bartender home** | Bartender | First screen after sign-in: big **Scan your board** card, **Beer list** card, quiet Sign out / Reset to demo links |
+| **Scan** | Bartender | Step 1 snap the board (1 photo, optional second angle) → step 2 **Read the board** → review → **Put on the wheel** → "N beers on the wheel · Spin it" |
+| **Beer list** | Bartender | Full-width beer list; tap a beer or Add for a full-screen form |
 
-Subtle bottom-right gear icon — outside the game column. Firebase Auth (email/password or Google) unlocks Edit; Spin Mode stays public. Edit is its **own page** (game hidden): a full-width beer list; tapping a beer or Add replaces it with a full-screen form (X cancels, check saves, both return to the list). **Controls** is a third screen for admin actions only — not a second beer-list editor.
+Subtle bottom-right gear icon — outside the game column. Firebase Auth (email/password or Google) unlocks Edit; Spin Mode stays public. Edit is its **own page** (game hidden) rooted at **Bartender home**; Scan and Beer list both go back to home, home goes back to the wheel. In the beer list, tapping a beer or Add replaces it with a full-screen form (X cancels, check saves, both return to the list).
+
+**First-run tips:** one speech bubble at a time, remembered per device (`brewlette.tips.v1`) — only where the next step isn't obvious: the wheel gear (signed out) and the Scan card on home. Scan and review pages explain themselves through numbered steps and button labels, not extra copy. Primary actions on edit sub-pages sit in a bottom-pinned bar.
 
 ## Beer model
 
@@ -87,6 +90,7 @@ Record changes from the original build idea here so future chats don’t re-liti
 | 2026-09-24 | Firestore `beer_lists/{uid}` per bartender + localStorage device cache; public read; owner-only writes; max 20 beers |
 | 2026-09-27 | Split edit view dropped: full-width list; tapping a beer or Add opens a full-screen form (X cancel + Save check); capped at `--content-max` ≥768px |
 | 2026-09-30 | Beer `surprise` field removed (model, form, result reveal); green zero always shows SPIN AGAIN |
+| 2026-10-02 | Controls screen replaced by Bartender home (scan-first); first-run tip bubbles; scan page split into numbered steps with pinned Read the board; review confirm dialog dropped (review is the confirmation); post-scan "Spin it" screen |
 
 ## Backlog
 
