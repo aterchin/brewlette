@@ -102,7 +102,7 @@
   padding: var(--space-3) var(--space-3) var(--space-4);
   background: var(--color-marquee);
   color: var(--color-ink);
-  border-radius: var(--radius-md);
+  border-radius: 0;
   box-shadow: var(--shadow-sm);
   cursor: pointer;
 }
@@ -149,8 +149,52 @@
   padding: var(--space-5) var(--space-5) var(--space-8);
   background: var(--color-marquee);
   color: var(--color-ink);
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   box-shadow: var(--shadow-lg);
+}
+
+/* Row ⇄ form morph: the card grows/shrinks while contents stay pinned top-left */
+::view-transition-group(beer-sheet) {
+  animation-duration: 480ms;
+  animation-timing-function: cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+::view-transition-image-pair(beer-sheet) {
+  overflow: clip;
+  background: var(--color-marquee);
+  box-shadow: var(--shadow-lg);
+}
+
+::view-transition-old(beer-sheet),
+::view-transition-new(beer-sheet) {
+  height: 100%;
+  object-fit: none;
+  object-position: left top;
+}
+
+::view-transition-old(beer-sheet) {
+  animation: beer-sheet-fade-out 200ms ease-out both;
+}
+
+::view-transition-new(beer-sheet) {
+  animation: beer-sheet-fade-in 300ms 120ms ease-out both;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 260ms;
+}
+
+@keyframes beer-sheet-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes beer-sheet-fade-in {
+  from {
+    opacity: 0;
+  }
 }
 
 .beer-editor__panel h3 {

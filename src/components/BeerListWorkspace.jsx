@@ -1,9 +1,29 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import BackButton from "./BackButton.jsx";
 import BeerForm from "./BeerForm.jsx";
 import ConfirmDialog from "./ConfirmDialog.jsx";
 import { MAX_BEERS } from "../utils/storage.js";
 import "./BeerEditor.css";
+
+const SHEET = "beer-sheet";
+
+/**
+ * Commits a state update (as a view transition when supported), then
+ * scrolls once the new layout exists. Resolves when the transition is done.
+ */
+function morph(update, scrollY) {
+  const run = () => {
+    flushSync(update);
+    window.scrollTo(0, scrollY);
+  };
+  const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  if (!document.startViewTransition || reduce) {
+    run();
+    return Promise.resolve();
+  }
+  return document.startViewTransition(run).finished;
+}
 
 /**
  * Beer list page; picking a beer (or Add) swaps in a full-screen form.
@@ -26,6 +46,8 @@ export default function BeerListWorkspace({
   const [showAdd, setShowAdd] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null);
   const [deleteAllOpen, setDeleteAllOpen] = useState(false);
+  const [returnTo, setReturnTo] = useState(null);
+  const listScrollRef = useRef(0);
 
   const editingBeer = beers.find((beer) => beer.id === editingId) || null;
   const isFormOpen = Boolean(editingBeer) || showAdd;
@@ -35,34 +57,53 @@ export default function BeerListWorkspace({
     .filter((beer) => !editingBeer || beer.id !== editingBeer.id)
     .map((beer) => beer.number);
 
-  function closeForm() {
-    setEditingId(null);
-    setShowAdd(false);
+  function closeForm(beforeClose) {
+    const target = editingId;
+    morph(() => {
+      beforeClose?.();
+      setEditingId(null);
+      setShowAdd(false);
+      setReturnTo(target);
+    }, listScrollRef.current).finally(() => setReturnTo(null));
   }
 
-  function selectBeer(id) {
-    setShowAdd(false);
-    setEditingId(id);
-    window.scrollTo(0, 0);
+  function openForm(update, source) {
+    listScrollRef.current = window.scrollY;
+    if (source) source.style.viewTransitionName = SHEET;
+    morph(update, 0);
+  }
+
+  function selectBeer(id, event) {
+    openForm(() => {
+      setShowAdd(false);
+      setEditingId(id);
+    }, event.currentTarget);
   }
 
   function startAdd() {
-    setEditingId(null);
-    setShowAdd(true);
-    window.scrollTo(0, 0);
+    openForm(() => {
+      setEditingId(null);
+      setShowAdd(true);
+    });
   }
 
   function confirmDelete() {
     if (!pendingDelete) return;
-    onDelete(pendingDelete.id);
+    const { id } = pendingDelete;
     setPendingDelete(null);
-    closeForm();
+    closeForm(() => onDelete(id));
   }
+
+  const sheetName = (target) =>
+    returnTo === target ? { viewTransitionName: SHEET } : undefined;
 
   return (
     <section className="beer-editor" aria-label={title}>
       {isFormOpen ? (
-        <div className="beer-editor__panel">
+        <div
+          className="beer-editor__panel"
+          style={editingBeer ? { viewTransitionName: SHEET } : undefined}
+        >
           <BeerForm
             key={editingBeer ? editingBeer.id : "add"}
             title={editingBeer ? "Edit" : "Add"}
@@ -72,14 +113,15 @@ export default function BeerListWorkspace({
             submitLabel={editingBeer ? "Save changes" : "Add beer"}
             cancelLabel="Cancel"
             onSubmit={(values) => {
-              if (editingBeer) {
-                onUpdate(editingBeer.id, values);
-              } else {
-                onAdd(values);
-              }
-              closeForm();
+              closeForm(() => {
+                if (editingBeer) {
+                  onUpdate(editingBeer.id, values);
+                } else {
+                  onAdd(values);
+                }
+              });
             }}
-            onCancel={closeForm}
+            onCancel={() => closeForm()}
             onDelete={
               editingBeer ? () => setPendingDelete(editingBeer) : undefined
             }
@@ -128,7 +170,8 @@ export default function BeerListWorkspace({
                   <button
                     type="button"
                     className="beer-editor__nav-item"
-                    onClick={() => selectBeer(beer.id)}
+                    style={sheetName(beer.id)}
+                    onClick={(event) => selectBeer(beer.id, event)}
                   >
                     <span className="beer-editor__nav-number" aria-hidden="true">
                       #{beer.number}
