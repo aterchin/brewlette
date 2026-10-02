@@ -2,7 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      (function () {
+        var h = location.hostname;
+        if ((h.endsWith('.web.app') || h.endsWith('.firebaseapp.com')) && h.indexOf('--') === -1) {
+          location.replace('https://brewlette.reallyslowwebsites.com' + location.pathname + location.search + location.hash);
+        }
+      })();
+    </script>
+    <link rel="canonical" href="https://brewlette.reallyslowwebsites.com/" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

@@ -119,10 +119,9 @@ export const sampleBeers = [
     abv: 5.2,
     description: "Dry cider - crisp, clean, and refreshing",
   },
-  // Slot 12 blank / crossed out on board — gap left intentional
   {
     id: "finback-class-act",
-    number: 13,
+    number: 12,
     name: "Class Act",
     brewery: "Finback Brewery",
     style: "NEIPA / Hazy IPA",
@@ -130,17 +129,8 @@ export const sampleBeers = [
     description: "IPA - New England / Hazy IPA",
   },
   {
-    id: "allagash-haunted-house",
-    number: 14,
-    name: "Haunted House",
-    brewery: "Allagash",
-    style: "Black IPA",
-    abv: 6.1,
-    description: "Black IPA / Hoppy Dark Ale with coffee-like roasted notes",
-  },
-  {
     id: "grimm-tesseract",
-    number: 15,
+    number: 13,
     name: "Tesseract",
     brewery: "Grimm",
     style: "Double IPA / DIPA",
@@ -150,39 +140,12 @@ export const sampleBeers = [
   },
   {
     id: "weihenstephaner-hefeweissbier",
-    number: 16,
+    number: 14,
     name: "Hefeweissbier",
     brewery: "Weihenstephaner",
     style: "Hefeweizen",
     abv: 5.4,
     description:
       "The gold standard of wheat beer from the world's oldest brewery. Fruity, banana & clove aromas",
-  },
-  {
-    id: "grimm-no-hands-now",
-    number: 17,
-    name: "No Hands Now",
-    brewery: "Grimm",
-    style: "Sour / Berliner Weisse",
-    abv: 3.8,
-    description: "Sour Ale - Berliner Weisse style",
-  },
-  {
-    id: "hacker-pschorr-oktoberfest-marzen",
-    number: 18,
-    name: "Oktoberfest Marzen",
-    brewery: "Hacker-Pschorr",
-    style: "Märzen / Oktoberfest",
-    abv: 5.8,
-    description: "Classic Munich Marzen style lager",
-  },
-  {
-    id: "drekker-smol-blue-razz",
-    number: 19,
-    name: "Smol - Blue Razz",
-    brewery: "Drekker Brewing",
-    style: "Fruit Sour",
-    abv: 6.0,
-    description: "Sour Fruit Beer - Slushy style sour with raspberry notes",
-  },
+  }
 ];
