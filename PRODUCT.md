@@ -18,7 +18,7 @@ Brewlette is a beer roulette / spinning-wheel web app for use on an iPad behind 
 |------|-----|-----|
 | **Spin** (default) | Customers / bar floor | Dominated by the canvas wheel + Spin; theatrical result reveal |
 | **Bartender home** | Bartender | First screen after sign-in: big **Scan your board** card, **Beer list** card, quiet Sign out / Reset to demo links |
-| **Scan** | Bartender | Step 1 snap the board (1 photo, optional second angle) → step 2 **Read the board** → review → **Put on the wheel** → "N beers on the wheel · Spin it" |
+| **Scan** | Bartender | Step 1 snap the board (1 photo, optional second angle stacked below) → step 2 **Scan** → review → **Put on the wheel** → "N beers on the wheel · Spin it" |
 | **Beer list** | Bartender | Full-width beer list; tap a beer or Add for a full-screen form |
 
 Subtle bottom-right gear icon — outside the game column. Firebase Auth (email/password or Google) unlocks Edit; Spin Mode stays public. Edit is its **own page** (game hidden) rooted at **Bartender home**; Scan and Beer list both go back to home, home goes back to the wheel. In the beer list, tapping a beer or Add replaces it with a full-screen form (X cancels, check saves, both return to the list).

@@ -48,7 +48,7 @@ export default function MarqueeScan({ uid, currentCount, onBack, onReplace }) {
   const [resizePoll, setResizePoll] = useState(0);
   const [status, setStatus] = useState("loading"); // loading | idle | uploading | removing | reading | error
   const [errorMessage, setErrorMessage] = useState("");
-  // { beers, skippedCount } from the last "Read board"; null shows the photo page.
+  // { beers, skippedCount } from the last scan; null shows the photo page.
   const [review, setReview] = useState(null);
   const [readingLine, setReadingLine] = useState(() => randomReadingLine());
 
@@ -192,8 +192,8 @@ export default function MarqueeScan({ uid, currentCount, onBack, onReplace }) {
     reading: "Reading the board…",
   }[status];
   const savedCount = saved.filter(Boolean).length;
-  const showSecondSlot = Boolean(saved[0] || saved[1]);
-  const pairLayout = Boolean(saved[1]);
+  // A saved photo always leads; the empty slot beside it shrinks to "Add another angle".
+  const slotOrder = saved[1] && !saved[0] ? [1, 0] : [0, 1];
   const scanningIndex = saved.findIndex(Boolean);
   const scanningSrc =
     scanningIndex >= 0 ? photoSrc(saved[scanningIndex], previews[scanningIndex]) : null;
@@ -225,29 +225,25 @@ export default function MarqueeScan({ uid, currentCount, onBack, onReplace }) {
           <h3>Snap the board</h3>
         </div>
 
-        <div className={`marquee-scan__photos${pairLayout ? " marquee-scan__photos--pair" : ""}`}>
-          <PhotoSlot
-            label="Photo 1"
-            emptyTitle="Tap to add a photo"
-            saved={saved[0]}
-            preview={previews[0]}
-            disabled={busy}
-            onPick={(file) => uploadPhoto(0, file)}
-            onRemove={() => removePhoto(0)}
-          />
-          {showSecondSlot ? (
-            <PhotoSlot
-              label="Photo 2"
-              emptyTitle="Add another angle"
-              emptyHint="For wide boards"
-              compact={!pairLayout}
-              saved={saved[1]}
-              preview={previews[1]}
-              disabled={busy}
-              onPick={(file) => uploadPhoto(1, file)}
-              onRemove={() => removePhoto(1)}
-            />
-          ) : null}
+        <div className="marquee-scan__photos">
+          {slotOrder.map((index, position) => {
+            const extra = position === 1;
+            if (extra && savedCount === 0) return null;
+            return (
+              <PhotoSlot
+                key={index}
+                label={`Photo ${index + 1}`}
+                emptyTitle={extra ? "Add another angle" : "Add a photo"}
+                emptyHint={extra ? "For wide boards" : undefined}
+                compact={extra}
+                saved={saved[index]}
+                preview={previews[index]}
+                disabled={busy}
+                onPick={(file) => uploadPhoto(index, file)}
+                onRemove={() => removePhoto(index)}
+              />
+            );
+          })}
         </div>
 
         {status === "error" ? (
@@ -265,7 +261,7 @@ export default function MarqueeScan({ uid, currentCount, onBack, onReplace }) {
           disabled={busy || savedCount === 0}
         >
           <span className="step-badge" aria-hidden="true">2</span>
-          Read the board
+          Scan
         </button>
         {savedCount === 0 && status !== "loading" ? (
           <p className="action-bar__note">Add a photo first</p>

@@ -11,7 +11,7 @@
 }
 
 .marquee-scan__step-head h3 {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   letter-spacing: var(--tracking-widest);
   color: var(--color-marquee);
 }
@@ -21,10 +21,6 @@
   gap: var(--space-4);
 }
 
-.marquee-scan__photos--pair {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
 .marquee-scan__tile {
   position: relative;
   aspect-ratio: 16 / 9;
@@ -32,10 +28,6 @@
   border-radius: var(--radius-lg);
   background: var(--color-marquee);
   box-shadow: var(--shadow-lg);
-}
-
-.marquee-scan__photos--pair .marquee-scan__tile {
-  aspect-ratio: 4 / 3;
 }
 
 .marquee-scan__tile--empty {
