@@ -8,6 +8,7 @@ import EmptyState from "./components/EmptyState.jsx";
 import Header from "./components/Header.jsx";
 import { useAuth } from "./hooks/useAuth.js";
 import { useBeerList } from "./hooks/useBeerList.js";
+import { useTip } from "./hooks/useTip.js";
 
 function App() {
   const {
@@ -33,8 +34,11 @@ function App() {
   const [unlockOpen, setUnlockOpen] = useState(false);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState(null);
+  const [gearTipUnseen, dismissGearTip] = useTip("gear");
 
   const showEdit = Boolean(user) && editOpen;
+  const showGearTip =
+    gearTipUnseen && !user && !authLoading && !spinning && !result;
 
   function handleSpinStart() {
     setSpinning(true);
@@ -58,6 +62,7 @@ function App() {
 
   function requestEdit() {
     if (spinning || authLoading) return;
+    dismissGearTip();
     if (showEdit) {
       setEditOpen(false);
       return;
@@ -166,6 +171,8 @@ function App() {
         editOpen={showEdit}
         onToggleEdit={requestEdit}
         disabled={spinning || authLoading}
+        showTip={showGearTip}
+        onDismissTip={dismissGearTip}
       />
     </div>
   );

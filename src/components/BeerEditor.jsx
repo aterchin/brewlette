@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Settings } from "lucide-react";
-import BartenderControls from "./BartenderControls.jsx";
+import BartenderHome from "./BartenderHome.jsx";
 import BeerListWorkspace from "./BeerListWorkspace.jsx";
 import MarqueeScan from "./MarqueeScan.jsx";
+import ScanDone from "./ScanDone.jsx";
 
 export default function BeerEditor({
   beers,
@@ -18,57 +18,58 @@ export default function BeerEditor({
   userEmail,
   onSignOut,
 }) {
-  const [view, setView] = useState("list");
+  const [view, setView] = useState("home"); // home | list | scan | done
 
   if (view === "scan") {
     return (
       <MarqueeScan
         uid={uid}
         currentCount={beers.length}
-        onBack={() => setView("controls")}
+        onBack={() => setView("home")}
         onReplace={(next) => {
           onReplace(next);
-          setView("list");
+          setView("done");
         }}
       />
     );
   }
 
-  if (view === "controls") {
+  if (view === "done") {
     return (
-      <BartenderControls
-        onBack={() => setView("list")}
-        onScanMarquee={() => setView("scan")}
-        onReset={onReset}
-        userEmail={userEmail}
-        onSignOut={onSignOut}
+      <ScanDone
+        count={beers.length}
+        onSpin={onClose}
+        onOpenList={() => setView("list")}
+      />
+    );
+  }
+
+  if (view === "list") {
+    return (
+      <BeerListWorkspace
+        title="Beer list"
+        subtitle={`${beers.length} beer${beers.length === 1 ? "" : "s"} on the wheel`}
+        beers={beers}
+        nextNumber={nextNumber}
+        onAdd={onAdd}
+        onUpdate={onUpdate}
+        onDelete={onDelete}
+        onDeleteAll={onDeleteAll}
+        onBack={() => setView("home")}
+        backLabel="Back"
       />
     );
   }
 
   return (
-    <BeerListWorkspace
-      title="Beer list"
-      subtitle={`${beers.length} beer${beers.length === 1 ? "" : "s"} on the wheel`}
-      beers={beers}
-      nextNumber={nextNumber}
-      onAdd={onAdd}
-      onUpdate={onUpdate}
-      onDelete={onDelete}
-      onDeleteAll={onDeleteAll}
+    <BartenderHome
+      beerCount={beers.length}
       onBack={onClose}
-      backLabel="Back to wheel"
-      topbarActions={
-        <button
-          type="button"
-          className="beer-editor__gear"
-          onClick={() => setView("controls")}
-          aria-label="Controls"
-          title="Controls"
-        >
-          <Settings size={26} strokeWidth={2.5} aria-hidden="true" focusable="false" />
-        </button>
-      }
+      onScanMarquee={() => setView("scan")}
+      onOpenList={() => setView("list")}
+      onReset={onReset}
+      userEmail={userEmail}
+      onSignOut={onSignOut}
     />
   );
 }

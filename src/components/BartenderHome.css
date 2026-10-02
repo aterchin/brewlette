@@ -1,0 +1,152 @@
+.bartender-home__cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.bartender-home__scan-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+/* Polaroid: photo window on top, thick caption strip below. */
+.bartender-home__scan {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  padding: var(--space-4) var(--space-4) var(--space-8);
+  background: var(--color-marquee);
+  color: var(--color-ink);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  text-align: left;
+  transition:
+    transform var(--duration-fast) var(--ease-mechanical),
+    box-shadow var(--duration-fast) var(--ease-mechanical);
+}
+
+.bartender-home__scan:active {
+  transform: translate(3px, 3px);
+  box-shadow: var(--shadow-sm);
+}
+
+.bartender-home__scan-photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3 / 1;
+  margin-bottom: var(--space-5);
+  border-radius: var(--radius-md);
+  color: var(--color-accent);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 22px,
+      rgba(253, 251, 247, 0.06) 22px 24px
+    ),
+    var(--color-dive-green);
+}
+
+.bartender-home__scan:hover .bartender-home__scan-photo {
+  color: var(--color-accent-hover);
+}
+
+.bartender-home__scan-title {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.bartender-home__scan-sub {
+  margin-top: var(--space-2);
+  color: #3a3a3a;
+  font-size: var(--font-size-lg);
+}
+
+/* In the flow above the card so it never covers the beer list card. */
+.bartender-home__tip {
+  position: relative;
+  margin-left: var(--space-4);
+}
+
+.bartender-home__list {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  min-height: 5.5rem;
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-marquee);
+  color: var(--color-ink);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  text-align: left;
+  transition:
+    transform var(--duration-fast) var(--ease-mechanical),
+    box-shadow var(--duration-fast) var(--ease-mechanical);
+}
+
+.bartender-home__list:hover {
+  background: #fff;
+}
+
+.bartender-home__list:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.bartender-home__list-count {
+  min-width: 3rem;
+  font-family: var(--font-family-number);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  text-align: center;
+  color: var(--color-accent-deep);
+}
+
+.bartender-home__list-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.bartender-home__list-copy strong {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.bartender-home__list-copy span {
+  color: #3a3a3a;
+  font-size: var(--font-size-md);
+}
+
+.bartender-home__footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-10);
+}
+
+.bartender-home__footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.bartender-home__error {
+  color: #f87171;
+}

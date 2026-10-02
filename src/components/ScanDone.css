@@ -1,0 +1,54 @@
+.scan-done {
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.scan-done__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 22rem);
+  padding: var(--space-8) var(--space-6) var(--space-10);
+  background: var(--color-marquee);
+  color: var(--color-ink);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  transform: rotate(-2deg);
+  animation: scan-done-drop 420ms var(--ease-mechanical) both;
+}
+
+.scan-done__count {
+  font-family: var(--font-family-number);
+  font-size: 6rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  color: var(--color-accent-deep);
+}
+
+.scan-done__title {
+  margin-top: var(--space-3);
+  font-size: var(--font-size-2xl);
+  letter-spacing: var(--tracking-widest);
+  text-align: center;
+  color: var(--color-ink);
+}
+
+.scan-done__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  width: min(100%, 22rem);
+}
+
+.scan-done__actions .btn {
+  width: 100%;
+}
+
+@keyframes scan-done-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-24px) rotate(-6deg);
+  }
+}

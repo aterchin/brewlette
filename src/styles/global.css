@@ -238,6 +238,85 @@ img {
   box-shadow: var(--shadow-sm);
 }
 
+.btn-xl {
+  min-height: 4rem;
+  font-size: var(--font-size-xl);
+}
+
+/* Quiet secondary action: text only, still a full touch target. */
+.btn-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch-min);
+  padding: 0 var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.btn-link:hover:not(:disabled) {
+  color: var(--color-marquee);
+}
+
+.btn-link--danger:hover:not(:disabled) {
+  color: #f87171;
+}
+
+/* Numbered step marker, e.g. the 1 / 2 on the scan page. */
+.step-badge {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-ink);
+  font-family: var(--font-family-number);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  corner-shape: round;
+}
+
+.btn-primary .step-badge {
+  width: 2rem;
+  height: 2rem;
+  margin-right: var(--space-3);
+  background: var(--color-ink);
+  color: var(--color-accent);
+}
+
+/* Primary action pinned to the bottom of edit sub-pages, in the thumb zone. */
+.action-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding: var(--space-6) 0 var(--space-4);
+  background: linear-gradient(to bottom, transparent, var(--color-bg) 35%);
+}
+
+.action-bar .btn {
+  width: 100%;
+}
+
+.action-bar__note {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

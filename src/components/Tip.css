@@ -1,0 +1,65 @@
+.tip {
+  position: absolute;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  width: max-content;
+  max-width: min(18rem, calc(100vw - 2 * var(--space-4)));
+  padding: var(--space-2) var(--space-1) var(--space-2) var(--space-4);
+  background: var(--color-accent);
+  color: var(--color-ink);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  animation: tip-drop var(--duration-med) var(--ease-mechanical) both;
+}
+
+/* Arrow */
+.tip::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: var(--color-accent);
+  transform: rotate(45deg);
+  corner-shape: round;
+}
+
+.tip--above::after {
+  bottom: -7px;
+  right: 16px;
+}
+
+.tip--above-start::after {
+  bottom: -7px;
+  left: 32px;
+}
+
+.tip__text {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-snug);
+}
+
+.tip__close {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  border-radius: var(--radius-sm);
+  color: var(--color-ink);
+}
+
+.tip__close:hover {
+  background: rgba(18, 22, 26, 0.12);
+}
+
+@keyframes tip-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}

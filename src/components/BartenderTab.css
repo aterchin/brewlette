@@ -30,6 +30,28 @@
   cursor: not-allowed;
 }
 
+.bartender-tab--tip {
+  opacity: 1;
+  color: var(--color-accent);
+  animation: bartender-tab-pulse 1.8s var(--ease-mechanical) infinite;
+}
+
+.bartender-tab__tip {
+  position: fixed;
+  right: var(--space-4);
+  bottom: calc(var(--space-4) + var(--touch-min) + var(--space-3));
+}
+
+@keyframes bartender-tab-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.55);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 14px rgba(245, 158, 11, 0);
+  }
+}
+
 .bartender-tab__icon {
   display: block;
   flex-shrink: 0;
