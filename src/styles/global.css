@@ -78,6 +78,23 @@ img {
   outline-offset: 3px;
 }
 
+/* Squircle corners need a larger radius to read as round as plain corners */
+@supports (corner-shape: squircle) {
+  :root {
+    --radius-sm: 16px;
+    --radius-md: 22px;
+    --radius-lg: 32px;
+  }
+
+  :where(*, *::before, *::after) {
+    corner-shape: squircle;
+  }
+
+  :where(.beer-wheel__canvas, .beer-wheel__pointer::after) {
+    corner-shape: round;
+  }
+}
+
 .app-shell {
   display: flex;
   flex-direction: column;
@@ -157,8 +174,7 @@ img {
   min-height: var(--touch-min);
   min-width: var(--touch-min);
   padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-pill);
-  border: var(--border-chunky) solid var(--color-border-chunky);
+  border-radius: var(--radius-md);
   font-family: var(--font-family-base);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
@@ -177,53 +193,6 @@ img {
   box-shadow: var(--shadow-sm);
 }
 
-@supports (corner-shape: squircle) {
-  .btn.squircle {
-    border-radius: var(--radius-funky);
-    corner-shape: squircle;
-    border: none;
-  }
-  .btn.bevel {
-    border-radius: var(--radius-funky);
-    corner-shape: bevel;
-    border: none;
-  }
-  .btn.scoop {
-    border-radius: var(--radius-funky);
-    corner-shape: scoop;
-    border: none;
-  }
-  /* Border is the button background peeking out around an inset ::after fill;
-     real borders don't paint reliably on concave corner shapes. */
-  .btn.scoop.btn-ghost {
-    position: relative;
-    isolation: isolate;
-  }
-  .btn.scoop.btn-ghost,
-  .btn.scoop.btn-ghost:hover:not(:disabled) {
-    background: var(--color-border-chunky);
-  }
-  .btn.scoop.btn-ghost::after {
-    content: "";
-    position: absolute;
-    inset: var(--border-chunky);
-    z-index: -1;
-    /* r − b(√2 − 1) keeps the ring width even across the concave diagonal */
-    border-radius: calc(var(--radius-funky) - var(--border-chunky) * 0.414);
-    corner-shape: scoop;
-    background: var(--color-marquee);
-    transition: background-color var(--duration-fast) var(--ease-mechanical);
-  }
-  .btn.scoop.btn-ghost:hover:not(:disabled)::after {
-    background: #fff;
-  }
-  .btn.notch {
-    border-radius: var(--radius-funky);
-    corner-shape: notch;
-    border: none;
-  }
-}
-
 .btn-primary {
   background: var(--color-accent);
   color: var(--color-ink);
@@ -240,6 +209,17 @@ img {
 
 .btn-ghost:hover:not(:disabled) {
   background: #fff;
+}
+
+/* Cream-on-cream ghost buttons need a sunk fill to read without an outline */
+:is(.bartender-controls__panel, .confirm-dialog__card, .beer-editor__panel, .beer-result, .empty-state)
+  .btn-ghost {
+  background: var(--color-marquee-sunk);
+}
+
+:is(.bartender-controls__panel, .confirm-dialog__card, .beer-editor__panel, .beer-result, .empty-state)
+  .btn-ghost:hover:not(:disabled) {
+  background: var(--color-marquee-sunk-hover);
 }
 
 .btn-danger {

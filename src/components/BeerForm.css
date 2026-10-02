@@ -24,11 +24,10 @@
 .beer-form__field textarea {
   min-height: var(--touch-min);
   padding: var(--space-3) var(--space-4);
-  border: var(--border-chunky) solid var(--color-border-chunky);
+  border: 2px solid var(--color-ink-line);
   border-radius: var(--radius-sm);
   background: #fff;
   color: var(--color-ink);
-  box-shadow: var(--shadow-sm);
 }
 
 .beer-form__field textarea {

@@ -4,7 +4,6 @@
   justify-content: center;
   width: var(--touch-min);
   height: var(--touch-min);
-  border: var(--border-chunky) solid transparent;
   border-radius: var(--radius-sm);
   color: var(--color-ink);
   transition:
@@ -25,7 +24,6 @@
 
 .icon-btn--save {
   background: var(--color-accent);
-  border-color: var(--color-border-chunky);
   box-shadow: var(--shadow-md);
 }
 
@@ -38,8 +36,7 @@
 }
 
 .icon-btn--cancel {
-  background: #fff;
-  border-color: var(--color-border-chunky);
+  background: var(--color-marquee-sunk);
   box-shadow: var(--shadow-sm);
 }
 

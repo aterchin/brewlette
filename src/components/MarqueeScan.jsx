@@ -223,7 +223,7 @@ export default function MarqueeScan({ uid, currentCount, onBack, onReplace }) {
         <div className="marquee-scan__read">
           <button
             type="button"
-            className="btn scoop btn-primary"
+            className="btn btn-primary"
             onClick={readBoard}
             disabled={busy || savedCount === 0}
           >

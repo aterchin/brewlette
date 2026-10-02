@@ -1,4 +1,4 @@
-/* Polaroid result card — cream face, dark ink, thick bottom border */
+/* Polaroid result card — cream face, dark ink, thick bottom padding */
 .beer-result {
   display: flex;
   flex-direction: column;
@@ -11,8 +11,7 @@
   padding: var(--space-8) var(--space-6) var(--space-12);
   background: var(--color-marquee);
   color: var(--color-ink);
-  border: var(--border-chunky) solid var(--color-border-chunky);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   animation: result-in 1.15s var(--ease-mechanical) both;
 }

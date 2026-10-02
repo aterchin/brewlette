@@ -50,7 +50,7 @@ export default function BartenderControls({
             <div className="bartender-controls__actions">
               <button
                 type="button"
-                className="btn scoop btn-ghost"
+                className="btn btn-ghost"
                 onClick={onScanMarquee}
               >
                 Scan marquee
@@ -66,7 +66,7 @@ export default function BartenderControls({
           <div className="bartender-controls__actions">
             <button
               type="button"
-              className="btn scoop btn-danger"
+              className="btn btn-danger"
               onClick={() => setResetConfirmOpen(true)}
             >
               Reset to demo
@@ -91,7 +91,7 @@ export default function BartenderControls({
             <div className="bartender-controls__actions">
               <button
                 type="button"
-                className="btn scoop btn-ghost"
+                className="btn btn-ghost"
                 onClick={handleSignOut}
                 disabled={signingOut}
               >

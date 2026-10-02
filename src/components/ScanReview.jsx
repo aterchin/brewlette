@@ -73,13 +73,13 @@ export default function ScanReview({ beers, skippedCount, currentCount, onReplac
         <div className="bartender-controls__actions">
           <button
             type="button"
-            className="btn scoop btn-primary"
+            className="btn btn-primary"
             onClick={() => setConfirmOpen(true)}
             disabled={beers.length === 0}
           >
             Replace list
           </button>
-          <button type="button" className="btn scoop btn-ghost" onClick={onCancel}>
+          <button type="button" className="btn btn-ghost" onClick={onCancel}>
             Discard
           </button>
         </div>

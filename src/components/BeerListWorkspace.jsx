@@ -102,7 +102,7 @@ export default function BeerListWorkspace({
             <div className="beer-editor__list-actions">
               <button
                 type="button"
-                className="btn scoop btn-primary"
+                className="btn btn-primary"
                 onClick={startAdd}
                 disabled={isListFull}
                 aria-describedby={isListFull ? "beer-list-full" : undefined}
@@ -154,7 +154,7 @@ export default function BeerListWorkspace({
             {onDeleteAll && beers.length > 0 ? (
               <button
                 type="button"
-                className="btn scoop btn-danger beer-editor__delete-all"
+                className="btn btn-danger beer-editor__delete-all"
                 onClick={() => setDeleteAllOpen(true)}
               >
                 Delete all beers

@@ -119,8 +119,7 @@
   padding: var(--space-3) var(--space-3) var(--space-4);
   background: var(--color-marquee);
   color: var(--color-ink);
-  border: var(--border-chunky) solid var(--color-border-chunky);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   cursor: pointer;
 }
@@ -167,8 +166,7 @@
   padding: var(--space-5) var(--space-5) var(--space-8);
   background: var(--color-marquee);
   color: var(--color-ink);
-  border: var(--border-chunky) solid var(--color-border-chunky);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
 }
 

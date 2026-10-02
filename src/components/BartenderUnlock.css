@@ -68,11 +68,10 @@ body:has(.app-shell--sign-in) {
   width: 100%;
   min-height: var(--touch-min);
   padding: var(--space-3) var(--space-4);
-  border: var(--border-chunky) solid var(--color-marquee);
+  border: none;
   border-radius: var(--radius-sm);
   background: var(--color-marquee);
   color: var(--color-ink);
-  box-shadow: var(--shadow-sm);
 }
 
 .bartender-unlock__password {
@@ -178,7 +177,7 @@ body:has(.app-shell--sign-in) {
 .bartender-unlock__divider::after {
   content: "";
   flex: 1;
-  height: 2px;
+  height: 1px;
   background: var(--color-border);
 }
 

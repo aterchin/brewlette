@@ -59,12 +59,12 @@ export default function ConfirmDialog({
           <button
             ref={confirmRef}
             type="button"
-            className={`btn scoop ${danger ? "btn-danger" : "btn-primary"}`}
+            className={`btn ${danger ? "btn-danger" : "btn-primary"}`}
             onClick={onConfirm}
           >
             {confirmLabel}
           </button>
-          <button type="button" className="btn scoop btn-ghost" onClick={onCancel}>
+          <button type="button" className="btn btn-ghost" onClick={onCancel}>
             {cancelLabel}
           </button>
         </div>

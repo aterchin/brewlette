@@ -50,8 +50,7 @@
   padding: var(--space-5) var(--space-5) var(--space-8);
   background: var(--color-marquee);
   color: var(--color-ink);
-  border: var(--border-chunky) solid var(--color-border-chunky);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
 }
 
@@ -104,11 +103,10 @@
 .bartender-controls__field input {
   min-height: var(--touch-min);
   padding: var(--space-3) var(--space-4);
-  border: var(--border-chunky) solid var(--color-border-chunky);
+  border: 2px solid var(--color-ink-line);
   border-radius: var(--radius-sm);
   background: #fff;
   color: var(--color-ink);
-  box-shadow: var(--shadow-sm);
 }
 
 .bartender-controls__field input::placeholder {

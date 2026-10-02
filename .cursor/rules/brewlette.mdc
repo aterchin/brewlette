@@ -5,9 +5,9 @@ alwaysApply: true
 
 # Brewlette
 
-Beer roulette for an iPad behind a bar. Fun bar toy — not enterprise software.
+Beer roulette for an iPad / phone behind a bar. Fun bar toy — not enterprise software.
 
-Follow [`.cursorrules`](../.cursorrules) for visual system (“Taproom Roulette”). Summarized below.
+Follow [`.cursorrules`](../.cursorrules) for visual system ("Brewlette"). Summarized below.
 
 ## Stack (do not change without asking)
 
@@ -25,14 +25,14 @@ Prefer: `components/`, `hooks/{useBeerList,useAuth}.js`, `utils/{storage,beerLis
 
 Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, then animate.**
 
-## Design — Taproom Roulette
+## Design — Brewlette (Taproom Roulette)
 
 - **Fonts:** Fraunces (brand + headers/results), Oswald (numbers), Arvo (UI/body)
 - **Headers:** uppercase + wide tracking
 - **Palette:** near-black dive (`#0B0D11` / `#12161A`), marquee cream (`#FDFBF7`), lager gold, Schlitz red, dive green — no pastels / purple SaaS
 - **Polaroid cards** for results/editor items: cream face, dark ink, thick bottom padding, hard zero-blur shadows
-- **Chunky borders** (`3px`), sharp corners — not hairline soft UI
-- **Wheel:** mechanical carnival feel; easing `cubic-bezier(0.12, 1, 0.33, 1)` / `easeMechanical`
+- **Clean UI first (exploratory, not locked):** soft squircle corners (`corner-shape: squircle` via `--radius-*`), no outlines on buttons/cards — fills + hard shadows separate things; overrides the chunky-border guidance in `.cursorrules` outside the wheel
+- **Wheel:** keep as-is — mechanical carnival feel, chunky rim; easing `cubic-bezier(0.12, 1, 0.33, 1)` / `easeMechanical`
 - Reject Inter/Roboto, purple gradients, neon glow spam
 
 ## UX invariants
@@ -45,7 +45,7 @@ Wheel math in `wheel.js`; crypto selection in `random.js`. **Pick winner first, 
 - Touch targets ≥ 44px (prefer 48px); hover never required
 - `prefers-reduced-motion`: shorter spin, still show result
 - Empty / 1-beer / corrupt storage / long names must not break
-- Optional “Remove this beer” after spin — never auto-remove
+- Optional "Remove this beer" after spin — never auto-remove
 - Beers have bartender-assigned `number` (unique, gaps OK); list/wheel sort by number — not array index / up-down reorder
 - No editable defaults list — bartenders maintain one list only
 

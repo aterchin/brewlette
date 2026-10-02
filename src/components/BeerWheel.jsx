@@ -181,7 +181,7 @@ export default function BeerWheel({
       </div>
       <button
         type="button"
-        className="btn btn-primary scoop beer-wheel__spin"
+        className="btn btn-primary beer-wheel__spin"
         onClick={spin}
         disabled={disabled || spinning || beers.length === 0}
       >

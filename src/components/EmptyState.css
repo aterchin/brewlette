@@ -8,7 +8,7 @@
   max-width: 26rem;
   background: var(--color-marquee);
   color: var(--color-ink);
-  border: var(--border-chunky) solid var(--color-border-chunky);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
 }
 
