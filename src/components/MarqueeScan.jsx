@@ -18,6 +18,23 @@ import "./MarqueeScan.css";
 const RESIZE_POLL_MS = 3000;
 const RESIZE_POLL_TRIES = 6;
 
+const READING_LINE_MS = 4000;
+const READING_LINES = [
+  "Analyzing you while you decide",
+  "Going outside to smoke",
+  "Double charging you in my mind",
+  "Cleaning glasses and ignoring you",
+  "Not caring where you grew up",
+  "Reconsidering my life choices",
+  "Buying a shot to shut you up",
+  "Playing get-the-hell-out music",
+];
+
+function randomReadingLine(except) {
+  const options = READING_LINES.filter((line) => line !== except);
+  return options[Math.floor(Math.random() * options.length)];
+}
+
 /**
  * Upload 1–2 photos of the beer marquee. Picking a photo uploads it right away.
  * Saved photos are loaded from Storage each time the page opens.
@@ -33,6 +50,16 @@ export default function MarqueeScan({ uid, currentCount, onBack, onReplace }) {
   const [errorMessage, setErrorMessage] = useState("");
   // { beers, skippedCount } from the last "Read board"; null shows the photo page.
   const [review, setReview] = useState(null);
+  const [readingLine, setReadingLine] = useState(() => randomReadingLine());
+
+  useEffect(() => {
+    if (status !== "reading") return undefined;
+    setReadingLine((current) => randomReadingLine(current));
+    const timer = setInterval(() => {
+      setReadingLine((current) => randomReadingLine(current));
+    }, READING_LINE_MS);
+    return () => clearInterval(timer);
+  }, [status]);
 
   useEffect(() => {
     let cancelled = false;
@@ -254,7 +281,14 @@ export default function MarqueeScan({ uid, currentCount, onBack, onReplace }) {
                 <span className="marquee-scan__scanline" />
               </div>
             ) : null}
-            <p>{busyLabel}</p>
+            {status === "reading" ? (
+              <p>
+                <span className="visually-hidden">{busyLabel}</span>
+                <span aria-hidden="true">{readingLine}…</span>
+              </p>
+            ) : (
+              <p>{busyLabel}</p>
+            )}
           </div>
         </div>
       ) : null}

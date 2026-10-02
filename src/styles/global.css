@@ -338,3 +338,7 @@ img {
     transition-duration: 0.01ms !important;
   }
 }
+
+.text-nowrap {
+  white-space: nowrap;
+}

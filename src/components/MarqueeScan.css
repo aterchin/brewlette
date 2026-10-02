@@ -208,11 +208,8 @@
 
 .marquee-scan__overlay-card p {
   margin: 0;
-  font-family: var(--font-family-display);
-  font-size: var(--font-size-xl);
-  font-weight: 700;
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
+  font-size: var(--font-size-lg);
+  text-align: center;
 }
 
 .marquee-scan__scanner {

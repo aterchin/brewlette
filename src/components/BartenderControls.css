@@ -27,9 +27,15 @@
 }
 
 .bartender-controls__topbar-copy h2 {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
   margin-bottom: var(--space-1);
   color: var(--color-marquee);
+}
+
+@media (min-width: 768px) {
+  .bartender-controls__topbar-copy h2 {
+    font-size: var(--font-size-2xl);
+  }
 }
 
 .bartender-controls__topbar-copy p {

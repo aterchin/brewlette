@@ -75,7 +75,8 @@ export default function BartenderHome({
               </span>
               <span className="bartender-home__scan-title">Scan your board</span>
               <span className="bartender-home__scan-sub">
-                Snap the tap list. We’ll fill the wheel.
+                <span className="text-nowrap">Snap the tap list.</span>{' '}
+                <span className="text-nowrap">We'll fill the wheel.</span>
               </span>
             </button>
           </div>

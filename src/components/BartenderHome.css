@@ -56,11 +56,17 @@
 
 .bartender-home__scan-title {
   font-family: var(--font-family-display);
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-xl);
   font-weight: 700;
   line-height: var(--line-height-tight);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
+}
+
+@media (min-width: 768px) {
+  .bartender-home__scan-title {
+    font-size: var(--font-size-3xl);
+  }
 }
 
 .bartender-home__scan-sub {
