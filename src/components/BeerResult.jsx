@@ -62,7 +62,7 @@ export default function BeerResult({ beer, onSpinAgain }) {
             showDetails ? "is-visible" : ""
           }`}
         >
-          SPIN AGAIN
+          I just came in for one beer
         </h2>
         <div className="beer-result__actions">
           <button
@@ -71,7 +71,7 @@ export default function BeerResult({ beer, onSpinAgain }) {
             onClick={handleSpinAgain}
             disabled={leaving}
           >
-            Spin again.
+            Spin again
           </button>
         </div>
       </section>
